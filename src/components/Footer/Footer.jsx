@@ -21,16 +21,13 @@ const Footer = () => {
               <div className="footer-nav-wrapper">
                 <ul className="footer-nav">
                   <li>
-                    <Link to="/">Home</Link>
+                    <Link to="/contact">Contact</Link>
                   </li>
                   <li>
-                    <Link to="/research">Research</Link>
+                    <Link to="/privacy">Privacy</Link>
                   </li>
                   <li>
-                    <Link to="/insights">Insights</Link>
-                  </li>
-                  <li>
-                    <Link to="/api">API</Link>
+                    <Link to="/terms">Terms of use</Link>
                   </li>
                 </ul>
               </div>
@@ -40,15 +37,15 @@ const Footer = () => {
               <div className="footer-nav-wrapper">
                 <ul className="footer-nav">
                   <li>
-                    <a href="https://github.com/MunoMono" target="_blank" rel="noreferrer">
-                      GitHub
+                    <a href="#" target="_blank" rel="noopener noreferrer">
+                      Github
                     </a>
                   </li>
                   <li>
                     <a
                       href="https://www.rca.ac.uk/study/programme-finder/communication-mphil-phd/"
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                     >
                       RCA
                     </a>
@@ -57,7 +54,7 @@ const Footer = () => {
                     <a
                       href="https://www.vam.ac.uk/info/archives#archive-of-art-design"
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                     >
                       V&amp;A East Storehouse
                     </a>
