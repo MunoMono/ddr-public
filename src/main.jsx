@@ -8,18 +8,24 @@ import Research from "./pages/Research.jsx";
 import Insights from "./pages/Insights.jsx";
 import ApiSandbox from "./pages/ApiSandbox.jsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: "research", element: <Research /> },
-      { path: "insights", element: <Insights /> },
-      { path: "api", element: <ApiSandbox /> },
-    ],
-  },
-]);
+// Use "/" in dev, "/ddr-public" on GitHub Pages
+const basename = import.meta.env.DEV ? "/" : "/ddr-public";
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <App />,
+      children: [
+        { index: true, element: <Home /> },
+        { path: "research", element: <Research /> },
+        { path: "insights", element: <Insights /> },
+        { path: "api", element: <ApiSandbox /> },
+      ],
+    },
+  ],
+  { basename }
+);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
