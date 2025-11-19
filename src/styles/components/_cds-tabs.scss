@@ -1,0 +1,324 @@
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/type' as type;
+@use '@carbon/styles/scss/breakpoint' as *;
+@use '../base/gutters' as g;
+
+/* =========================================================
+   Shared variable for left alignment across header, tabs, and panels
+   ========================================================= */
+:root {
+  --content-left: #{spacing.$spacing-10};     /* ~4rem small screens */
+  --content-left-md: #{spacing.$spacing-10};  /* ~4rem md+ */
+}
+
+/* =========================================================
+   Adjustable, responsive tab bar height (single system)
+   ========================================================= */
+$tab-bar-height-sm: 2.75rem;
+$tab-font-size-sm: 0.875rem;
+$tab-line-height-sm: 1.25rem;
+
+$tab-bar-height-md: 3.25rem;
+$tab-font-size-md: 1rem;
+$tab-line-height-md: 1.25rem;
+
+$tab-bar-height-lg: $tab-bar-height-md;
+$tab-font-size-lg:  $tab-font-size-md;
+$tab-line-height-lg:$tab-line-height-md;
+
+/* =========================================================
+   Page bands like IBM docs
+   ========================================================= */
+.docs-band {
+  border-top: 1px solid var(--cds-border-subtle-01);
+  background: transparent;
+}
+.docs-band__inner { padding-inline: 0; margin-inline: 0; }
+
+.docs-content { padding: 4rem 0rem; }
+.docs-content__grid { padding-left: 0; padding-right: 0; }
+
+/* =========================================================
+   Tabs band (pull back flush left to red line)
+   ========================================================= */
+.tabs-band {
+  padding-right: 0;
+  padding-left: 0;
+  background-color: #000 !important;
+
+  .cds--css-grid {
+    --cds-grid-margin: 0 !important; /* reset left shift */
+    --cds-grid-gutter-start: 0 !important;
+    margin-inline: 0 !important;
+    max-inline-size: none !important;
+  }
+}
+
+/* =========================================================
+   Tabs: Top indicator, grey selected, hide Carbon bottom slider
+   ========================================================= */
+.tabs-force-top {
+  position: relative;
+
+  .cds--tabs.cds--tabs--contained {
+    background: transparent;
+    border-top: 1px solid var(--cds-border-subtle-01);
+  }
+
+  .cds--tabs__nav {
+    position: relative;
+    margin-top: 0;
+    border-bottom: none !important;
+    align-items: stretch !important;
+    padding-left: 0 !important; /* flush left */
+  }
+
+  .cds--tabs__nav-item { margin-top: 0 !important; }
+
+  .cds--tabs__nav-link {
+    border-bottom: none !important;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    @include type.type-style('label-01');
+
+    font-size: $tab-font-size-sm;
+    line-height: $tab-line-height-sm;
+    padding-block: calc(($tab-bar-height-sm - $tab-line-height-sm) / 2) !important;
+
+    padding-inline: 1rem;
+    min-width: 12rem;
+    text-align: left;
+    justify-content: flex-start;
+  }
+
+  @include breakpoint('md') {
+    .cds--tabs__nav-link {
+      font-size: $tab-font-size-md;
+      line-height: $tab-line-height-md;
+      padding-block: calc(($tab-bar-height-md - $tab-line-height-md) / 2) !important;
+      min-width: 12rem;
+    }
+  }
+
+  @include breakpoint('lg') {
+    .cds--tabs__nav-link {
+      font-size: $tab-font-size-lg;
+      line-height: $tab-line-height-lg;
+      padding-block: calc(($tab-bar-height-lg - $tab-line-height-lg) / 2) !important;
+    }
+  }
+
+  .cds--tabs__slider { display: none !important; }
+  .cds--tabs__nav::after { content: none !important; }
+  .cds--tabs__selection-indicator { display: none !important; }
+
+  .cds--tabs--contained .cds--tabs__nav-item--selected .cds--tabs__nav-link {
+    box-shadow: none !important;
+    border-bottom: 0 !important;
+  }
+
+  .cds--tabs__nav-link,
+  .cds--tabs__nav-link:hover,
+  .cds--tabs__nav-link[aria-selected="true"],
+  .cds--tabs__nav-link[aria-selected="true"]:hover {
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+
+  .cds--tabs__nav-link[aria-selected="true"] {
+    background: var(--cds-layer-selected, var(--cds-layer));
+    color: var(--cds-text-primary);
+    font-weight: 400;
+  }
+
+  .cds--tabs__nav-link:hover { background: var(--cds-layer-hover); }
+
+  /* Blue line indicator */
+  .cds--tabs__nav-link[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--cds-border-interactive);
+  }
+
+  /* reset first tab padding so it hugs red line */
+  .cds--tabs__nav-item:first-child .cds--tabs__nav-link {
+    padding-left: 0 !important;
+    padding-right: 1rem !important;
+  }
+
+  .cds--tab-content { display: none; padding-top: 0; }
+}
+
+/* =========================================================
+   Layout tweaks
+   ========================================================= */
+.docs-band,
+.docs-band__inner,
+.tabs-band,
+.tabs-force-top { padding-bottom: 0; }
+
+.tabs-force-top .cds--tabs,
+.tabs-force-top .cds--tabs .cds--tabs__nav { margin-bottom: 0 !important; }
+
+.docs-panel-band {
+  margin-top: 0;
+  transform: translateY(-0.5px);
+  padding-right: 0;
+  padding-left: 0;
+}
+
+@media (max-width: 672px) {
+  .tabs-force-top {
+    .cds--tabs__nav { flex-wrap: nowrap; }
+    .cds--tabs__nav-item { flex: 1 1 0; min-width: 0; }
+    .cds--tabs__nav-link {
+      min-width: 0;
+      padding-inline: 0.5rem;
+      text-align: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* =========================================================
+   Full-bleed bands & header alignment sync
+   ========================================================= */
+
+/* Page header inner container */
+.page-header > .container,
+.page-header__inner {
+  padding-left: var(--content-left);
+
+  @include breakpoint('md') {
+    padding-left: var(--content-left-md);
+  }
+}
+
+/* Bands inherit same left alignment */
+.docs-band__inner,
+.tabs-band__inner,
+.docs-panel-band__inner {
+  max-width: g.$container-max;
+  margin-left: auto;
+  margin-right: auto;
+
+  padding-left: var(--content-left);
+  padding-right: g.$container-pad-sm;
+
+  @include breakpoint('md') {
+    padding-left: var(--content-left-md);
+    padding-right: g.$container-pad-md;
+  }
+}
+
+/* Carbon grids inside tabs/panels honour same start */
+.tabs-band .cds--css-grid,
+.docs-panel-band .cds--css-grid {
+  margin-inline: 0 !important;
+  max-inline-size: none !important;
+  --cds-grid-margin: var(--content-left) !important;
+  --cds-grid-gutter-start: 0 !important;
+}
+
+/* -----------------------------------------
+   Use 4rem left start (Carbon spacing-10)
+----------------------------------------- */
+:root {
+  --content-left: #{spacing.$spacing-07};     /* ~2rem on small screens */
+  --content-left-md: #{spacing.$spacing-10};  /* ~4rem from md and up */
+}
+
+/* =========================================================
+   Tabs band (full-bleed black, zero shift; mobile flush, md+ 4rem)
+   ========================================================= */
+.tabs-band {
+  padding-left: 0;  /* mobile: flush */
+  padding-right: 0;
+
+  /* full-bleed black without shifting layout */
+  background: #000;
+  box-shadow: 0 0 0 100vmax #000;
+  clip-path: inset(0 -100vmax);
+
+  /* keep grid alignment exactly as-is */
+  .cds--css-grid {
+    --cds-grid-margin: 0 !important;
+    --cds-grid-gutter-start: 0 !important;
+    margin-inline: 0 !important;
+    max-inline-size: none !important;
+  }
+
+  /* from md up, add the 4rem left start (Carbon spacing-10) */
+  @include breakpoint('md') {
+    padding-left: #{spacing.$spacing-10}; // = 4rem
+  }
+}
+
+/* -----------------------------------------
+   Tabs component: remove any residual left
+   padding on the nav and the very first tab
+----------------------------------------- */
+.tabs-force-top {
+  .cds--tabs,
+  .cds--tabs__nav {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  /* first tab’s text normally has 1rem left padding; remove it so the tab’s left edge
+     (and its label) visually start at the same x as the page header/content */
+  .cds--tabs__nav-item:first-child .cds--tabs__nav-link {
+    padding-left: 0 !important;
+  }
+
+  /* keep right padding so tab doesn’t look cramped */
+  .cds--tabs__nav-item:first-child .cds--tabs__nav-link {
+    padding-right: 1rem !important;
+  }
+}
+
+/* -----------------------------------------
+   Panels band: same no-gutter treatment so
+   table/content aligns perfectly underneath
+----------------------------------------- */
+.docs-panel-band {
+  padding-left: 0;
+  padding-right: 0;
+
+  .cds--css-grid {
+    --cds-grid-margin: var(--content-left) !important;
+    --cds-grid-gutter-start: 0 !important;
+    --cds-grid-gutter: 0 !important;
+
+    @include breakpoint('md') {
+      --cds-grid-margin: var(--content-left-md) !important;
+    }
+  }
+}
+
+/* -----------------------------------------
+   Page header inner keeps using the same vars
+----------------------------------------- */
+@media (max-width: 672px) {
+  .page-header > .container,
+  .page-header__inner {
+    padding-left: var(--cds-spacing-05);  // ≈1rem
+    padding-right: var(--cds-spacing-05);
+  }
+
+  .page-header h1,
+  .page-header h2 {
+    margin-left: 1rem !important;
+  }
+
+  /* Smaller tab-lead on mobile */
+@media (max-width: 672px) {
+  .tab-lead {
+    font-size: 1.8rem;
+  }
+}
+}

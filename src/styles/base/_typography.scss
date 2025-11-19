@@ -1,0 +1,183 @@
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/breakpoint' as *;
+@use '../base/mixins' as mixins;
+@use 'sass:map';
+
+// -----------------------------------
+// Custom Typography Utilities (Carbon v11 compliant)
+// -----------------------------------
+
+.heading-01 {
+  @include type-style('heading-01');
+}
+
+.heading-02 {
+  @include type-style('heading-02');
+}
+
+.heading-03 {
+  @include type-style('heading-03');
+}
+
+.body-01 {
+  @include type-style('body-01');
+}
+
+.body-compact-01 {
+  @include type-style('body-compact-01');
+}
+
+.label-01 {
+  @include type-style('label-01');
+}
+
+// -----------------------------------
+// HTML Headings + Utilities (with legacy overrides)
+// -----------------------------------
+
+h1,
+.h1 {
+  @include type-style('heading-03');
+  font-weight: 300 !important;
+
+  @media (max-width: breakpoint('sm')) {
+    font-size: 2.5rem;
+  }
+}
+
+h2,
+.h2 {
+  @include type-style('heading-02');
+  font-weight: 600;
+}
+
+h3,
+.h3 {
+  @include mixins.heading-h3-bold;
+}
+
+h4,
+.h4 {
+  @include type-style('heading-01');
+  font-weight: 700;
+}
+
+h5,
+.h5 {
+  @include mixins.heading-h5-compact;
+}
+
+// -----------------------------------
+// Paragraphs
+// -----------------------------------
+
+p,
+.p {
+  @include type-style('body-short-01');
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+// -----------------------------------
+// Anchor Targets
+// -----------------------------------
+
+.bx--type-heading-02.anchor-target,
+h3.anchor-target {
+  scroll-margin-top: $spacing-09;
+  font-weight: 400 !important;
+  margin-top: $spacing-07;
+  margin-bottom: $spacing-05;
+}
+
+.bx--type-heading-02,
+h2 {
+  font-weight: 400 !important;
+  margin-top: $spacing-07;
+  margin-bottom: $spacing-05;
+}
+
+// -----------------------------------
+// Vertical Rhythm Rules
+// -----------------------------------
+
+@include mixins.heading-spacing(p, p, 1rem);
+@include mixins.heading-spacing(p, ul, 1rem);
+
+h3 + .bx--list--unordered {
+  margin-top: $spacing-05 !important;
+}
+
+@include mixins.heading-spacing(h3, p, $spacing-05);
+@include mixins.heading-spacing(h3, ul, $spacing-05);
+@include mixins.heading-spacing(h4, p, $spacing-05);
+@include mixins.heading-spacing(h4, ul, $spacing-05);
+
+h4 + .bx--list--unordered {
+  margin-top: $spacing-05 !important;
+}
+
+@include mixins.heading-spacing(h5, p, $spacing-03);
+@include mixins.heading-spacing(h5, ul, $spacing-03);
+
+h5 + .bx--list--unordered {
+  margin-top: $spacing-03 !important;
+}
+
+@include mixins.heading-spacing(p, h3, $spacing-07);
+@include mixins.heading-spacing(ul, h3, $spacing-07);
+
+.bx--list--unordered + h3 {
+  margin-top: $spacing-07 !important;
+}
+
+@include mixins.heading-spacing(p, h4, $spacing-06);
+@include mixins.heading-spacing(ul, h4, $spacing-06);
+
+.bx--list--unordered + h4 {
+  margin-top: $spacing-06 !important;
+}
+
+@include mixins.heading-spacing(p, h5, $spacing-05);
+@include mixins.heading-spacing(ul, h5, $spacing-05);
+
+.bx--list--unordered + h5 {
+  margin-top: $spacing-05 !important;
+}
+
+@include mixins.heading-spacing(h5, h3, 1rem);
+@include mixins.heading-spacing(h3, h5, $spacing-05);
+@include mixins.heading-spacing(h2, h3, 2rem);
+
+// -----------------------------------
+// Code & Annotation Support
+// -----------------------------------
+
+p + .filecode {
+  @include mixins.filecode-spacing;
+}
+
+p + .filecode-wrapper {
+  margin-top: $spacing-05 !important;
+}
+
+h4 + h5 {
+  margin-top: $spacing-05 !important;
+}
+
+ul + p {
+  margin-top: 1rem;
+}
+
+.chart-annotation {
+  @include type-style('body-long-01');
+  color: var(--cds-text-primary);
+  margin-bottom: 2.5rem;
+}
+
+.tab-lead {
+  font-size: 2.5rem;
+  font-weight: 350 !important;
+  margin-bottom: $spacing-05;
+}

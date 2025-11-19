@@ -1,0 +1,11 @@
+@use '@carbon/styles/scss/spacing' as *;
+
+/* existing gutters... */
+$gutter-left-sm: 0;
+$gutter-left-md: $spacing-05; // ~16px
+$gutter-left-lg: $spacing-06; // ~24px
+
+/* NEW: global container tokens */
+$container-max: 99rem;          // ~1584px (Carbon docs-scale)
+$container-pad-sm: $spacing-05; // side padding on small screens
+$container-pad-md: $spacing-06; // side padding from md+

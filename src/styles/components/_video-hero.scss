@@ -1,0 +1,55 @@
+@use '@carbon/styles/scss/spacing' as *;
+
+/* -------------------------------------------------
+   Page header — media variant (hero with image/video)
+   Reuses the base .page-header rules you already have.
+   Only adds background + gradient overlay behavior.
+-------------------------------------------------- */
+
+.page-header {
+  /* base .page-header rules live in your other partial */
+}
+
+/* Media hero baseline (re-uses --height from base, falls back to 20rem) */
+.page-header--media {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  --height: var(--height, 20rem);
+  height: var(--height);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(22, 22, 22, 0.8),
+      rgba(22, 22, 22, 0.2)
+    );
+    pointer-events: none;
+  }
+
+  .page-header__inner,
+  > .container {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Homepage-specific taller hero (1.5×) */
+.page-header--media.page-header--home {
+  --height: 30rem; /* 1.5 × 20rem */
+}
+
+/* Optional: tweak heights on small screens */
+@media screen and (max-width: 768px) {
+  .page-header--media {
+    --height: 22rem;
+  }
+  .page-header--media.page-header--home {
+    --height: 33rem; /* proportionally taller */
+  }
+}

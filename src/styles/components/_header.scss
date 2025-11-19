@@ -1,0 +1,82 @@
+/* styles/components/_header.scss
+   Tablet-specific nav behavior (Carbon md–lg: 672–1055px)
+   and small spacing tweaks to avoid wrap.
+*/
+
+/* Defaults: desktop (≥1056px) = full labels, full menu names */
+.label--full { display: inline; }
+.label--tab  { display: none; } /* no longer used for the title, still fine for menu text if you want */
+
+/* Short alternate prefix (no longer used) */
+.header-prefix-alt {
+  display: none;
+  margin-right: 0.25rem;
+}
+
+/* Duplicate menus: show full by default, hide short */
+.menu--full { display: inline-block; }
+.menu--tab  { display: none; }
+
+/* Prevent unexpected wrapping and reduce horizontal padding a touch */
+.cds--header__nav {
+  white-space: nowrap;
+}
+.cds--header__menu-item,
+.cds--header__menu .cds--HeaderMenu__label {
+  /* tighten just a bit so tablet fits in one row without ellipsis */
+  padding-inline: 0.75rem;
+}
+
+/* NEW: hidden by default — used to force a two-line tablet title */
+.tablet-name {
+  display: none;
+}
+
+/* Mobile-only (≤671px): show hamburger, full labels live in the SideNav */
+@media (max-width: 671px) {
+  /* nothing special here: Carbon handles the hamburger + sidenav */
+}
+
+/* Tablet-only (672–1055px): forced two-line title; keep shortened menu labels if provided */
+@media (min-width: 672px) and (max-width: 1055px) {
+  /* Hide Carbon’s built-in HeaderName prefix (“RCA PhD”) */
+  .cds--header__name--prefix { display: none !important; }
+
+  /* For the title: hide desktop label, show our stacked two-line version */
+  .label--full { display: none; }
+  .tablet-name {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.05; /* tight but readable */
+  }
+
+  /* Allow the name to wrap normally (remove prior single-line lock) */
+  .cds--header__name {
+    white-space: normal;    /* allow line breaks */
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow: visible;       /* no ellipsis on the name */
+    text-overflow: clip;
+  }
+
+  /* If any old tablet labels/prefix exist, keep them hidden */
+  .label--tab,
+  .header-prefix-alt {
+    display: none !important;
+  }
+
+  /* PER-ITEM swap: only hide full text when a short text exists */
+  .has-tab .menu--full { display: none; }
+  .has-tab .menu--tab  { display: inline-block; }
+
+  /* keep the hamburger visible on tablet as a safety net */
+  /* .cds--header__menu-trigger { display: none !important; } */
+}
+
+/* Desktop (≥1056px): keep full labels and desktop nav (no hamburger) */
+@media (min-width: 1056px) {
+  .cds--header__menu-trigger {
+    display: none !important;
+  }
+}

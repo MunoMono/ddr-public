@@ -1,0 +1,115 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/colors' as *;
+@use '@carbon/styles/scss/layer' as *;
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/theme' as *;
+
+// -----------------------------------
+// IBM-style Inline & Block Anchor Lists (Carbon v11)
+// -----------------------------------
+
+.anchor-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-02;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.anchor-chip {
+  display: inline-block;
+  padding: $spacing-01 $spacing-03;
+  background-color: $layer-accent;
+  border-radius: 1rem;
+  font: type-style('body-compact-01');
+  font-weight: 500;
+  text-decoration: none;
+  color: $text-primary;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    background-color: $layer-accent-hover;
+    text-decoration: underline;
+  }
+}
+
+.anchor-links-wrapper {
+  margin-bottom: 2rem;
+  padding-left: 0;
+
+  .anchor-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .anchor-col {
+      flex: 1 1 40ch;
+    }
+  }
+
+  .anchor-links-heading {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem); // ≈ Carbon H3
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: $text-primary;
+  }
+
+  .anchor-links-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .anchor-link-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    transition: color 0.25s ease;
+
+    .anchor-arrow {
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+      fill: currentColor;
+      transition: fill 0.25s ease;
+      width: clamp(1rem, 2vw, 1.25rem);
+      height: clamp(1rem, 2vw, 1.25rem);
+    }
+
+    .anchor-link-text {
+      color: currentColor;
+      text-decoration: none;
+      transition: color 0.25s ease;
+      font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    &:hover {
+      .anchor-link-text,
+      .anchor-arrow {
+        color: #0f62fe;
+        fill: #0f62fe;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &.anchor-links--small {
+    .anchor-link-text {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      font-weight: 400;
+      line-height: 1.25;
+    }
+
+    .anchor-arrow {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

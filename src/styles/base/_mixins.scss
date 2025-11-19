@@ -1,0 +1,90 @@
+// src/styles/base/_mixins.scss
+
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/breakpoint' as *; // for responsive mixins
+@use '../base/gutters' as g;                 // shared container + gutter tokens
+
+/// -------------------------------
+/// Global centered container (Carbon docs style)
+/// Use on any wrapper that should be centered site‑wide.
+/// -------------------------------
+@mixin centered-container {
+  max-width: g.$container-max;
+  margin-left: auto;
+  margin-right: auto;
+
+  // responsive horizontal padding
+  padding-left: g.$container-pad-sm;
+  padding-right: g.$container-pad-sm;
+
+  @include breakpoint('md') {
+    padding-left: g.$container-pad-md;
+    padding-right: g.$container-pad-md;
+  }
+}
+
+/// Mixin for responsive padding using Carbon spacing scale
+@mixin responsive-padding(
+  $top: $spacing-05,
+  $right: $spacing-05,
+  $bottom: $spacing-05,
+  $left: $spacing-05
+) {
+  padding: $top $right $bottom $left;
+}
+
+/// Mixin for headline typography
+@mixin heading-style {
+  font-family: $font-family-sans;
+  font-weight: 600;
+  font-size: $fluid-heading-03;
+  line-height: 1.25;
+  color: $text-primary;
+}
+
+/// Mixin for body copy
+@mixin body-style {
+  font-family: $font-family-sans;
+  font-weight: 400;
+  font-size: $body-01;
+  line-height: 1.5;
+  color: $text-primary;
+}
+
+/// Mixin for visually hidden content (a11y)
+@mixin visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+/// Mixin for bold H3 heading (based on Carbon heading-03)
+@mixin heading-h3-bold {
+  @include type-style('heading-03');
+  font-weight: 600;
+}
+
+/// Mixin for compact H5 heading (based on body-compact-01)
+@mixin heading-h5-compact {
+  @include type-style('body-compact-01');
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16px;
+}
+
+/// Mixin to apply vertical spacing between two elements
+@mixin heading-spacing($from, $to, $margin-top) {
+  #{$from} + #{$to} {
+    margin-top: $margin-top !important;
+  }
+}
+
+/// Mixin for consistent file code block spacing
+@mixin filecode-spacing {
+  margin-top: $spacing-05 !important;
+  margin-bottom: $spacing-05 !important;
+}

@@ -1,0 +1,100 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/theme' as *;
+@use '@carbon/styles/scss/colors' as *;
+
+.risk-register-container {
+  font-family: font-family('body-01');
+  font-size: type-token('body-01');
+  line-height: 1.5;
+  color: $text-primary; // falls back to light theme variable
+
+  h2 {
+    font-weight: 600;
+    font-size: type-token('heading-03');
+    margin-top: $spacing-07;
+    margin-bottom: $spacing-05;
+    color: $text-primary;
+  }
+
+  .matrix-container {
+    margin-top: $spacing-07;
+    overflow-x: auto;
+    border: 1px solid #393939;
+    border-radius: 0.5rem;
+    padding: $spacing-05;
+    background-color: #1f1f1f;
+  }
+
+  .cds--dropdown {
+    margin: $spacing-07 0;
+    max-width: 100%;
+  }
+
+  .risk-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: $spacing-07;
+    font-size: 0.95rem;
+    background-color: #262626;
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    thead {
+      background-color: #393939;
+
+      tr {
+        th {
+          font-weight: 700;
+          text-align: left;
+          padding: $spacing-04 $spacing-05;
+          color: #ffffff;
+          border-bottom: 1px solid #525252;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        border-top: 1px solid #393939;
+
+        td {
+          padding: $spacing-04 $spacing-05;
+          border-bottom: 1px solid #2a2a2a;
+          color: #e0e0e0;
+        }
+
+        &:nth-child(even) {
+          background-color: #2b2b2b;
+        }
+      }
+    }
+  }
+
+  // Wrap table on smaller screens
+  .table-wrapper {
+    overflow-x: auto;
+    display: block;
+    -webkit-overflow-scrolling: touch;
+
+    .risk-table {
+      min-width: 640px;
+    }
+  }
+}
+
+// Mobile-only scroll behavior
+@media (max-width: 768px) {
+  .risk-register-container {
+    .table-wrapper {
+      overflow-x: auto;
+    }
+  }
+}
+
+.risk-matrix-svg {
+  width: 66%;
+  height: auto;
+  display: block;
+  margin-bottom: $spacing-06;
+}

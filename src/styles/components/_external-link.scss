@@ -1,0 +1,16 @@
+@use '@carbon/styles/scss/type' as type;
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/theme' as theme;
+@use 'sass:map';
+
+.external-link {
+  font-size: map.get(type.$body-compact-01, font-size);
+  font-weight: map.get(type.$body-compact-01, font-weight);
+  line-height: map.get(type.$body-compact-01, line-height);
+  letter-spacing: map.get(type.$body-compact-01, letter-spacing);
+
+  // ✅ Correct token access via theme.get()
+  // color: theme.get('interactive-01');
+
+  padding-left: spacing.$spacing-03;
+}

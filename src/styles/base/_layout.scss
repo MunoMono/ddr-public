@@ -1,0 +1,36 @@
+/* src/styles/base/_layout.scss */
+@use '@carbon/styles/scss/breakpoint' as *;
+@use '@carbon/styles/scss/spacing' as *;
+@use '../base/mixins' as mx;
+
+/* Full-bleed background stays global */
+.page-container {
+  background-color: var(--cds-background);
+  min-height: 100vh;
+}
+
+/* ✅ Center only the actual content wrappers (NOT main) */
+.page-content,
+.docs-content,
+.grid-section,
+.cds-markdown,
+.carbon-markdown,
+.cds--content,
+.cds--css-grid,
+.container,
+.site-container,
+.page-header__inner,     /* hero/heading inner */
+.tabs-band__inner,       /* tabs bar inner */
+.docs-panel-band__inner  /* g10 panel inner */
+{
+  @include mx.centered-container;
+}
+
+/* Keep vertical rhythm on docs content; no side padding here */
+.docs-content {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  padding-inline: 0;
+}
+
+.docs-content__grid { padding-left: 0; padding-right: 0; }

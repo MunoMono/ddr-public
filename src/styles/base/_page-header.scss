@@ -1,0 +1,73 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/breakpoint' as *;
+@use '../base/gutters' as g;
+
+/* Full‑bleed header band */
+.page-header {
+  --height: 20rem;
+  --cds-heading-06-font-weight: 400;
+
+  background-color: #000;
+  border-bottom: 1px solid #393939;
+  color: #fff;
+  
+  h1,
+  h2,
+  p,
+  .lead,
+  .eyebrow,
+  a {
+    color: #fff;
+  }
+
+  display: flex;
+  justify-content: center;
+  height: var(--height);
+  width: 100%;
+}
+
+/* Inner wrapper: keep using your existing .container,
+   but make its side padding IDENTICAL to the tabs/content grid. */
+.page-header__inner,
+.page-header > .container {
+  max-width: g.$container-max;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+
+  /* 👇 match the same left/right padding your tab bar & content use */
+  padding-left: g.$container-pad-sm;
+  padding-right: g.$container-pad-sm;
+
+  @include breakpoint('md') {
+    padding-left: g.$container-pad-md;
+    padding-right: g.$container-pad-md;
+  }
+}
+
+/* Title */
+.page-header__inner h1,
+.page-header > .container h1 {
+  margin: 0;
+  padding-bottom: $spacing-07;
+  font-size: clamp(3rem, 6vw, 4rem);
+  font-weight: 200;
+  color: #fff;
+  text-align: left;
+}
+
+/* ----------------------------
+   Make content align with tabs
+   ---------------------------- */
+
+/* Your tab bar already sits inside a Grid + Column.
+   Give the content grid the same side padding as the header/tabs. */
+.docs-content__grid {
+  padding-left: g.$container-pad-sm;
+  padding-right: g.$container-pad-sm;
+
+  @include breakpoint('md') {
+    padding-left: g.$container-pad-md;
+    padding-right: g.$container-pad-md;
+  }
+}

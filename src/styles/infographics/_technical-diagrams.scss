@@ -1,0 +1,9 @@
+@use '@carbon/styles/scss/spacing' as *;
+
+.technical-diagram-svg {
+  width: 66%;
+  height: auto;
+  display: block;
+  margin-top: $spacing-07 !important;   // ≈ 2rem
+  margin-bottom: $spacing-09 !important; // ≈ 3rem
+}

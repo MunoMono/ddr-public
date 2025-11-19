@@ -1,0 +1,65 @@
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/type' as type;
+@use '@carbon/styles/scss/theme';
+@use 'sass:map';
+
+.anchor-links-wrapper {
+  padding-left: 0;
+
+  .anchor-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .anchor-col {
+      flex: 1 1 40ch;
+    }
+
+    @media (max-width: 640px) {
+      display: block;
+
+      .anchor-col {
+        width: 100%;
+        margin-bottom: spacing.$spacing-05;
+      }
+    }
+  }
+
+  .anchor-links-heading {
+    font-size: map.get(type.$heading-03, font-size);
+    font-weight: 600;
+    margin-bottom: spacing.$spacing-06;
+    color: theme.get('text-primary');
+  }
+
+  .anchor-links-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .anchor-link-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: spacing.$spacing-05;
+    transition: color 0.25s ease;
+
+    .anchor-arrow {
+      margin-right: spacing.$spacing-03;
+      flex-shrink: 0;
+      fill: currentColor;
+      transition: fill 0.25s ease;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .anchor-link-text {
+      color: theme.get('text-primary');
+      font-weight: 400;
+      font-size: map.get(type.$body-compact-01, font-size);
+    }
+
+    // &:hover .anchor-arrow {
+    //   fill: theme.get('interactive-01');
+    // }
+  }
+}

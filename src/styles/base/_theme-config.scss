@@ -1,0 +1,24 @@
+@use '@carbon/styles/scss/tokens' as *;
+
+// Base styles
+@use './base/colors';
+@use './base/fonts';
+@use './base/layout';
+@use './base/mixins';
+@use './base/responsive';
+@use './base/filecode';
+
+// Components
+@use './components/AnchorLinks';
+@use './components/CombinedCard';
+@use './components/ExternalLink';
+@use './components/Footer';
+@use './components/Header';
+@use './components/ImageCard';
+@use './components/ResponsiveChartWrapper';
+@use './components/TextCard';
+
+// Global layer background using Carbon theme token
+body {
+  background-color: $layer;
+}
