@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/ddr-public/", // 👈 important for GitHub Pages
   plugins: [react()],
   resolve: {
     alias: {
