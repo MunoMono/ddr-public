@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "@styles": fileURLToPath(new URL("./src/styles", import.meta.url)),
+      "~@ibm": fileURLToPath(new URL("./node_modules/@ibm", import.meta.url)),
     },
   },
   server: {

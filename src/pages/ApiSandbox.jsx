@@ -364,9 +364,7 @@ const ApiSandbox = () => {
         tabAriaLabel="API sections"
         activeTab={activeApiTab}
         onTabSelect={handleHeroTabSelect}
-      >
-        <Tag type="teal">100% Carbon components</Tag>
-      </PageHero>
+      />
 
       <div className="page-content">
         <section className="page-section" id="api-content">

@@ -12,7 +12,12 @@
   background: radial-gradient(circle at top, #1c1c1c 0%, #0f0f0f 55%, #050505 100%);
   color: #fff;
   border-bottom: 1px solid #262626;
-  padding: clamp(3rem, 6vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+  padding: clamp(3rem, 6vw, 5rem) 0 clamp(2.5rem, 5vw, 4rem);
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: flex-end;
 
   h1 {
     font-size: clamp(2.75rem, 5vw, 4rem);
@@ -35,6 +40,10 @@
 .page-hero__inner,
 .hero-tabs__inner {
   @include mx.centered-container;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
 }
 
 .page-hero__grid {
@@ -78,4 +87,31 @@
   width: 1px;
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
+}
+
+.home-page .page-hero {
+  min-height: clamp(600px, 75vh, 900px);
+  padding: clamp(5rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3rem);
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+}
+
+.home-page .page-hero__inner {
+  align-self: flex-end;
+}
+
+.home-page .page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+    radial-gradient(rgba(120, 169, 255, 0.25) 1px, transparent 1px);
+  background-size: 16px 16px, 22px 22px;
+  background-position: 0 0, 8px 8px;
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
 }

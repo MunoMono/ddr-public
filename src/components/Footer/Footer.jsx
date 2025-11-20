@@ -17,7 +17,7 @@ const Footer = () => {
       <footer className="global-footer">
         <div className="footer-container left-aligned">
           <Grid className="footer-grid">
-            <Column sm={4} md={2} lg={2}>
+            <Column sm={4} md={4} lg={3}>
               <div className="footer-nav-wrapper">
                 <ul className="footer-nav">
                   <li>
@@ -33,7 +33,7 @@ const Footer = () => {
               </div>
             </Column>
 
-            <Column sm={4} md={2} lg={2}>
+            <Column sm={4} md={4} lg={3}>
               <div className="footer-nav-wrapper">
                 <ul className="footer-nav">
                   <li>
@@ -63,7 +63,7 @@ const Footer = () => {
               </div>
             </Column>
 
-            <Column sm={4} md={4} lg={4} lgOffset={2}>
+            <Column sm={4} md={8} lg={6}>
               <div className="footer-meta">
                 <p>
                   Last updated {formattedDate}

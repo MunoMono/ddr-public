@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Column, Grid, Tab, TabList, TabPanel, TabPanels, Tabs, Theme } from "@carbon/react";
 
@@ -23,15 +23,12 @@ const PageHero = ({
   tabAriaLabel = "Page sections",
   activeTab,
   onTabSelect,
+  style,
 }) => {
   const [internalIndex, setInternalIndex] = useState(() => clampTabIndex(activeTab ?? 0, tabs.length));
   const hasTabs = tabs.length > 0;
   const isControlled = useMemo(() => typeof activeTab === "number", [activeTab]);
-
-  useEffect(() => {
-    if (!isControlled) return;
-    setInternalIndex(clampTabIndex(activeTab, tabs.length));
-  }, [activeTab, isControlled, tabs.length]);
+  const resolvedIndex = isControlled ? clampTabIndex(activeTab ?? 0, tabs.length) : internalIndex;
 
   const handleTabChange = useCallback(
     ({ selectedIndex }) => {
@@ -51,7 +48,7 @@ const PageHero = ({
   return (
     <Theme theme="g100">
       <div className="page-hero-shell">
-        <section className="page-hero" id={id}>
+        <section className="page-hero" id={id} style={style}>
           <div className="page-hero__inner">
             <Grid condensed className="page-hero__grid">
               <Column lg={hasTabs ? 12 : 10} md={8} sm={4}>
@@ -77,7 +74,7 @@ const PageHero = ({
         {hasTabs ? (
           <div className="hero-tabs">
             <div className="hero-tabs__inner">
-              <Tabs selectedIndex={internalIndex} onChange={handleTabChange} scrollIntoView={false}>
+              <Tabs selectedIndex={resolvedIndex} onChange={handleTabChange} scrollIntoView={false}>
                 <TabList aria-label={tabAriaLabel}>
                   {tabs.map((tab) => (
                     <Tab key={tab.id}>{tab.label}</Tab>
@@ -122,6 +119,7 @@ PageHero.propTypes = {
   tabAriaLabel: PropTypes.string,
   activeTab: PropTypes.number,
   onTabSelect: PropTypes.func,
+  style: PropTypes.object,
 };
 
 export default PageHero;

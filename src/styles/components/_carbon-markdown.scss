@@ -2,8 +2,10 @@
 @use '@carbon/styles/scss/type' as type;
 @use '@carbon/styles/scss/spacing' as *;
 @use '@carbon/styles/scss/theme' as *; // <-- use theme vars ($text-primary, $layer-01, ...)
+@import '../../../vendor/carbon-markdown-scss/scss/github';
 
-.carbon-markdown {
+.carbon-markdown,
+.markdown-body {
   color: $text-primary;
   @include type.type-style('body-01');
   line-height: 1.6;

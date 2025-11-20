@@ -3,8 +3,6 @@ import {
   Theme,
   Header as CarbonHeader,
   HeaderContainer,
-  HeaderGlobalAction,
-  HeaderGlobalBar,
   HeaderMenuButton,
   HeaderMenuItem,
   HeaderName,
@@ -14,7 +12,6 @@ import {
   HeaderSideNavItems,
   SkipToContent,
 } from "@carbon/react";
-import { Notification, Search } from "@carbon/icons-react";
 
 import "../../styles/components/_header.scss";
 
@@ -43,7 +40,7 @@ const Header = () => {
             />
 
             <HeaderName as={Link} to="/" prefix="RCA PhD">
-              <span className="label--full">Department of Design Research</span>
+              <span className="label--full">Graham Newman</span>
               <span className="tablet-name">
                 <span>DDR</span>
                 <span>Public shell</span>
@@ -64,15 +61,6 @@ const Header = () => {
                 </HeaderMenuItem>
               ))}
             </HeaderNavigation>
-
-            <HeaderGlobalBar>
-              <HeaderGlobalAction aria-label="Search placeholder" tooltipAlignment="end">
-                <Search size={20} />
-              </HeaderGlobalAction>
-              <HeaderGlobalAction aria-label="Notifications placeholder" tooltipAlignment="end">
-                <Notification size={20} />
-              </HeaderGlobalAction>
-            </HeaderGlobalBar>
 
             <SideNav aria-label="DDR navigation" expanded={isSideNavExpanded} isPersistent={false}>
               <SideNavItems>

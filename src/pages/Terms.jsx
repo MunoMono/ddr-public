@@ -1,14 +1,10 @@
-import FooterPage from "./FooterPage";
+import MarkdownPage from "../components/MarkdownPage/MarkdownPage";
 
-const TERMS_MD = `${import.meta.env.BASE_URL}docs/footer/terms.md`;
+const TERMS_MD = `${import.meta.env.BASE_URL}docs/pages/terms.md`;
 
 const Terms = () => {
   return (
-    <FooterPage
-      title="Terms of use"
-      description="Conditions for using the DDR ingestion platform and its data."
-      markdownSrc={TERMS_MD}
-    />
+    <MarkdownPage markdownSrc={TERMS_MD} pageClassName="footer-page" showTopLink />
   );
 };
 
