@@ -1,0 +1,10 @@
+{
+  "name": "carbon-markdown-scss",
+  "version": "1.0.0",
+  "description": "Markdown styles for IBM Carbon Design System",
+  "author": "Hunter Medney",
+  "license": "MIT",
+  "files": [
+    "scss"
+  ]
+}

@@ -1,0 +1,46 @@
+@import './github.scss';
+@import '@carbon/elements/scss/type/type.scss';
+@import 'carbon-components/scss/components/list/_list.scss';
+
+.markdown-body {
+  @include carbon--type-style('body-long-01');
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre {
+  @include carbon--type-style('code-01');
+}
+
+.markdown-body h1 {
+  @include carbon--type-style('expressive-heading-05');
+}
+
+.markdown-body h2 {
+  @include carbon--type-style('expressive-heading-04');
+}
+
+.markdown-body h3 {
+  @include carbon--type-style('expressive-heading-03');
+}
+
+.markdown-body h4 {
+  @include carbon--type-style('expressive-heading-02');
+}
+
+.markdown-body h5 {
+  @include carbon--type-style('expressive-heading-01');
+}
+
+.markdown-body ol {
+  @extend .bx--list--ordered;
+  list-style-type: decimal;
+}
+
+.markdown-body ul {
+  @extend .bx--list--unordered;
+}
+
+.markdown-body ul li {
+  @extend .bx--list__item;
+}
