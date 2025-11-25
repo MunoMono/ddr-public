@@ -3,10 +3,10 @@ import {
   Theme,
   Header as CarbonHeader,
   HeaderContainer,
-  HeaderMenuButton,
-  HeaderMenuItem,
   HeaderName,
   HeaderNavigation,
+  HeaderMenuButton,
+  HeaderMenuItem,
   SideNav,
   SideNavItems,
   HeaderSideNavItems,
@@ -15,71 +15,71 @@ import {
 
 import "../../styles/components/_header.scss";
 
-const NAV_ITEMS = [
-  { id: "home", label: "Home", href: "/" },
-  { id: "research", label: "Research", href: "/research" },
-  { id: "insights", label: "Insights", href: "/insights" },
-  { id: "api", label: "API", href: "/api" },
-];
-
 const Header = () => {
   const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  const is = (path) => location.pathname === path;
+
+  const NAV = [
+    ["Home", "/"],
+    ["Research", "/research"],
+    ["Insights", "/insights"],
+    ["API", "/api"],
+  ];
 
   return (
     <Theme theme="g100">
       <HeaderContainer
-        render={({ isSideNavExpanded, onClickSideNavExpand }) => (
-          <CarbonHeader aria-label="DDR Public Preview">
-            <SkipToContent />
-            <HeaderMenuButton
-              aria-label={isSideNavExpanded ? "Close menu" : "Open menu"}
-              onClick={onClickSideNavExpand}
-              isActive={isSideNavExpanded}
-              aria-expanded={isSideNavExpanded}
-            />
+        render={({ isSideNavExpanded, onClickSideNavExpand }) => {
+          const closeNav = () => {
+            if (isSideNavExpanded) onClickSideNavExpand(false);
+          };
 
-            <HeaderName as={Link} to="/" prefix="RCA PhD">
-              <span className="label--full">Graham Newman</span>
-              <span className="tablet-name">
-                <span>DDR</span>
-                <span>Public shell</span>
-              </span>
-            </HeaderName>
+          return (
+            <CarbonHeader aria-label="DDR Public Preview">
+              <SkipToContent />
 
-              <HeaderNavigation aria-label="DDR navigation">
-              {NAV_ITEMS.map((item) => (
-                <HeaderMenuItem
-                  key={item.id}
-                  as={Link}
-                  to={item.href}
-                  isActive={isActive(item.href)}
-                  className="has-tab"
-                >
-                  <span className="menu--full">{item.label}</span>
-                  <span className="menu--tab">{item.label}</span>
-                </HeaderMenuItem>
-              ))}
+              {/* Hamburger toggle */}
+              <HeaderMenuButton
+                aria-label={isSideNavExpanded ? "Close menu" : "Open menu"}
+                onClick={onClickSideNavExpand}
+                isActive={isSideNavExpanded}
+              />
+
+              {/* Brand */}
+              <HeaderName as={Link} to="/" prefix="RCA PhD">
+                Graham Newman
+              </HeaderName>
+
+              {/* ---- MAIN NAV ---- */}
+              <HeaderNavigation aria-label="Main navigation">
+                {NAV.map(([label, path]) => (
+                  <HeaderMenuItem key={path} as={Link} to={path} isActive={is(path)}>
+                    {label}
+                  </HeaderMenuItem>
+                ))}
               </HeaderNavigation>
-            <SideNav aria-label="DDR navigation" expanded={isSideNavExpanded} isPersistent={false}>
-              <SideNavItems>
-                <HeaderSideNavItems>
-                  {NAV_ITEMS.map((item) => (
-                    <HeaderMenuItem
-                      key={`mobile-${item.id}`}
-                      as={Link}
-                      to={item.href}
-                      isActive={isActive(item.href)}
-                      onClick={() => onClickSideNavExpand(false)}
-                    >
-                      {item.label}
-                    </HeaderMenuItem>
-                  ))}
-                </HeaderSideNavItems>
-              </SideNavItems>
-            </SideNav>
-          </CarbonHeader>
-        )}
+
+              {/* ---- SIDE NAV ---- */}
+              <SideNav aria-label="Side navigation" expanded={isSideNavExpanded} isPersistent={false}>
+                <SideNavItems>
+                  <HeaderSideNavItems>
+                    {NAV.map(([label, path]) => (
+                      <HeaderMenuItem
+                        key={path}
+                        as={Link}
+                        to={path}
+                        isActive={is(path)}
+                        onClick={closeNav}
+                      >
+                        {label}
+                      </HeaderMenuItem>
+                    ))}
+                  </HeaderSideNavItems>
+                </SideNavItems>
+              </SideNav>
+            </CarbonHeader>
+          );
+        }}
       />
     </Theme>
   );

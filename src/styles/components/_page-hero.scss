@@ -6,30 +6,36 @@
 .page-hero-shell {
   background: #000;
   color: #fff;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .page-hero {
   background: radial-gradient(circle at top, #1c1c1c 0%, #0f0f0f 55%, #050505 100%);
   color: #fff;
   border-bottom: 1px solid #262626;
-  padding: clamp(3rem, 6vw, 5rem) 0 clamp(2.5rem, 5vw, 4rem);
+  padding: clamp(2rem, 6vw, 5rem) 0 clamp(1.5rem, 5vw, 4rem);
   position: relative;
   overflow: hidden;
+  width: 100%;
 
   display: flex;
   align-items: flex-end;
 
   h1 {
-    font-size: clamp(2.75rem, 5vw, 4rem);
+    font-size: clamp(2rem, 5vw, 4rem);
     font-weight: 200;
     letter-spacing: -0.02em;
     margin-bottom: $spacing-05;
     color: #f4f4f4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .lead {
     color: rgba(244, 244, 244, 0.85);
     max-width: 64ch;
+    word-wrap: break-word;
   }
 
   .eyebrow {
@@ -44,6 +50,8 @@
   z-index: 1;
   display: flex;
   align-items: flex-end;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .page-hero__grid {

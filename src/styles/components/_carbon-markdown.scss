@@ -92,6 +92,8 @@
   code {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: .95em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
   :not(pre) > code {
     background: $layer-01;
@@ -104,13 +106,35 @@
     padding: $spacing-05;
     border-radius: .5rem;
     border: 1px solid $border-subtle;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     margin: $spacing-05 0;
-    code { background: transparent; border: 0; padding: 0; }
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    
+    code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      white-space: pre;
+      word-wrap: normal;
+      overflow-wrap: normal;
+    }
   }
 
   // Tables
-  table { width: 100%; border-collapse: collapse; margin: $spacing-05 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacing-05 0;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    @media (max-width: 672px) {
+      font-size: 0.875rem;
+    }
+  }
   thead th {
     @include type.type-style('label-01');
     text-align: left;
@@ -118,6 +142,7 @@
     color: $text-secondary;
     border-bottom: 1px solid $border-subtle;
     padding: $spacing-03 $spacing-04;
+    white-space: nowrap;
   }
   tbody td {
     border-bottom: 1px solid $border-subtle;

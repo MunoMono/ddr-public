@@ -21,9 +21,11 @@
   padding-bottom: spacing.$spacing-09;
   width: 100%;
   min-height: 320px;
+  overflow-x: hidden;
 
   .footer-container {
     @include mx.centered-container;
+    width: 100%;
   }
 
   .footer-grid {

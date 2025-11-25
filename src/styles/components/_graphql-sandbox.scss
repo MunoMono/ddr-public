@@ -9,8 +9,10 @@
 .docs-panel-band__inner {
   max-width: 1312px;
   margin-inline: auto;
-  padding-left: clamp(1.5rem, 5vw, 3.5rem);
+  padding-left: clamp(1rem, 5vw, 3.5rem);
   padding-right: clamp(1rem, 4vw, 2.5rem);
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .docs-panel-band .cds--css-grid {
@@ -40,6 +42,12 @@
   border-radius: 0.5rem;
   overflow: hidden;
   display: block;
+  width: 100%;
+  
+  @media (max-width: 672px) {
+    height: 320px;
+    min-height: 240px;
+  }
 }
 
 /* Sandbox-specific layout & small polish */
@@ -100,6 +108,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--cds-spacing-04);
+  
+  @media (max-width: 672px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--cds-spacing-03);
+  }
 }
 
 .cds-figure {
@@ -151,6 +164,13 @@
 .api-page__panel {
   margin-top: var(--cds-spacing-07, 3rem);
   row-gap: var(--cds-spacing-06, 2rem);
+  width: 100%;
+  overflow-x: hidden;
+  
+  @media (max-width: 672px) {
+    margin-top: var(--cds-spacing-05, 1.5rem);
+    row-gap: var(--cds-spacing-05, 1.5rem);
+  }
 }
 
 .api-page__list {
@@ -158,11 +178,15 @@
   list-style: none;
   padding: 0;
   margin: var(--cds-spacing-05) 0;
+  width: 100%;
+  overflow-x: hidden;
 
   li {
     counter-increment: steps;
     margin-bottom: var(--cds-spacing-04);
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 
     &::before {
       content: counter(steps) ".";
@@ -175,4 +199,6 @@
 
 .api-page__hint {
   margin-top: var(--cds-spacing-05);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }

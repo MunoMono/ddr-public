@@ -24,3 +24,26 @@
   /* keep any vertical rhythm you want here */
   /* e.g., padding-top/bottom if needed */
 }
+/* Ensure containers and grids prevent horizontal overflow */
+.container,
+.site-container,
+.grid-section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure Carbon Grid components are responsive */
+.cds--css-grid,
+.cds--grid {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cds--row {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cds--col {
+  overflow-x: hidden;
+}

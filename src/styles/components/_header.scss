@@ -1,75 +1,21 @@
-/* styles/components/_header.scss
-   Tablet-specific nav behavior (Carbon md–lg: 672–1055px)
-*/
+/* styles/components/_header.scss */
 
-/* Override Carbon header menu item padding to make blue line sit flush */
+/* Carbon default menu item styles */
 a.cds--header__menu-item {
-  padding-bottom: 0 !important;
-}
-
-a.cds--header__menu-item[aria-current="page"] {
-  box-shadow: inset 0 -3px 0 0 #78a9ff;
-  border-bottom: none;
-}
-
-/* Defaults: desktop (≥1056px) = full labels, full menu names */
-.label--full { display: inline; }
-.label--tab  { display: none; }
-
-/* Duplicate menus: show full by default, hide short */
-.menu--full { display: inline-block; }
-.menu--tab  { display: none; }
-
-/* NEW: hidden by default — used to force a two-line tablet title */
-.tablet-name {
-  display: none;
-}
-
-/* Mobile-only (≤671px): show hamburger, full labels live in the SideNav */
-@media (max-width: 671px) {
-  /* nothing special here: Carbon handles the hamburger + sidenav */
-}
-
-/* Tablet-only (672–1055px): forced two-line title; keep shortened menu labels if provided */
-@media (min-width: 672px) and (max-width: 1055px) {
-  /* Hide Carbon's built-in HeaderName prefix ("RCA PhD") */
-  .cds--header__name--prefix { display: none !important; }
-
-  /* For the title: hide desktop label, show our stacked two-line version */
-  .label--full { display: none; }
-  .tablet-name {
-    display: inline-flex;
-    flex-direction: column;
-    line-height: 1.05; /* tight but readable */
-  }
-
-  /* Allow the name to wrap normally (remove prior single-line lock) */
-  .cds--header__name {
-    white-space: normal;    /* allow line breaks */
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 0;
-    overflow: visible;       /* no ellipsis on the name */
-    text-overflow: clip;
-  }
-
-  /* If any old tablet labels/prefix exist, keep them hidden */
-  .label--tab,
-  .header-prefix-alt {
-    display: none !important;
-  }
-
-  /* PER-ITEM swap: only hide full text when a short text exists */
-  .has-tab .menu--full { display: none; }
-  .has-tab .menu--tab  { display: inline-block; }
-
-  /* keep the hamburger visible on tablet as a safety net */
-  /* .cds--header__menu-trigger { display: none !important; } */
-}
-
-/* Desktop (≥1056px): keep full labels and desktop nav (no hamburger) */
-@media (min-width: 1056px) {
-  .cds--header__menu-trigger {
-    display: none !important;
-  }
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border: 2px solid transparent;
+  background-color: var(--cds-background, #ffffff);
+  block-size: 100%;
+  color: var(--cds-text-secondary, #525252);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.125rem;
+  text-decoration: none;
+  transition: background-color 0.11s, border-color 0.11s, color 0.11s;
+  -webkit-user-select: none;
+  user-select: none;
 }
