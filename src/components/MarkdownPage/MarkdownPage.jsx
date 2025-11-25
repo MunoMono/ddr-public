@@ -48,6 +48,8 @@ const MarkdownPage = ({
   renderHero,
   heroStyle,
   showAnchors = false,
+  showHeroTabs = true,
+  heroMainCols,
 }) => {
   const { html, meta, headings, loading, error } = useMarkdown(markdownSrc);
   const [heroTabIndex, setHeroTabIndex] = useState(0);
@@ -92,10 +94,11 @@ const MarkdownPage = ({
     anchorColumns: anchorCols,
     actions,
     tags,
-    heroTabs,
+    heroTabs: showHeroTabs ? heroTabs : [],
     heroTabIndex,
     onHeroTabSelect: handleHeroTabSelect,
     heroStyle,
+    mainCols: heroMainCols,
   };
 
   const heroNode =
@@ -108,12 +111,13 @@ const MarkdownPage = ({
         title={heroTitle}
         lead={heroLead}
         style={heroStyle}
+        mainCols={heroProps.mainCols}
         aside={
           showAnchors && anchorLinks.length ? (
             <AnchorLinks heading={anchorHeadingLabel} links={anchorLinks} columns={anchorCols} />
           ) : null
         }
-        tabs={heroTabs}
+        tabs={heroProps.heroTabs}
         activeTab={heroTabs.length ? resolvedHeroTabIndex : undefined}
         onTabSelect={handleHeroTabSelect}
       >
@@ -184,7 +188,13 @@ MarkdownPage.propTypes = {
   topLinkLabel: PropTypes.string,
   renderHero: PropTypes.func,
   heroStyle: PropTypes.object,
+  showHeroTabs: PropTypes.bool,
   showAnchors: PropTypes.bool,
+  heroMainCols: PropTypes.shape({
+    lg: PropTypes.number,
+    md: PropTypes.number,
+    sm: PropTypes.number,
+  }),
 };
 
 export default MarkdownPage;

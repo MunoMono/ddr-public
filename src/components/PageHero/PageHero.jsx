@@ -19,6 +19,7 @@ const PageHero = ({
   children,
   aside,
   asideCols = { lg: 4, md: 8, sm: 4 },
+  mainCols,
   tabs = [],
   tabAriaLabel = "Page sections",
   activeTab,
@@ -51,7 +52,11 @@ const PageHero = ({
         <section className="page-hero" id={id} style={style}>
           <div className="page-hero__inner">
             <Grid condensed className="page-hero__grid">
-              <Column lg={hasTabs ? 12 : 10} md={8} sm={4}>
+              <Column
+                lg={mainCols?.lg ?? (hasTabs ? 12 : 10)}
+                md={mainCols?.md ?? 8}
+                sm={mainCols?.sm ?? 4}
+              >
                 {eyebrow ? <div className="eyebrow">{eyebrow}</div> : null}
                 {title ? <h1>{title}</h1> : null}
                 {lead ? <p className="lead">{lead}</p> : null}
@@ -80,10 +85,10 @@ const PageHero = ({
                     <Tab key={tab.id}>{tab.label}</Tab>
                   ))}
                 </TabList>
-                <TabPanels className="hero-tabs__panels sr-only">
+                <TabPanels className="hero-tabs__panels">
                   {tabs.map((tab) => (
                     <TabPanel key={`${tab.id}-panel`}>
-                      <span>{tab.label}</span>
+                      <span className="sr-only">{tab.label}</span>
                     </TabPanel>
                   ))}
                 </TabPanels>
@@ -104,6 +109,11 @@ PageHero.propTypes = {
   children: PropTypes.node,
   aside: PropTypes.node,
   asideCols: PropTypes.shape({
+    lg: PropTypes.number,
+    md: PropTypes.number,
+    sm: PropTypes.number,
+  }),
+  mainCols: PropTypes.shape({
     lg: PropTypes.number,
     md: PropTypes.number,
     sm: PropTypes.number,

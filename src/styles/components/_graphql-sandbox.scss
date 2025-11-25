@@ -33,11 +33,42 @@
 }
 
 .cds-editor {
-  height: 360px;
+  height: 480px;
+  min-height: 320px;
   border: 1px solid var(--cds-border-subtle, #e0e0e0);
   background: var(--cds-layer, #f4f4f4);
   border-radius: 0.5rem;
   overflow: hidden;
+  display: block;
+}
+
+/* Sandbox-specific layout & small polish */
+.graphql-sandbox {
+  .cds-card {
+    padding: var(--cds-spacing-04);
+  }
+
+  .cds-actions {
+    gap: var(--cds-spacing-03);
+    align-items: center;
+  }
+
+  .cds-editor {
+    border: 1px solid var(--cds-border-subtle);
+    box-shadow: 0 1px 0 0 rgb(0 0 0 / 0.04);
+  }
+
+  .cds-heading {
+    margin-bottom: var(--cds-spacing-04);
+  }
+
+  .graphql-sandbox__toast-wrapper {
+    position: fixed;
+    right: clamp(1rem, 4vw, 2.5rem);
+    top: clamp(1rem, 4vw, 2.5rem);
+    z-index: 9999;
+    width: min(360px, 36vw);
+  }
 }
 
 .cds-heading {

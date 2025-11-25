@@ -4,6 +4,7 @@
 @use '@carbon/styles/scss/theme' as theme;
 @use '@carbon/styles/scss/breakpoint' as bp;
 @use 'sass:map';
+@use '../base/mixins' as mx;
 
 /* -----------------------------------
    Global Footer Layout
@@ -22,12 +23,7 @@
   min-height: 320px;
 
   .footer-container {
-    padding-right: spacing.$spacing-07;
-
-    @include bp.breakpoint-down('md') {
-      padding-left: spacing.$spacing-05;
-      padding-right: spacing.$spacing-05;
-    }
+    @include mx.centered-container;
   }
 
   .footer-grid {

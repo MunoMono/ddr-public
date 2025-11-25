@@ -39,7 +39,7 @@
 
 /* Tablet-only (672–1055px): forced two-line title; keep shortened menu labels if provided */
 @media (min-width: 672px) and (max-width: 1055px) {
-  /* Hide Carbon’s built-in HeaderName prefix (“RCA PhD”) */
+  /* Hide Carbon's built-in HeaderName prefix ("RCA PhD") */
   .cds--header__name--prefix { display: none !important; }
 
   /* For the title: hide desktop label, show our stacked two-line version */

@@ -8,6 +8,7 @@
 @use './base/responsive';
 @use './components/graphql-sandbox';
 @use './components/page-hero';
+@use './components/tabs';
 
 /* Force light (g10) and dark (g90) theme tokens */
 :root[data-theme="g10"] {

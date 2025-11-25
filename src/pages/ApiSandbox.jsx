@@ -20,6 +20,7 @@ import {
   Tag,
   Theme,
   Tile,
+  ToastNotification,
 } from "@carbon/react";
 import { Save } from "@carbon/icons-react";
 
@@ -38,6 +39,22 @@ const REST_PRESETS = [
     "title": "Square textile, 1910–20",
     "woe:country_id": "23424977"
   }
+}`,
+  },
+  {
+    id: "search",
+    name: "Search objects",
+    description: "Search for objects with query parameters. Supports pagination with page parameter.",
+    request:
+      "https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.search.objects&query=poster&page=1&per_page=10&access_token=REPLACE_ME",
+    response: `{
+  "stat": "ok",
+  "total": 4532,
+  "page": 1,
+  "per_page": 10,
+  "objects": [
+    { "id": "18123456", "title": "Poster, Expo '70" }
+  ]
 }`,
   },
   {
@@ -65,6 +82,20 @@ const REST_PRESETS = [
   "person": {
     "display_name": "Florence Knoll",
     "nationality": "United States"
+  }
+}`,
+  },
+  {
+    id: "error",
+    name: "Error response example",
+    description: "Shows what happens with invalid tokens or exceeded rate limits.",
+    request:
+      "https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.getRandom&access_token=INVALID",
+    response: `{
+  "stat": "fail",
+  "error": {
+    "code": "401",
+    "message": "Invalid access token"
   }
 }`,
   },
@@ -100,53 +131,66 @@ const body = await response.json();`,
 const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
 
 const endpoint = import.meta.env.DEV
-  ? "/ch-graphql/"
-  : "https://proud-hat-1ce4.gnhkfc.workers.dev/ch-graphql/";
+  ? "http://localhost:8000/graphql"
+  : "https://ddrarchive.org/graphql";
 
-const displayEndpoint = "https://api.cooperhewitt.org/";
+const displayEndpoint = import.meta.env.DEV
+  ? "localhost:8000/graphql"
+  : "ddrarchive.org/graphql";
 
 const DEFAULT_QUERY = `{
-  object(hasImages:true, size:12, page:1) {
+  projects(limit: 10) {
     id
     title
-    summary
-    date
-    multimedia
+    description
+    status
+    createdAt
   }
 }`;
 
 const DESIGNER_PRESETS = {
-  tanaka: `{
-  object(maker:"Ikko Tanaka", general:"poster", hasImages:true, size:12, page:1){
-    id title summary date multimedia
+  allProjects: `{
+  projects(limit: 20) {
+    id
+    title
+    description
+    status
+    createdAt
   }
 }`,
-  yokoo: `{
-  object(maker:"Tadanori Yokoo", general:"poster", hasImages:true, size:12){
-    id title summary date multimedia
+  activeProjects: `{
+  projects(status: "active", limit: 10) {
+    id
+    title
+    description
+    status
   }
 }`,
-  fukuda: `{
-  object(maker:"Shigeo Fukuda", general:"poster", hasImages:true, size:12){
-    id title summary date multimedia
+  singleProject: `{
+  project(id: "1") {
+    id
+    title
+    description
+    status
+    createdAt
   }
 }`,
-  kamekura: `{
-  object(maker:"Yusaku Kamekura", general:"poster", hasImages:true, size:12){
-    id title summary date multimedia
+  users: `{
+  users(limit: 5) {
+    id
+    username
+    email
   }
 }`,
-  nagai: `{
-  object(maker:"Kazumasa Nagai", general:"poster", hasImages:true, size:12){
-    id title summary date multimedia
-  }
+  hello: `{
+  hello
 }`,
 };
 
 const API_NAV_TABS = [
   { id: "api-getting-started", label: "Getting started" },
   { id: "api-graphql-sandbox", label: "GraphQL sandbox" },
-  { id: "api-presets", label: "Presets & snippets" },
+  { id: "api-presets", label: "Presets and snippets" },
 ];
 
 const getThemePreference = () => {
@@ -169,6 +213,19 @@ const ApiSandbox = () => {
   const [snippetsMd, setSnippetsMd] = useState("Loading...");
   const sandboxRef = useRef(null);
   const [activeApiTab, setActiveApiTab] = useState(0);
+  const [variables, setVariables] = useState('{}');
+  const [resultPct, setResultPct] = useState(40);
+  const [showResults, setShowResults] = useState(true);
+  const [presetLoadedNotification, setPresetLoadedNotification] = useState(false);
+  const [queryHistory, setQueryHistory] = useState([]);
+  const [savedQueries, setSavedQueries] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ddr-graphql-saved-queries');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const currentSnippet = useMemo(
     () => SNIPPETS.find((snippet) => snippet.id === activeSnippet) || SNIPPETS[0],
@@ -192,6 +249,11 @@ const ApiSandbox = () => {
     setQuery(preset);
     setJson(null);
     setError(null);
+    // ensure user sees the GraphQL sandbox panel when loading a preset
+    setActiveApiTab(1);
+    sandboxRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setPresetLoadedNotification(true);
+    setTimeout(() => setPresetLoadedNotification(false), 3000);
   }, []);
 
   useEffect(() => {
@@ -228,6 +290,11 @@ const ApiSandbox = () => {
         if (payloadJson.errors)
           throw new Error(payloadJson.errors.map((e) => e.message).join("\n"));
         setJson(payloadJson.data);
+        // Add to query history
+        setQueryHistory((prev) => [
+          { query: payload, timestamp: Date.now(), id: Date.now() },
+          ...prev.slice(0, 9)
+        ]);
       } catch (err) {
         setJson(null);
         setError(err.message || String(err));
@@ -244,6 +311,32 @@ const ApiSandbox = () => {
     setJson(null);
     setError(null);
   }, [loading]);
+
+  const saveQuery = useCallback(() => {
+    const name = prompt('Name this query:');
+    if (!name) return;
+    const newSaved = [...savedQueries, { id: Date.now(), name, query }];
+    setSavedQueries(newSaved);
+    try {
+      localStorage.setItem('ddr-graphql-saved-queries', JSON.stringify(newSaved));
+    } catch (e) {
+      console.error('Failed to save query:', e);
+    }
+  }, [query, savedQueries]);
+
+  const loadSavedQuery = useCallback((saved) => {
+    setQuery(saved.query);
+  }, []);
+
+  const deleteSavedQuery = useCallback((id) => {
+    const newSaved = savedQueries.filter((q) => q.id !== id);
+    setSavedQueries(newSaved);
+    try {
+      localStorage.setItem('ddr-graphql-saved-queries', JSON.stringify(newSaved));
+    } catch (e) {
+      console.error('Failed to delete query:', e);
+    }
+  }, [savedQueries]);
 
   const saveSnippet = useCallback(() => {
     const ts = new Date().toISOString().replace(/[:]/g, "-");
@@ -359,7 +452,7 @@ const ApiSandbox = () => {
         id="api"
         eyebrow="API"
         title="DDR API landing"
-        lead="Carbon-native tabs keep the narrative intact while the Cooper Hewitt GraphQL sandbox runs live queries for demos and workshops."
+        lead="Carbon-native tabs keep the narrative intact while the DDR GraphQL sandbox runs live queries for demos and workshops."
         tabs={API_NAV_TABS}
         tabAriaLabel="API sections"
         activeTab={activeApiTab}
@@ -368,30 +461,15 @@ const ApiSandbox = () => {
 
       <div className="page-content">
         <section className="page-section" id="api-content">
-          <Tabs selectedIndex={activeApiTab} onChange={({ selectedIndex }) => setActiveApiTab(selectedIndex)}>
-            <TabList aria-label="API content">
-              {API_NAV_TABS.map((tab) => (
-                <Tab key={tab.id}>{tab.label}</Tab>
-              ))}
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
+          {/* Content panels controlled by hero tabs — remove duplicated TabList from content */}
+              {activeApiTab === 0 && (
+                <div role="tabpanel">
             <Grid condensed className="api-page__panel">
               <Column lg={8} md={8} sm={4}>
                 <h2>Three simple steps</h2>
                 <p>
-                  Cooper Hewitt’s API is REST-based. Sign up for a personal access token at{" "}
-                  <Button
-                    kind="ghost"
-                    size="sm"
-                    href="https://collection.cooperhewitt.org/api"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    collection.cooperhewitt.org/api
-                  </Button>{" "}
-                  and keep the token private.
+                  DDR's API uses GraphQL and REST endpoints. The GraphQL sandbox below connects to the
+                  DDR archive for live queries during development and demos.
                 </p>
                 <ol className="api-page__list">
                   <li>
@@ -414,8 +492,18 @@ const ApiSandbox = () => {
                   <a href="https://apidocs.cooperhewitt.org/the-api/" target="_blank" rel="noreferrer">
                     apidocs.cooperhewitt.org
                   </a>
-                  . DDR’s own REST hooks follow the same approach so the learning transfers.
+                  . DDR's own REST hooks follow the same approach so the learning transfers.
                 </p>
+
+                <h3 style={{ marginTop: "var(--cds-spacing-07)" }}>Common query parameters</h3>
+                <p className="cds-subtle">Use these with GraphQL or REST to refine results:</p>
+                <ul className="api-page__list">
+                  <li><code>page</code> — Pagination offset (default: 1)</li>
+                  <li><code>per_page</code> or <code>size</code> — Results per page (max: 100)</li>
+                  <li><code>hasImages</code> — Filter to objects with images only</li>
+                  <li><code>query</code> — Full-text search across titles and descriptions</li>
+                  <li><code>maker</code> or <code>person_id</code> — Filter by designer/maker</li>
+                </ul>
               </Column>
               <Column lg={8} md={8} sm={4}>
                 <Tile>
@@ -440,15 +528,17 @@ const ApiSandbox = () => {
                 </Tile>
               </Column>
             </Grid>
-              </TabPanel>
+              </div>
+              )}
 
-              <TabPanel>
+              {activeApiTab === 1 && (
+              <div role="tabpanel">
             <Theme theme={isDark ? "g90" : "g10"}>
-              <section ref={sandboxRef} className="docs-panel-band">
+              <section ref={sandboxRef} className="docs-panel-band graphql-sandbox">
                 <div className="docs-panel-band__inner">
-                  <Loading active={loading} withOverlay description="Querying Cooper Hewitt..." />
+                  <Loading active={loading} withOverlay description="Querying DDR API..." />
                   <Grid condensed fullWidth className="cds-stack" style={{ marginTop: "1rem" }}>
-                    <Column lg={8} md={8} sm={4}>
+                    <Column lg={Math.round(16 * (resultPct / 100))} md={8} sm={4}>
                       <div className="cds-card">
                         <div className="cds-actions">
                           <ButtonSet>
@@ -459,7 +549,31 @@ const ApiSandbox = () => {
                               Clear
                             </Button>
                           </ButtonSet>
-                          <Tag type="cool-gray">POST {displayEndpoint}</Tag>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cds-spacing-03)' }}>
+                            <Tag type="cool-gray">POST {displayEndpoint}</Tag>
+                            <ComboBox
+                              id="designer-preset-picker"
+                              titleText="Load preset"
+                              helperText="Load a designer preset into the editor"
+                              items={Object.keys(DESIGNER_PRESETS).map((id) => ({ id, label: id, query: DESIGNER_PRESETS[id] }))}
+                              itemToString={(item) => (item ? item.label : '')}
+                              onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
+                            />
+                            <Button kind="ghost" size="sm" onClick={() => setShowResults((s) => !s)}>
+                              {showResults ? 'Hide results' : 'Show results'}
+                            </Button>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--cds-text-secondary)' }}>Results</span>
+                              <input
+                                type="range"
+                                min="20"
+                                max="70"
+                                value={resultPct}
+                                onChange={(e) => setResultPct(Number(e.target.value))}
+                                style={{ width: '120px' }}
+                              />
+                            </label>
+                          </div>
                         </div>
                       </div>
 
@@ -483,13 +597,59 @@ const ApiSandbox = () => {
                       </div>
 
                       <div className="cds-card" style={{ padding: "var(--cds-spacing-03)" }}>
-                        <Button kind="tertiary" size="sm" renderIcon={Save} onClick={saveSnippet}>
-                          Save snippet (.txt)
-                        </Button>
+                        <div style={{ display: 'flex', gap: 'var(--cds-spacing-03)', alignItems: 'center', marginBottom: 'var(--cds-spacing-03)' }}>
+                          <Button kind="tertiary" size="sm" renderIcon={Save} onClick={saveSnippet}>
+                            Save snippet (.txt)
+                          </Button>
+                          <Button kind="tertiary" size="sm" renderIcon={Save} onClick={saveQuery}>
+                            Save query
+                          </Button>
+                        </div>
+
+                        {savedQueries.length > 0 && (
+                          <div style={{ marginTop: 'var(--cds-spacing-05)' }}>
+                            <h4 className="cds-heading" style={{ fontSize: '0.875rem', marginBottom: 'var(--cds-spacing-03)' }}>Saved queries</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cds-spacing-02)' }}>
+                              {savedQueries.map((sq) => (
+                                <div key={sq.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--cds-spacing-02)', background: 'var(--cds-layer-01)', borderRadius: '2px' }}>
+                                  <button
+                                    onClick={() => loadSavedQuery(sq)}
+                                    style={{ background: 'none', border: 'none', color: 'var(--cds-link-primary)', cursor: 'pointer', textAlign: 'left', fontSize: '0.875rem', flex: 1 }}
+                                  >
+                                    {sq.name}
+                                  </button>
+                                  <Button kind="ghost" size="sm" onClick={() => deleteSavedQuery(sq.id)}>×</Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {queryHistory.length > 0 && (
+                          <div style={{ marginTop: 'var(--cds-spacing-05)' }}>
+                            <h4 className="cds-heading" style={{ fontSize: '0.875rem', marginBottom: 'var(--cds-spacing-03)' }}>Query history</h4>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cds-spacing-02)' }}>
+                              {queryHistory.slice(0, 10).map((qh) => (
+                                <button
+                                  key={qh.id}
+                                  onClick={() => setQuery(qh.query)}
+                                  style={{ background: 'var(--cds-layer-01)', border: 'none', color: 'var(--cds-text-primary)', cursor: 'pointer', textAlign: 'left', padding: 'var(--cds-spacing-02)', borderRadius: '2px', fontSize: '0.75rem' }}
+                                >
+                                  <div style={{ fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {qh.query.trim().split('\n')[0].substring(0, 50)}...
+                                  </div>
+                                  <div style={{ color: 'var(--cds-text-secondary)', fontSize: '0.7rem', marginTop: '2px' }}>
+                                    {new Date(qh.timestamp).toLocaleTimeString()}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </Column>
 
-                    <Column lg={8} md={8} sm={4}>
+                    <Column lg={16 - Math.round(16 * (resultPct / 100))} md={8} sm={4}>
                       <div className="cds-card">
                         <h3 className="cds-heading">Results</h3>
                         {error && (
@@ -549,67 +709,28 @@ const ApiSandbox = () => {
                         )}
                       </div>
 
-                      <div className="cds-card">
-                        <h3 className="cds-heading">Raw JSON</h3>
-                        <pre className="cds-json">{json ? JSON.stringify(json, null, 2) : "{}"}</pre>
-                      </div>
+                      {showResults && (
+                        <div className="cds-card">
+                          <h3 className="cds-heading">Raw JSON</h3>
+                          <pre className="cds-json">{json ? JSON.stringify(json, null, 2) : "{}"}</pre>
+                        </div>
+                      )}
                     </Column>
                   </Grid>
                 </div>
               </section>
             </Theme>
-
-            <section className="docs-panel-band" style={{ marginTop: "2rem" }}>
-              <div className="docs-panel-band__inner">
-                <Grid fullWidth className="cds-stack">
-                  <Column lg={10} md={8} sm={4}>
-                    <div className="cds-card">
-                      <Tag type="cool-gray">Source: Cooper Hewitt GraphQL</Tag>
-                      <div className="carbon-markdown" style={{ marginTop: "1rem" }}>
-                        <ReactMarkdown components={mdComponents}>{snippetsMd}</ReactMarkdown>
-                      </div>
-                    </div>
-
-                    <div className="cds-card">
-                      <h3 className="cds-heading">Designer presets</h3>
-                      <p className="cds-subtle">Load directly into the editor.</p>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "var(--cds-spacing-03)",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.tanaka)}>
-                          Ikko Tanaka
-                        </Button>
-                        <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.yokoo)}>
-                          Tadanori Yokoo
-                        </Button>
-                        <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.fukuda)}>
-                          Shigeo Fukuda
-                        </Button>
-                        <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.kamekura)}>
-                          Yusaku Kamekura
-                        </Button>
-                        <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.nagai)}>
-                          Kazumasa Nagai
-                        </Button>
-                      </div>
-                    </div>
-                  </Column>
-                </Grid>
               </div>
-            </section>
-              </TabPanel>
+              )}
 
-              <TabPanel>
+              {activeApiTab === 2 && (
+              <div role="tabpanel">
             <Grid condensed className="api-page__panel">
               <Column lg={8} md={8} sm={4}>
                 <h2>Presets</h2>
                 <p>
-                  Borrowing directly from the Cooper Hewitt console, pick a preset and swap the
-                  token for your value. DDR REST routes follow the same structure.
+                  Example REST endpoints for reference. DDR's production API will follow similar patterns
+                  with authentication and structured responses.
                 </p>
                 <ComboBox
                   id="preset-picker"
@@ -628,6 +749,36 @@ const ApiSandbox = () => {
                 <CodeSnippet type="multi" wrapText>
                   {selectedPreset.response}
                 </CodeSnippet>
+
+                <div style={{ marginTop: "var(--cds-spacing-07)" }}>
+                  <div className="cds-card">
+                    <h3 className="cds-heading">DDR query presets</h3>
+                    <p className="cds-subtle">Load directly into the GraphQL editor.</p>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "var(--cds-spacing-03)",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.allProjects)}>
+                        All Projects
+                      </Button>
+                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.activeProjects)}>
+                        Active Projects
+                      </Button>
+                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.singleProject)}>
+                        Single Project
+                      </Button>
+                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.users)}>
+                        Users
+                      </Button>
+                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.hello)}>
+                        Hello
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </Column>
 
               <Column lg={8} md={8} sm={4}>
@@ -657,18 +808,19 @@ const ApiSandbox = () => {
                     ))}
                   </TabPanels>
                 </Tabs>
-                <InlineNotification
-                  className="api-page__hint"
-                  lowContrast
-                  kind="info"
-                  title="Preset loaded"
-                  subtitle={`${currentSnippet.label} preset ready to paste anywhere.`}
-                />
+
+                <div style={{ marginTop: "var(--cds-spacing-07)" }}>
+                  <div className="cds-card">
+                    <Tag type="cool-gray">Source: DDR GraphQL Examples</Tag>
+                    <div className="carbon-markdown" style={{ marginTop: "1rem" }}>
+                      <ReactMarkdown components={mdComponents}>{snippetsMd}</ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
               </Column>
             </Grid>
-              </TabPanel>
-            </TabPanels>
-      </Tabs>
+              </div>
+            )}
         </section>
       </div>
     </div>

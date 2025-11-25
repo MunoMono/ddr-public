@@ -75,18 +75,26 @@
     outline-color: #a6c8ff;
   }
 
-  .cds--tabs__nav-item--selected .cds--tabs__nav-link {
+  .cds--tabs__nav-item--selected {
     color: #fff;
-    border-color: #78a9ff;
+    border-block-start-color: #78a9ff;
   }
 }
 
 .hero-tabs__panels {
+  /* Keep the panels hidden with standard sr-only behaviour (so screen readers can still
+     access them) while avoiding the race that made them visible earlier. */
   position: absolute;
   height: 1px;
   width: 1px;
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
+}
+
+.hero-tabs {
+  /* Ensure any carbon tab content inside the hero doesn't render visible labels; we keep
+     this behavior isolated to hero scope only so other tabbed areas behave normally. */
+  .cds--tab-content { display: none !important; }
 }
 
 .home-page .page-hero {

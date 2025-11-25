@@ -32,7 +32,8 @@ const Header = () => {
         render={({ isSideNavExpanded, onClickSideNavExpand }) => (
           <CarbonHeader aria-label="DDR Public Preview">
             <SkipToContent />
-            <HeaderMenuButton
+            <div className="page-header__inner">
+              <HeaderMenuButton
               aria-label={isSideNavExpanded ? "Close menu" : "Open menu"}
               onClick={onClickSideNavExpand}
               isActive={isSideNavExpanded}
@@ -47,7 +48,7 @@ const Header = () => {
               </span>
             </HeaderName>
 
-            <HeaderNavigation aria-label="DDR navigation">
+              <HeaderNavigation aria-label="DDR navigation">
               {NAV_ITEMS.map((item) => (
                 <HeaderMenuItem
                   key={item.id}
@@ -60,8 +61,8 @@ const Header = () => {
                   <span className="menu--tab">{item.label}</span>
                 </HeaderMenuItem>
               ))}
-            </HeaderNavigation>
-
+              </HeaderNavigation>
+            </div>
             <SideNav aria-label="DDR navigation" expanded={isSideNavExpanded} isPersistent={false}>
               <SideNavItems>
                 <HeaderSideNavItems>

@@ -1,0 +1,43 @@
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/type' as type;
+
+/*
+  Move the active indicator for Carbon tabs from the bottom to the top.
+  This ONLY applies to page content tabs (within main content areas),
+  NOT to header navigation which should use default Carbon styling.
+*/
+
+/* Scope to tabs that are NOT inside the Carbon header */
+main .cds--tabs,
+.docs-panel-band .cds--tabs,
+.api-page__panel .cds--tabs {
+  /* Carbon draws the selected indicator on the item via border-block-end (bottom) by default.
+     To move the active indicator to the top, override the item and link borders to use
+     border-block-start (top) instead, and null out the bottom border. */
+
+  /* Ensure the default bottom underline is removed across both item and link. */
+  .cds--tabs__nav-link,
+  .cds--tabs__nav-item {
+    border-block-end: none !important;
+    border-block-start: 3px solid transparent !important; /* reserve the top border */
+  }
+
+  /* When selected, show the top border on the item (not the link). Carbon's selected
+     underline typically uses item-level border-block-end. We match that at the top. */
+  .cds--tabs__nav-item--selected {
+    border-block-end: none !important; /* remove any bottom rule */
+    border-block-start-color: var(--cds-link-primary, var(--cds-interactive, #0f62fe)) !important;
+  }
+
+  /* For contained tabs where the selected item uses box-shadow for the underline, ensure it
+     uses box-shadow inset at the top. */
+  &.cds--tabs--contained .cds--tabs__nav-item--selected {
+    box-shadow: inset 0 -2px 0 0 transparent !important; /* remove bottom */
+    box-shadow: inset 0 2px 0 0 var(--cds-link-primary, var(--cds-interactive, #0f62fe)) !important; /* top */
+  }
+
+  /* Keep focus outlines consistent without pushing layout */
+  .cds--tabs__nav-link:focus-visible {
+    outline-offset: -3px;
+  }
+}
