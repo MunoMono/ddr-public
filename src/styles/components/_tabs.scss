@@ -11,6 +11,7 @@
 main .cds--tabs,
 .docs-panel-band .cds--tabs,
 .api-page__panel .cds--tabs {
+  margin-bottom: spacing.$spacing-05;
   /* Carbon draws the selected indicator on the item via border-block-end (bottom) by default.
      To move the active indicator to the top, override the item and link borders to use
      border-block-start (top) instead, and null out the bottom border. */

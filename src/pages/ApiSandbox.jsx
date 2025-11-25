@@ -537,48 +537,45 @@ const ApiSandbox = () => {
               <section ref={sandboxRef} className="docs-panel-band graphql-sandbox">
                 <div className="docs-panel-band__inner">
                   <Loading active={loading} withOverlay description="Querying DDR API..." />
-                  <Grid condensed fullWidth className="cds-stack" style={{ marginTop: "1rem" }}>
-                    <Column lg={Math.round(16 * (resultPct / 100))} md={8} sm={4}>
-                      <div className="cds-card">
-                        <div className="cds-actions">
+                  <Grid condensed fullWidth className="sandbox-grid">
+                    {/* Editor & Controls Column - Stacks vertically on mobile */}
+                    <Column lg={8} md={8} sm={4} className="sandbox-editor-column">
+                      <div className="sandbox-toolbar-wrapper">
+                        <div className="toolbar-primary">
                           <ButtonSet>
-                            <Button onClick={() => runQuery()} kind="primary" disabled={loading}>
-                              {loading ? <InlineLoading description="Running..." /> : "Execute query"}
+                            <Button 
+                              onClick={() => runQuery()} 
+                              kind="primary" 
+                              disabled={loading}
+                            >
+                              {loading ? <InlineLoading description="Running..." /> : "Run query"}
                             </Button>
-                            <Button onClick={clearAll} kind="secondary" disabled={loading}>
+                            <Button 
+                              onClick={clearAll} 
+                              kind="secondary" 
+                              disabled={loading}
+                            >
                               Clear
                             </Button>
                           </ButtonSet>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cds-spacing-03)' }}>
-                            <Tag type="cool-gray">POST {displayEndpoint}</Tag>
-                            <ComboBox
-                              id="designer-preset-picker"
-                              titleText="Load preset"
-                              helperText="Load a designer preset into the editor"
-                              items={Object.keys(DESIGNER_PRESETS).map((id) => ({ id, label: id, query: DESIGNER_PRESETS[id] }))}
-                              itemToString={(item) => (item ? item.label : '')}
-                              onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
-                            />
-                            <Button kind="ghost" size="sm" onClick={() => setShowResults((s) => !s)}>
-                              {showResults ? 'Hide results' : 'Show results'}
-                            </Button>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                              <span style={{ fontSize: '0.8rem', color: 'var(--cds-text-secondary)' }}>Results</span>
-                              <input
-                                type="range"
-                                min="20"
-                                max="70"
-                                value={resultPct}
-                                onChange={(e) => setResultPct(Number(e.target.value))}
-                                style={{ width: '120px' }}
-                              />
-                            </label>
-                          </div>
+                        </div>
+                        <div className="toolbar-secondary">
+                          <ComboBox
+                            id="preset-picker"
+                            titleText=""
+                            placeholder="Quick start..."
+                            size="md"
+                            light
+                            items={Object.keys(DESIGNER_PRESETS).map((id) => ({ id, label: id, query: DESIGNER_PRESETS[id] }))}
+                            itemToString={(item) => (item ? item.label : '')}
+                            onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
+                          />
+                          <Tag size="md" type="blue">POST {displayEndpoint}</Tag>
                         </div>
                       </div>
 
-                      <div className="cds-card">
-                        <div className="cds-editor">
+                      <div className="editor-card">
+                        <div className="editor-container">
                           <Editor
                             height="100%"
                             defaultLanguage="graphql"
@@ -588,60 +585,84 @@ const ApiSandbox = () => {
                             options={{
                               minimap: { enabled: false },
                               fontSize: 14,
+                              lineHeight: 20,
                               tabSize: 2,
                               automaticLayout: true,
                               readOnly: loading,
+                              scrollBeyondLastLine: false,
+                              renderLineHighlight: 'all',
                             }}
                           />
                         </div>
                       </div>
 
-                      <div className="cds-card" style={{ padding: "var(--cds-spacing-03)" }}>
-                        <div style={{ display: 'flex', gap: 'var(--cds-spacing-03)', alignItems: 'center', marginBottom: 'var(--cds-spacing-03)' }}>
-                          <Button kind="tertiary" size="sm" renderIcon={Save} onClick={saveSnippet}>
-                            Save snippet (.txt)
-                          </Button>
-                          <Button kind="tertiary" size="sm" renderIcon={Save} onClick={saveQuery}>
+                      <div className="history-card">
+                        <ButtonSet stacked={false}>
+                          <Button 
+                            kind="ghost" 
+                            size="sm" 
+                            renderIcon={Save} 
+                            onClick={saveQuery}
+                          >
                             Save query
                           </Button>
-                        </div>
+                          <Button 
+                            kind="ghost" 
+                            size="sm" 
+                            renderIcon={Save} 
+                            onClick={saveSnippet}
+                          >
+                            Download snippet
+                          </Button>
+                        </ButtonSet>
 
                         {savedQueries.length > 0 && (
-                          <div style={{ marginTop: 'var(--cds-spacing-05)' }}>
-                            <h4 className="cds-heading" style={{ fontSize: '0.875rem', marginBottom: 'var(--cds-spacing-03)' }}>Saved queries</h4>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cds-spacing-02)' }}>
+                          <div className="history-section">
+                            <h5 className="history-heading">Saved queries</h5>
+                            <div className="history-list">
                               {savedQueries.map((sq) => (
-                                <div key={sq.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 'var(--cds-spacing-02)', background: 'var(--cds-layer-01)', borderRadius: '2px' }}>
-                                  <button
-                                    onClick={() => loadSavedQuery(sq)}
-                                    style={{ background: 'none', border: 'none', color: 'var(--cds-link-primary)', cursor: 'pointer', textAlign: 'left', fontSize: '0.875rem', flex: 1 }}
-                                  >
-                                    {sq.name}
-                                  </button>
-                                  <Button kind="ghost" size="sm" onClick={() => deleteSavedQuery(sq.id)}>×</Button>
-                                </div>
+                                <Tile key={sq.id} className="history-tile" light>
+                                  <div className="tile-content">
+                                    <button
+                                      onClick={() => loadSavedQuery(sq)}
+                                      className="tile-button"
+                                    >
+                                      {sq.name}
+                                    </button>
+                                    <Button 
+                                      kind="ghost" 
+                                      size="sm" 
+                                      hasIconOnly 
+                                      iconDescription="Delete"
+                                      onClick={() => deleteSavedQuery(sq.id)}
+                                    >
+                                      ×
+                                    </Button>
+                                  </div>
+                                </Tile>
                               ))}
                             </div>
                           </div>
                         )}
 
                         {queryHistory.length > 0 && (
-                          <div style={{ marginTop: 'var(--cds-spacing-05)' }}>
-                            <h4 className="cds-heading" style={{ fontSize: '0.875rem', marginBottom: 'var(--cds-spacing-03)' }}>Query history</h4>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cds-spacing-02)' }}>
-                              {queryHistory.slice(0, 10).map((qh) => (
-                                <button
+                          <div className="history-section">
+                            <h5 className="history-heading">Recent queries</h5>
+                            <div className="history-list">
+                              {queryHistory.slice(0, 5).map((qh) => (
+                                <Tile 
                                   key={qh.id}
+                                  className="history-tile clickable"
+                                  light
                                   onClick={() => setQuery(qh.query)}
-                                  style={{ background: 'var(--cds-layer-01)', border: 'none', color: 'var(--cds-text-primary)', cursor: 'pointer', textAlign: 'left', padding: 'var(--cds-spacing-02)', borderRadius: '2px', fontSize: '0.75rem' }}
                                 >
-                                  <div style={{ fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {qh.query.trim().split('\n')[0].substring(0, 50)}...
-                                  </div>
-                                  <div style={{ color: 'var(--cds-text-secondary)', fontSize: '0.7rem', marginTop: '2px' }}>
+                                  <code className="history-preview">
+                                    {qh.query.trim().split('\n')[0].substring(0, 60)}
+                                  </code>
+                                  <span className="history-timestamp">
                                     {new Date(qh.timestamp).toLocaleTimeString()}
-                                  </div>
-                                </button>
+                                  </span>
+                                </Tile>
                               ))}
                             </div>
                           </div>
@@ -649,8 +670,9 @@ const ApiSandbox = () => {
                       </div>
                     </Column>
 
-                    <Column lg={16 - Math.round(16 * (resultPct / 100))} md={8} sm={4}>
-                      <div className="cds-card">
+                    {/* Results Column - Stacks below editor on mobile */}
+                    <Column lg={8} md={8} sm={4} className="sandbox-results-column">
+                      <div className="cds-card results-panel">
                         <h3 className="cds-heading">Results</h3>
                         {error && (
                           <p style={{ color: "var(--cds-support-error)" }}>{error}</p>
