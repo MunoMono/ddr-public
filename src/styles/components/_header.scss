@@ -1,31 +1,24 @@
 /* styles/components/_header.scss
    Tablet-specific nav behavior (Carbon md–lg: 672–1055px)
-   and small spacing tweaks to avoid wrap.
 */
+
+/* Override Carbon header menu item padding to make blue line sit flush */
+a.cds--header__menu-item {
+  padding-bottom: 0 !important;
+}
+
+a.cds--header__menu-item[aria-current="page"] {
+  box-shadow: inset 0 -3px 0 0 #78a9ff;
+  border-bottom: none;
+}
 
 /* Defaults: desktop (≥1056px) = full labels, full menu names */
 .label--full { display: inline; }
-.label--tab  { display: none; } /* no longer used for the title, still fine for menu text if you want */
-
-/* Short alternate prefix (no longer used) */
-.header-prefix-alt {
-  display: none;
-  margin-right: 0.25rem;
-}
+.label--tab  { display: none; }
 
 /* Duplicate menus: show full by default, hide short */
 .menu--full { display: inline-block; }
 .menu--tab  { display: none; }
-
-/* Prevent unexpected wrapping and reduce horizontal padding a touch */
-.cds--header__nav {
-  white-space: nowrap;
-}
-.cds--header__menu-item,
-.cds--header__menu .cds--HeaderMenu__label {
-  /* tighten just a bit so tablet fits in one row without ellipsis */
-  padding-inline: 0.75rem;
-}
 
 /* NEW: hidden by default — used to force a two-line tablet title */
 .tablet-name {

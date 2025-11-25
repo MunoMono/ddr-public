@@ -6,6 +6,7 @@
 @use './base/layout';
 @use './base/type-reset';
 @use './base/responsive';
+@use './components/header';
 @use './components/graphql-sandbox';
 @use './components/page-hero';
 @use './components/tabs';
