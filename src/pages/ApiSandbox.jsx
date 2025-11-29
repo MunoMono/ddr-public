@@ -25,6 +25,7 @@ import {
 import { Save } from "@carbon/icons-react";
 
 import PageHero from "../components/PageHero/PageHero";
+import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
 
 const REST_PRESETS = [
   {
@@ -132,11 +133,11 @@ const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
-  : "https://ddrarchive.org/graphql";
+  : "https://admin.ddrarchive.org/graphql";
 
 const displayEndpoint = import.meta.env.DEV
   ? "localhost:8000/graphql"
-  : "ddrarchive.org/graphql";
+  : "admin.ddrarchive.org/graphql";
 
 const DEFAULT_QUERY = `{
   projects(limit: 10) {
@@ -158,12 +159,11 @@ const DESIGNER_PRESETS = {
     createdAt
   }
 }`,
-  activeProjects: `{
-  projects(status: "active", limit: 10) {
-    id
+  activeProjects: `query GetAllItems {
+  items_recent {
+    pid
     title
-    description
-    status
+    updated_at
   }
 }`,
   singleProject: `{
@@ -191,6 +191,20 @@ const API_NAV_TABS = [
   { id: "api-getting-started", label: "Getting started" },
   { id: "api-graphql-sandbox", label: "GraphQL sandbox" },
   { id: "api-presets", label: "Presets and snippets" },
+];
+
+const GETTING_STARTED_ANCHORS = [
+  { id: "authentication", label: "Authentication" },
+  { id: "request-format", label: "Request format" },
+  { id: "rate-limits", label: "Rate limits" },
+  { id: "query-parameters", label: "Query parameters" },
+];
+
+const PRESETS_ANCHORS = [
+  { id: "rest-examples", label: "REST examples" },
+  { id: "graphql-presets", label: "GraphQL presets" },
+  { id: "code-snippets", label: "Code snippets" },
+  { id: "response-formats", label: "Response formats" },
 ];
 
 const getThemePreference = () => {
@@ -459,13 +473,17 @@ const ApiSandbox = () => {
         onTabSelect={handleHeroTabSelect}
       />
 
-      <div className="page-content">
-        <section className="page-section" id="api-content">
-          {/* Content panels controlled by hero tabs — remove duplicated TabList from content */}
+      <Theme theme="g10">
+        <div className="page-content">
+          <section className="page-section" id="main-content">
+            <Grid condensed>
+              <Column lg={14} md={8} sm={4}>
               {activeApiTab === 0 && (
-                <div role="tabpanel">
-            <Grid condensed className="api-page__panel">
-              <Column lg={8} md={8} sm={4}>
+                <>
+                  <Heading type="heading-03" className="tab-lead">
+                    DDR's API uses GraphQL and REST endpoints. The GraphQL sandbox connects to the DDR archive for live queries during development and demos. Follow these steps to get started with authentication and rate limits.
+                  </Heading>
+                  <AnchorLinks links={GETTING_STARTED_ANCHORS} />
                 <h2>Three simple steps</h2>
                 <p>
                   DDR's API uses GraphQL and REST endpoints. The GraphQL sandbox below connects to the
@@ -504,38 +522,34 @@ const ApiSandbox = () => {
                   <li><code>query</code> — Full-text search across titles and descriptions</li>
                   <li><code>maker</code> or <code>person_id</code> — Filter by designer/maker</li>
                 </ul>
-              </Column>
-              <Column lg={8} md={8} sm={4}>
-                <Tile>
-                  <p className="eyebrow">Example request</p>
-                  <CodeSnippet type="multi" wrapText>
-                    {
-                      "https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.getRandom&access_token=YOUR_TOKEN"
-                    }
-                  </CodeSnippet>
-                </Tile>
-                <Tile>
-                  <p className="eyebrow">Example JSON</p>
-                  <CodeSnippet type="multi" wrapText>
-                    {`{
+
+                <h3 style={{ marginTop: "var(--cds-spacing-07)" }}>Example request</h3>
+                <CodeSnippet type="multi" wrapText>
+                  {
+                    "https://api.collection.cooperhewitt.org/rest/?method=cooperhewitt.objects.getRandom&access_token=YOUR_TOKEN"
+                  }
+                </CodeSnippet>
+
+                <h3 style={{ marginTop: "var(--cds-spacing-05)" }}>Example JSON</h3>
+                <CodeSnippet type="multi" wrapText>
+                  {`{
   "stat": "ok",
   "object": {
     "title": "Square textile, 1910–20",
     "description": "Silk; block-printed"
   }
 }`}
-                  </CodeSnippet>
-                </Tile>
-              </Column>
-            </Grid>
-              </div>
+                </CodeSnippet>
+                </>
               )}
 
               {activeApiTab === 1 && (
-              <div role="tabpanel">
+              <>
+                {/* No tab-lead or anchor links for GraphQL Sandbox */}
+            <div style={{ marginTop: "var(--cds-spacing-05)" }}>
             <Theme theme={isDark ? "g90" : "g10"}>
-              <section ref={sandboxRef} className="docs-panel-band graphql-sandbox">
-                <div className="docs-panel-band__inner">
+              <section ref={sandboxRef} className="graphql-sandbox">
+                <div className="sandbox-inner">
                   <Loading active={loading} withOverlay description="Querying DDR API..." />
                   <Grid condensed fullWidth className="sandbox-grid">
                     {/* Editor & Controls Column - Stacks vertically on mobile */}
@@ -742,13 +756,16 @@ const ApiSandbox = () => {
                 </div>
               </section>
             </Theme>
-              </div>
+            </div>
+              </>
               )}
 
               {activeApiTab === 2 && (
-              <div role="tabpanel">
-            <Grid condensed className="api-page__panel">
-              <Column lg={8} md={8} sm={4}>
+              <>
+                <Heading type="heading-03" className="tab-lead">
+                  Example REST endpoints for reference. DDR's production API follows similar patterns with authentication and structured responses. Load GraphQL presets directly into the sandbox editor.
+                </Heading>
+                <AnchorLinks links={PRESETS_ANCHORS} />
                 <h2>Presets</h2>
                 <p>
                   Example REST endpoints for reference. DDR's production API will follow similar patterns
@@ -801,10 +818,8 @@ const ApiSandbox = () => {
                     </div>
                   </div>
                 </div>
-              </Column>
 
-              <Column lg={8} md={8} sm={4}>
-                <h2>Snippets</h2>
+                <h2 style={{ marginTop: "var(--cds-spacing-09)" }}>Snippets</h2>
                 <p>Use these quick copies when you need a cURL test, a fetch helper, or DDR GraphQL.</p>
                 <Tabs
                   selectedIndex={selectedIndex >= 0 ? selectedIndex : 0}
@@ -839,12 +854,13 @@ const ApiSandbox = () => {
                     </div>
                   </div>
                 </div>
+                </>
+              )}
               </Column>
             </Grid>
-              </div>
-            )}
-        </section>
-      </div>
+          </section>
+        </div>
+      </Theme>
     </div>
   );
 };

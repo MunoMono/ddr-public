@@ -1,5 +1,6 @@
-@use '@carbon/styles'; /* pull in Carbon’s base styles */
+@use '@carbon/styles'; /* pull in Carbon's base styles */
 @use '@carbon/styles/scss/type' as type;
+@use '@carbon/styles/scss/breakpoint' as *;
 
 /* Import shared layout primitives from phd-research-app */
 @use './base/page-header';
@@ -134,7 +135,7 @@ li {
   min-width: 600px;
   height: 500px;
   
-  @media (max-width: 672px) {
+  @include breakpoint-down('md') {
     min-width: 100%;
     height: 350px;
   }

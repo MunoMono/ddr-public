@@ -33,4 +33,12 @@
   padding-inline: 0;
 }
 
-.docs-content__grid { padding-left: 0; padding-right: 0; }
+.docs-content__grid { 
+  padding-left: 0; 
+  padding-right: 0;
+  
+  // Ensure columns align with hero content above
+  .cds--col {
+    padding-left: 0;
+  }
+}

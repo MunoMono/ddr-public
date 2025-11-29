@@ -1,13 +1,35 @@
 import { useCallback, useState } from "react";
-import { Column, Grid } from "@carbon/react";
+import { Column, Grid, Heading, Theme } from "@carbon/react";
 import PageHero from "../components/PageHero/PageHero";
 import MarkdownContent from "../components/MarkdownContent/MarkdownContent";
+import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
 import useMarkdown from "../hooks/useMarkdown";
 
 const HOME_TABS = [
   { id: "overview", label: "Overview" },
   { id: "public-workstreams", label: "Public workstreams" },
   { id: "roadmap", label: "Roadmap" },
+];
+
+const OVERVIEW_ANCHORS = [
+  { id: "partners", label: "Partners" },
+  { id: "safe-to-publish", label: "Safe to publish" },
+  { id: "fast-iterate", label: "Fast iterate" },
+  { id: "technology", label: "Technology" },
+];
+
+const WORKSTREAMS_ANCHORS = [
+  { id: "current-projects", label: "Current projects" },
+  { id: "research-themes", label: "Research themes" },
+  { id: "collaborations", label: "Collaborations" },
+  { id: "outputs", label: "Outputs" },
+];
+
+const ROADMAP_ANCHORS = [
+  { id: "upcoming-features", label: "Upcoming features" },
+  { id: "timeline", label: "Timeline" },
+  { id: "priorities", label: "Priorities" },
+  { id: "feedback", label: "Feedback" },
 ];
 
 const Home = () => {
@@ -41,35 +63,55 @@ const Home = () => {
         onTabSelect={handleTabSelect}
       />
 
-      <div className="page-content">
-        <section className="page-section" aria-label="Home content">
-          <Grid condensed>
-            <Column lg={8} md={8} sm={4}>
-              {activeTab === 0 && (
-                <MarkdownContent 
-                  html={overviewMd.html} 
-                  loading={overviewMd.loading} 
-                  error={overviewMd.error} 
-                />
-              )}
-              {activeTab === 1 && (
-                <MarkdownContent 
-                  html={workstreamsMd.html} 
-                  loading={workstreamsMd.loading} 
-                  error={workstreamsMd.error} 
-                />
-              )}
-              {activeTab === 2 && (
-                <MarkdownContent 
-                  html={roadmapMd.html} 
-                  loading={roadmapMd.loading} 
-                  error={roadmapMd.error} 
-                />
-              )}
-            </Column>
-          </Grid>
-        </section>
-      </div>
+      <Theme theme="g10">
+        <div className="page-content">
+          <section className="page-section" id="main-content">
+            <Grid condensed>
+              <Column lg={14} md={8} sm={4}>
+                {activeTab === 0 && (
+                  <>
+                    <Heading type="heading-03" className="tab-lead">
+                      Partners asked to see the scaffolding that shapes DDR's internal work. This view keeps sensitive research inside the parent application while still exposing the information architecture, typography, and Carbon baseline.
+                    </Heading>
+                    <AnchorLinks links={OVERVIEW_ANCHORS} />
+                    <MarkdownContent 
+                      html={overviewMd.html} 
+                      loading={overviewMd.loading} 
+                      error={overviewMd.error} 
+                    />
+                  </>
+                )}
+                {activeTab === 1 && (
+                  <>
+                    <Heading type="heading-03" className="tab-lead">
+                      Current workstreams show where DDR focuses effort. Each project follows a similar workflow structure so external collaborators can build context quickly.
+                    </Heading>
+                    <AnchorLinks links={WORKSTREAMS_ANCHORS} />
+                    <MarkdownContent 
+                      html={workstreamsMd.html} 
+                      loading={workstreamsMd.loading} 
+                      error={workstreamsMd.error} 
+                    />
+                  </>
+                )}
+                {activeTab === 2 && (
+                  <>
+                    <Heading type="heading-03" className="tab-lead">
+                      The roadmap tracks upcoming features and improvements. Timelines remain flexible to accommodate changing research priorities and partner needs.
+                    </Heading>
+                    <AnchorLinks links={ROADMAP_ANCHORS} />
+                    <MarkdownContent 
+                      html={roadmapMd.html} 
+                      loading={roadmapMd.loading} 
+                      error={roadmapMd.error} 
+                    />
+                  </>
+                )}
+              </Column>
+            </Grid>
+          </section>
+        </div>
+      </Theme>
     </div>
   );
 };

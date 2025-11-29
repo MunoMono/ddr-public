@@ -1,11 +1,12 @@
 @use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/breakpoint' as *;
 
 // -----------------------------------
 // _responsive.scss (Carbon 11 compliant)
 // -----------------------------------
 
 // ✅ From: components/_anchors.scss
-@media (max-width: 672px) {
+@include breakpoint-down('md') {
   .anchor-links-wrapper {
     display: flex;
     flex-direction: column;
@@ -30,7 +31,7 @@
 }
 
 // ✅ From: ResponsiveChartWrapper.scss
-@media (max-width: 672px) {
+@include breakpoint-down('md') {
   .responsive-chart-wrapper {
     overflow-x: scroll;
     -webkit-overflow-scrolling: touch;
@@ -40,7 +41,7 @@
 }
 
 // ✅ From: PageHeader.scss
-@media (max-width: 672px) {
+@include breakpoint-down('md') {
   .page-header {
     padding: $spacing-07 $spacing-05;
   }
@@ -59,14 +60,14 @@
 }
 
 // ✅ From: ImageCard.scss
-@media (max-width: 672px) {
+@include breakpoint-down('md') {
   .image-card {
     margin-bottom: $spacing-07;
   }
 }
 
 // ✅ Fix long model titles on very small screens
-@media (max-width: 600px) {
+@include breakpoint-down('sm') {
   .model-shell-standalone h2,
   .cds--breadcrumb-item.cds--breadcrumb-item--current .cds--link {
     word-break: break-word;
@@ -78,12 +79,14 @@
 }
 
 // ✅ Force hamburger menu on tablet (768–834px)
-@media screen and (min-width: 768px) and (max-width: 834px) {
-  .bx--header__nav {
-    display: none !important;
-  }
+@include breakpoint('md') {
+  @media (max-width: 834px) {
+    .bx--header__nav {
+      display: none !important;
+    }
 
-  .bx--header__menu-trigger {
-    display: flex !important;
+    .bx--header__menu-trigger {
+      display: flex !important;
+    }
   }
 }

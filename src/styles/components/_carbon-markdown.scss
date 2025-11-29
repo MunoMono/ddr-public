@@ -2,6 +2,7 @@
 @use '@carbon/styles/scss/type' as type;
 @use '@carbon/styles/scss/spacing' as *;
 @use '@carbon/styles/scss/theme' as *; // <-- use theme vars ($text-primary, $layer-01, ...)
+@use '@carbon/styles/scss/breakpoint' as *;
 @import '../../../vendor/carbon-markdown-scss/scss/github';
 
 .carbon-markdown,
@@ -131,7 +132,7 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     
-    @media (max-width: 672px) {
+    @include breakpoint-down('md') {
       font-size: 0.875rem;
     }
   }
@@ -185,7 +186,7 @@
   .cds-callout--warning { border-color: $support-warning; }
 
   // Mobile type scaling (optional)
-  @media (max-width: 640px) {
+  @include breakpoint-down('sm') {
     h1 { @include type.type-style('heading-04'); }
     h2 { @include type.type-style('heading-03'); }
     h3 { @include type.type-style('heading-02'); }

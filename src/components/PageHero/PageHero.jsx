@@ -53,7 +53,7 @@ const PageHero = ({
           <div className="page-hero__inner">
             <Grid condensed className="page-hero__grid">
               <Column
-                lg={mainCols?.lg ?? (hasTabs ? 12 : 10)}
+                lg={mainCols?.lg ?? (hasTabs ? 14 : 12)}
                 md={mainCols?.md ?? 8}
                 sm={mainCols?.sm ?? 4}
               >

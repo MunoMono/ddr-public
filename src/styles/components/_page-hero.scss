@@ -30,16 +30,23 @@
     color: #f4f4f4;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    text-align: left;
   }
 
   .lead {
     color: rgba(244, 244, 244, 0.85);
     max-width: 64ch;
     word-wrap: break-word;
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
   }
 
   .eyebrow {
     color: rgba(255, 255, 255, 0.7);
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
   }
 }
 
@@ -52,10 +59,26 @@
   align-items: flex-end;
   width: 100%;
   overflow-x: hidden;
+  
+  // Override Grid padding to align with g10 content below
+  .cds--grid {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .page-hero__grid {
   row-gap: $spacing-06;
+  
+  // Ensure all content in hero is left-aligned on mobile
+  .cds--col {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
 }
 
 .page-hero__aside {
@@ -64,10 +87,9 @@
 
 .hero-tabs {
   background: #050505;
-  border-bottom: 1px solid #393939;
 
   .cds--tabs {
-    --cds-tabs-height: 3.125rem;
+    --cds-tabs-height: 2.5rem;
   }
 
   .cds--tabs__nav-item {
@@ -77,6 +99,10 @@
   .cds--tabs__nav-link {
     color: rgba(255, 255, 255, 0.8);
     font: type-style('body-compact-01');
+  }
+
+  .cds--tabs__nav-link:hover {
+    color: #fff;
   }
 
   .cds--tabs__nav-link:focus-visible {

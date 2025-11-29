@@ -155,7 +155,7 @@ const MarkdownPage = ({
       <div className="page-content">
         <section className="page-section" aria-label={heroTitle || heroId}>
           <Grid condensed>
-            <Column lg={8} md={8} sm={4}>
+            <Column lg={14} md={8} sm={4}>
               <MarkdownContent html={html} loading={loading} error={error} />
               {showTopLink ? (
                 <Button kind="ghost" size="sm" renderIcon={UpToTop} iconDescription={topLabel} onClick={scrollToTop}>

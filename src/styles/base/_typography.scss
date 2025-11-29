@@ -41,8 +41,8 @@ h1,
   @include type-style('heading-03');
   font-weight: 300 !important;
 
-  @media (max-width: breakpoint('sm')) {
-    font-size: 2.5rem;
+  @include breakpoint-down('md') {
+    font-size: 1.625rem !important;
   }
 }
 
@@ -177,7 +177,16 @@ ul + p {
 }
 
 .tab-lead {
-  font-size: 2.5rem;
+  font-size: 1rem !important;
   font-weight: 350 !important;
-  margin-bottom: $spacing-05;
+  margin-bottom: 1.5rem;
+  line-height: 1.4 !important;
+  
+  @include breakpoint('md') {
+    font-size: 1.5rem !important;
+  }
+  
+  @include breakpoint('lg') {
+    font-size: 2.5rem !important;
+  }
 }
