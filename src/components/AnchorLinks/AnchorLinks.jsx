@@ -20,7 +20,7 @@ const AnchorLinks = ({ heading = "", links = [], columns = 1, size = "normal", o
       className={`anchor-links-wrapper ${sizeClass} ${useGridLayout ? "grid-layout" : ""}`}
       style={useGridLayout ? { gridTemplateColumns: `repeat(${columns}, 1fr)` } : {}}
     >
-      {heading ? <h3 className="anchor-links-heading">{heading}</h3> : null}
+      {heading ? <h1 className="anchor-links-heading">{heading}</h1> : null}
       <div className="anchor-links-list">
         {links.map((link, index) => (
           <div key={link.id} className="anchor-link-item">

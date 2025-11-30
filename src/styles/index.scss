@@ -6,11 +6,13 @@
 @use './base/page-header';
 @use './base/layout';
 @use './base/type-reset';
+@use './base/typography';
 @use './base/responsive';
 @use './components/header';
 @use './components/graphql-sandbox';
 @use './components/page-hero';
 @use './components/tabs';
+@use './components/anchor-links';
 
 /* Force light (g10) and dark (g90) theme tokens */
 :root[data-theme="g10"] {
