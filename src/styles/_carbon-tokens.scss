@@ -1,0 +1,35 @@
+@use '@carbon/styles/scss/colors' as *;
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/layer' as *;
+@use '@carbon/styles/scss/theme';
+
+// -----------------------------------
+// Theme token aliases
+// -----------------------------------
+
+$carbon-layer: $layer;
+$carbon-layer-hover: $layer-hover;
+$carbon-text: $text-primary;
+$carbon-text-secondary: $text-secondary;
+$carbon-background: $background;
+$carbon-border: $border-subtle;
+$carbon-interactive: $interactive-01;
+
+// -----------------------------------
+// Semantic aliases
+// -----------------------------------
+
+$color-primary: $carbon-interactive;
+$color-text: $carbon-text;
+$color-text-secondary: $carbon-text-secondary;
+$color-background: $carbon-background;
+$color-border: $carbon-border;
+
+// -----------------------------------
+// Spacing tokens
+// -----------------------------------
+
+$spacing-xs: $spacing-01;
+$spacing-sm: $spacing-02;
+$spacing-lg: $spacing-05;
+$spacing-xl: $spacing-07;

@@ -1,0 +1,24 @@
+// src/styles/custom-theme.scss
+
+@use 'sass:map';
+@use '@carbon/styles/scss/themes' as *;
+
+@use '@carbon/styles/scss/theme' as theme with (
+  $theme: map.merge(
+    $g100,
+    (
+      'interactive-01': #198038,
+      'interactive-02': #0f62fe,
+      'interactive-03': #8a3ffc,
+      'interactive-04': #ff832b,
+      'hover-primary': #0f62fe,
+      'text-primary': #ffffff
+    )
+  )
+);
+
+// These can stay
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/layer' as *;
+@use '@carbon/styles/scss/colors' as *;

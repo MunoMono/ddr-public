@@ -1,0 +1,7 @@
+// src/styles/base/_fonts.scss
+
+@use '@carbon/styles/scss/type' as type;
+
+// Define custom font family variables directly
+$heading-font-family: 'IBM Plex Sans', sans-serif;
+$body-font-family: 'IBM Plex Sans', sans-serif;

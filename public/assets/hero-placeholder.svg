@@ -1,0 +1,22 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F62FE"/>
+      <stop offset="50%" stop-color="#6F42C1"/>
+      <stop offset="100%" stop-color="#0B0F1A"/>
+    </linearGradient>
+    <radialGradient id="g2" cx="20%" cy="25%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g3" cx="80%" cy="10%" r="35%">
+      <stop offset="0%" stop-color="#78A9FF" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#78A9FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#g1)"/>
+  <circle cx="250" cy="220" r="320" fill="url(#g2)"/>
+  <circle cx="1320" cy="150" r="240" fill="url(#g3)"/>
+  <path d="M0,720 C300,660 480,560 820,600 C1180,640 1320,560 1600,520 L1600,900 L0,900 Z" fill="rgba(255,255,255,0.06)"/>
+  <path d="M0,640 C320,600 520,520 860,540 C1160,556 1320,520 1600,480 L1600,900 L0,900 Z" fill="rgba(15,98,254,0.12)" />
+</svg>

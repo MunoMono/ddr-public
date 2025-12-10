@@ -1,0 +1,49 @@
+@use '../base/gutters' as g;
+@use '@carbon/styles/scss/breakpoint' as *;
+
+/* Global centered container */
+.container,
+.site-container {
+  max-width: g.$container-max;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* responsive side padding */
+  padding-left: g.$container-pad-sm;
+  padding-right: g.$container-pad-sm;
+
+  @include breakpoint('md') {
+    padding-left: g.$container-pad-md;
+    padding-right: g.$container-pad-md;
+  }
+}
+
+/* Your grid wrapper can just “be a container” */
+.grid-section {
+  @extend .container;
+  /* keep any vertical rhythm you want here */
+  /* e.g., padding-top/bottom if needed */
+}
+/* Ensure containers and grids prevent horizontal overflow */
+.container,
+.site-container,
+.grid-section {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure Carbon Grid components are responsive */
+.cds--css-grid,
+.cds--grid {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cds--row {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.cds--col {
+  overflow-x: hidden;
+}

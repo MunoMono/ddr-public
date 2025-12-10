@@ -1,0 +1,8 @@
+@use '@carbon/styles/scss/type' as type;
+@use '@carbon/styles/scss/theme' as theme;
+
+body {
+  @include type.type-style('body-01');
+  color: theme.$text-primary;
+  margin: 0;
+}

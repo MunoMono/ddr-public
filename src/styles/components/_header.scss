@@ -1,0 +1,126 @@
+/* ---------------------------------------------------------------------------
+   Global Page Header (Full-bleed, g90 background)
+--------------------------------------------------------------------------- */
+@use "@carbon/styles/scss/spacing" as *;
+@use "@carbon/styles/scss/breakpoint" as *;
+
+.page-header {
+  position: relative;
+  width: 100%;
+  background-color: #161616;
+  color: #ffffff;
+  border: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  z-index: 1;
+
+  .container {
+    min-height: var(--page-header-height, 18rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: 0;
+    padding-bottom: $spacing-07;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 6vw, 4.75rem);
+    margin: 0;
+  }
+
+  h2,
+  h3 {
+    color: #ffffff;
+    font-weight: 300;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .page-header__subtitle {
+    color: #c6c6c6;
+    font-weight: 300;
+    margin-top: $spacing-02;
+    line-height: 1.3;
+  }
+
+  /* ------------------ Tablet responsive ------------------ */
+  @include breakpoint-down('lg') {
+    .container {
+      min-height: 14rem;
+      padding-bottom: $spacing-06;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  /* ------------------ Mobile responsive ------------------ */
+  @include breakpoint-down('md') {
+    .container {
+      min-height: 12rem;
+      padding-bottom: $spacing-05;
+      padding-inline: $spacing-05;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      line-height: 1.1;
+    }
+
+    h2,
+    h3 {
+      font-size: 1.75rem;
+    }
+
+    .page-header__subtitle {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+header .cds--header__global {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+header .cds--header__action {
+  color: #fff;
+
+  &:hover {
+    background-color: var(--cds-background-hover, rgba(255, 255, 255, 0.1));
+  }
+}
+
+/* Mobile side nav submenu items - reduce left indent */
+.cds--side-nav {
+  .cds--header__menu-item {
+    padding-left: 1rem !important;
+  }
+  
+  .cds--header__menu .cds--header__menu-item {
+    padding-left: 2rem !important;
+  }
+}
+
+/* Carbon default menu item styles */
+a.cds--header__menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border: 2px solid transparent;
+  background-color: var(--cds-background, #ffffff);
+  block-size: 100%;
+  color: var(--cds-text-secondary, #525252);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.125rem;
+  text-decoration: none;
+  transition: background-color 0.11s, border-color 0.11s, color 0.11s;
+  -webkit-user-select: none;
+  user-select: none;
+}

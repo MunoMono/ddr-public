@@ -1,0 +1,140 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/colors' as *;
+@use '@carbon/styles/scss/layer' as *;
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/theme' as *;
+@use '@carbon/styles/scss/breakpoint' as breakpoint;
+
+// -----------------------------------
+// IBM-style Inline & Block Anchor Lists (Carbon v11)
+// -----------------------------------
+
+.anchor-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-02;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.anchor-chip {
+  display: inline-block;
+  padding: $spacing-01 $spacing-03;
+  background-color: $layer-accent;
+  border-radius: 1rem;
+  font: type-style('body-compact-01');
+  font-weight: 500;
+  text-decoration: none;
+  color: $text-primary;
+  white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    background-color: $layer-accent-hover;
+    text-decoration: underline;
+  }
+}
+
+.anchor-links-wrapper {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding-left: 0;
+
+  .anchor-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    .anchor-col {
+      flex: 1 1 40ch;
+    }
+  }
+
+  h1.anchor-links-heading {
+    font-size: var(--cds-heading-03-font-size, 2rem) !important; // Override Carbon heading styles
+    font-weight: 600 !important;
+    line-height: var(--cds-heading-03-line-height, 1.4);
+    margin-bottom: 1.5rem;
+    color: $text-primary;
+  }
+  
+  @media (max-width: 671px) {
+    h1.anchor-links-heading {
+      font-size: 1.65rem !important; // Heading size on mobile
+    }
+  }
+
+  .anchor-links-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .anchor-link-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.2rem !important;
+    transition: color 0.25s ease;
+
+    @include breakpoint.breakpoint(sm) {
+      margin-bottom: 0.5rem !important;
+    }
+
+    .anchor-arrow {
+      margin-right: 0.375rem;
+      margin-top: 0.15em;
+      flex-shrink: 0;
+      fill: currentColor;
+      transition: fill 0.25s ease;
+      width: 20px;
+      height: 20px;
+
+      @include breakpoint.breakpoint(sm) {
+        width: 24px;
+        height: 24px;
+        margin-right: 0.5rem;
+      }
+    }
+
+    .anchor-link-text {
+      color: currentColor;
+      text-decoration: none;
+      transition: color 0.25s ease;
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.4;
+
+      @include breakpoint.breakpoint(sm) {
+        font-size: 1.5rem;
+        line-height: 1.3;
+      }
+    }
+
+    &:hover {
+      .anchor-link-text,
+      .anchor-arrow {
+        color: #0f62fe;
+        fill: #0f62fe;
+        text-decoration: none;
+      }
+    }
+  }
+
+  &.anchor-links--small {
+    .anchor-link-text {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      font-weight: 400;
+      line-height: 1.25;
+    }
+
+    .anchor-arrow {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

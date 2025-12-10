@@ -1,0 +1,479 @@
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/breakpoint' as breakpoint;
+
+/* ========================================
+   MOBILE-FIRST RESPONSIVE GRAPHQL SANDBOX
+   ======================================== */
+
+.docs-panel-band {
+  margin-top: 0;
+  padding-block: spacing.$spacing-03;
+  background: linear-gradient(180deg, var(--cds-background) 0%, var(--cds-layer-01) 100%);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--cds-border-subtle) 50%, transparent 100%);
+  }
+}
+
+.docs-panel-band__inner {
+  max-width: 1312px;
+  margin-inline: auto;
+  padding-left: clamp(1rem, 5vw, 3.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.docs-panel-band .cds--css-grid {
+  margin-inline: 0 !important;
+  max-inline-size: none !important;
+  --cds-grid-margin: 0 !important;
+  --cds-grid-gutter-start: 0 !important;
+}
+
+/* ========================================
+   MOBILE LAYOUT (default)
+   ======================================== */
+
+.graphql-sandbox {
+  
+  /* Grid overrides for sandbox */
+  .sandbox-grid {
+    margin-inline: 0 !important;
+    max-inline-size: none !important;
+    --cds-grid-margin: 0 !important;
+    --cds-grid-gutter-start: 0 !important;
+    
+    // Force 16 columns for desktop 50/50 layout
+    @include breakpoint.breakpoint(md) {
+      --cds-grid-columns: 16 !important;
+    }
+  }
+  
+  /* ========================================
+     RESULTS WRAPPER
+     ======================================== */
+  .results-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: spacing.$spacing-05;
+  }
+  
+  /* ========================================
+     TOOLBAR - Responsive
+     ======================================== */
+  .sandbox-toolbar-wrapper {
+    background: var(--cds-layer-01);
+    padding: spacing.$spacing-05;
+    border-radius: 0;
+    margin-top: 0;
+    margin-bottom: spacing.$spacing-05;
+    border: 1px solid var(--cds-border-subtle-01);
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-04;
+    }
+  }
+  
+  .toolbar-primary {
+    margin-bottom: spacing.$spacing-05;
+    
+    // Mobile: Stack buttons vertically
+    @include breakpoint.breakpoint-down(md) {
+      .cds--btn-set {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: spacing.$spacing-03;
+        
+        .cds--btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  .toolbar-secondary {
+    display: flex;
+    gap: spacing.$spacing-05;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    
+    @include breakpoint.breakpoint-down(md) {
+      flex-direction: column;
+      gap: spacing.$spacing-04;
+      align-items: stretch;
+    }
+    
+    .cds--combo-box {
+      flex: 1;
+      min-width: 200px;
+      
+      @include breakpoint.breakpoint-down(md) {
+        width: 100%;
+        min-width: 100%;
+      }
+    }
+    
+    .cds--tag {
+      @include breakpoint.breakpoint-down(md) {
+        align-self: flex-start;
+      }
+    }
+  }
+  
+  /* ========================================
+     EDITOR - Responsive height
+     ======================================== */
+  .editor-card {
+    background: var(--cds-layer-01);
+    border: 1px solid var(--cds-border-subtle-01);
+    margin-bottom: spacing.$spacing-05;
+    border-radius: 0;
+  }
+  
+  .editor-container {
+    // Mobile: Smaller editor height
+    height: 300px;
+    min-height: 250px;
+    
+    @include breakpoint.breakpoint(md) {
+      height: 400px;
+      min-height: 350px;
+    }
+    
+    @include breakpoint.breakpoint(lg) {
+      height: 500px;
+      min-height: 400px;
+    }
+  }
+  
+  /* ========================================
+     HISTORY & SAVED QUERIES - Mobile optimized
+     ======================================== */
+  .history-card {
+    background: var(--cds-layer-01);
+    border: 1px solid var(--cds-border-subtle-01);
+    padding: spacing.$spacing-05;
+    border-radius: 0;
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-04;
+    }
+    
+    // Mobile: Stack save buttons vertically
+    @include breakpoint.breakpoint-down(md) {
+      > .cds--btn-set {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: spacing.$spacing-03;
+        margin-bottom: spacing.$spacing-05;
+        
+        .cds--btn {
+          width: 100%;
+          justify-content: flex-start;
+        }
+      }
+    }
+    
+    // Tablet and up: Horizontal save buttons
+    @include breakpoint.breakpoint(md) {
+      > .cds--btn-set {
+        display: flex;
+        flex-direction: row;
+        gap: spacing.$spacing-03;
+        margin-bottom: spacing.$spacing-05;
+      }
+    }
+  }
+  
+  .history-section {
+    margin-top: spacing.$spacing-06;
+    
+    &:first-of-type {
+      margin-top: spacing.$spacing-05;
+    }
+  }
+  
+  .history-heading {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--cds-text-secondary);
+    margin-bottom: spacing.$spacing-04;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: spacing.$spacing-03;
+  }
+  
+  .history-tile {
+    cursor: pointer;
+    transition: all 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    padding: spacing.$spacing-04;
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-03;
+    }
+    
+    &:hover {
+      background: var(--cds-layer-hover-01);
+      transform: translateX(2px);
+    }
+    
+    &.clickable {
+      border-left: 2px solid transparent;
+      
+      &:hover {
+        border-left-color: var(--cds-border-interactive);
+      }
+    }
+  }
+  
+  .tile-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: spacing.$spacing-04;
+    
+    @include breakpoint.breakpoint-down(md) {
+      gap: spacing.$spacing-03;
+    }
+  }
+  
+  .tile-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--cds-text-primary);
+    text-align: left;
+    cursor: pointer;
+    flex: 1;
+    font-size: 0.875rem;
+    
+    @include breakpoint.breakpoint-down(md) {
+      font-size: 0.8125rem;
+    }
+    
+    &:hover {
+      color: var(--cds-link-primary);
+    }
+  }
+  
+  .history-preview {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cds-text-secondary);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: spacing.$spacing-02;
+    
+    @include breakpoint.breakpoint-down(md) {
+      font-size: 0.6875rem;
+    }
+  }
+  
+  .history-timestamp {
+    font-size: 0.6875rem;
+    color: var(--cds-text-placeholder);
+    white-space: nowrap;
+  }
+  
+  /* ========================================
+     RESULTS PANEL - Mobile optimized
+     ======================================== */
+  .results-panel {
+    background: var(--cds-layer-01);
+    border: 1px solid var(--cds-border-subtle-01);
+    padding: spacing.$spacing-06;
+    border-radius: 0;
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-04;
+    }
+    
+    // On desktop, sticky positioning
+    @include breakpoint.breakpoint(lg) {
+      position: sticky;
+      top: spacing.$spacing-05;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+  }
+  
+  .cds-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: spacing.$spacing-05;
+    color: var(--cds-text-primary);
+    
+    @include breakpoint.breakpoint-down(md) {
+      font-size: 1.125rem;
+      margin-bottom: spacing.$spacing-04;
+    }
+  }
+  
+  .cds-subtle {
+    color: var(--cds-text-secondary);
+    font-style: italic;
+  }
+  
+  /* ========================================
+     RESULTS GRID - Responsive cards
+     ======================================== */
+  .cds-grid {
+    display: grid;
+    gap: spacing.$spacing-05;
+    
+    // Mobile: Single column
+    grid-template-columns: 1fr;
+    
+    // Tablet: 2 columns
+    @include breakpoint.breakpoint(md) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: spacing.$spacing-04;
+    }
+    
+    // Desktop: adapt to available space
+    @include breakpoint.breakpoint(lg) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @include breakpoint.breakpoint(xlg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .cds-figure {
+    margin: 0;
+  }
+  
+  .cds-card-tile {
+    background: var(--cds-layer-02);
+    border: 1px solid var(--cds-border-subtle-01);
+    border-radius: 0;
+    overflow: hidden;
+    transition: all 70ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    
+    &:hover {
+      border-color: var(--cds-border-interactive);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  .cds-thumb {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    background: var(--cds-layer-01);
+    
+    @include breakpoint.breakpoint-down(md) {
+      height: 150px;
+    }
+    
+    &--placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cds-text-placeholder);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+  
+  .cds-figcaption {
+    padding: spacing.$spacing-04;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--cds-text-primary);
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-03;
+      font-size: 0.8125rem;
+    }
+  }
+  
+  /* ========================================
+     JSON OUTPUT - Code block styling
+     ======================================== */
+  .cds-json {
+    background: var(--cds-layer-02);
+    border: 1px solid var(--cds-border-subtle-01);
+    padding: spacing.$spacing-05;
+    border-radius: 0;
+    overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    max-height: 500px;
+    overflow-y: auto;
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-04;
+      font-size: 0.6875rem;
+      max-height: 400px;
+    }
+  }
+  
+  .cds-card {
+    background: var(--cds-layer-01);
+    border: 1px solid var(--cds-border-subtle-01);
+    border-radius: 0;
+    padding: spacing.$spacing-06;
+    margin-bottom: spacing.$spacing-05;
+    
+    @include breakpoint.breakpoint-down(md) {
+      padding: spacing.$spacing-04;
+    }
+  }
+}
+
+/* ========================================
+   TOUCH OPTIMIZATION
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+  .graphql-sandbox {
+    // Increase touch targets on mobile
+    .cds--btn {
+      min-height: 48px;
+      padding-top: spacing.$spacing-04;
+      padding-bottom: spacing.$spacing-04;
+    }
+    
+    .history-tile {
+      min-height: 56px;
+      padding: spacing.$spacing-04;
+      
+      .cds--btn {
+        min-width: 48px;
+        min-height: 48px;
+      }
+    }
+    
+    .tile-button {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .cds--combo-box {
+      .cds--list-box__field {
+        min-height: 48px;
+      }
+    }
+  }
+}

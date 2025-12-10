@@ -1,0 +1,29 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/colors' as *;
+@use '@carbon/styles/scss/layer' as *;
+@use '@carbon/styles/scss/theme' as theme;
+
+// -----------------------------------
+// Theme token aliases (via Sass, not CSS vars)
+$carbon-layer: theme.get('layer');
+$carbon-layer-hover: theme.get('layer-hover');
+$carbon-text: theme.get('text-primary');
+$carbon-text-secondary: theme.get('text-secondary');
+$carbon-background: theme.get('background');
+$carbon-border: theme.get('border-subtle');
+$carbon-interactive: theme.get('interactive-01');
+
+// -----------------------------------
+// Additional semantic aliases
+$color-primary: $carbon-interactive;
+$color-text: $carbon-text;
+$color-text-secondary: $carbon-text-secondary;
+$color-background: $carbon-background;
+$color-border: $carbon-border;
+
+// -----------------------------------
+// Spacing tokens (Carbon spacing doesn't need theme.get())
+$spacing-xs: $spacing-01;
+$spacing-sm: $spacing-02;
+$spacing-lg: $spacing-05;
+$spacing-xl: $spacing-07;

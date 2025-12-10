@@ -1,0 +1,159 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type' as *;
+@use '@carbon/styles/scss/theme' as *;
+@use '../base/mixins' as mx;
+
+.page-hero-shell {
+  background: #000;
+  color: #fff;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.page-hero {
+  background: radial-gradient(circle at top, #1c1c1c 0%, #0f0f0f 55%, #050505 100%);
+  color: #fff;
+  border-bottom: 1px solid #262626;
+  padding: clamp(2rem, 6vw, 5rem) 0 clamp(1.5rem, 5vw, 4rem);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+
+  display: flex;
+  align-items: flex-end;
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    margin-bottom: $spacing-05;
+    color: #f4f4f4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: left;
+  }
+
+  .lead {
+    color: rgba(244, 244, 244, 0.85);
+    max-width: 64ch;
+    word-wrap: break-word;
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .eyebrow {
+    color: rgba(255, 255, 255, 0.7);
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
+
+.page-hero__inner,
+.hero-tabs__inner {
+  @include mx.centered-container;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  overflow-x: hidden;
+  
+  // Override Grid padding to align with g10 content below
+  .cds--grid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.page-hero__grid {
+  row-gap: $spacing-06;
+  
+  // Ensure all content in hero is left-aligned on mobile
+  .cds--col {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
+.page-hero__aside {
+  margin-top: auto;
+}
+
+.hero-tabs {
+  background: #050505;
+
+  .cds--tabs {
+    --cds-tabs-height: 2.5rem;
+  }
+
+  .cds--tabs__nav-item {
+    background: transparent;
+  }
+
+  .cds--tabs__nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    font: type-style('body-compact-01');
+  }
+
+  .cds--tabs__nav-link:hover {
+    color: #fff;
+  }
+
+  .cds--tabs__nav-link:focus-visible {
+    outline-color: #a6c8ff;
+  }
+
+  .cds--tabs__nav-item--selected {
+    color: #fff;
+    border-block-start-color: #78a9ff;
+  }
+}
+
+.hero-tabs__panels {
+  /* Keep the panels hidden with standard sr-only behaviour (so screen readers can still
+     access them) while avoiding the race that made them visible earlier. */
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+.hero-tabs {
+  /* Ensure any carbon tab content inside the hero doesn't render visible labels; we keep
+     this behavior isolated to hero scope only so other tabbed areas behave normally. */
+  .cds--tab-content { display: none !important; }
+}
+
+.home-page .page-hero {
+  min-height: clamp(600px, 75vh, 900px);
+  padding: clamp(5rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3rem);
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center;
+}
+
+.home-page .page-hero__inner {
+  align-self: flex-end;
+}
+
+.home-page .page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+    radial-gradient(rgba(120, 169, 255, 0.25) 1px, transparent 1px);
+  background-size: 16px 16px, 22px 22px;
+  background-position: 0 0, 8px 8px;
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+}
