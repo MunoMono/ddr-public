@@ -1,0 +1,109 @@
+@use '@carbon/styles/scss/spacing' as spacing;
+@use '@carbon/styles/scss/breakpoint' as breakpoint;
+
+/* ========================================
+   API PAGE STYLES
+   ======================================== */
+
+.api-page {
+  
+  /* Tab lead paragraph */
+  .tab-lead {
+    margin-bottom: spacing.$spacing-06;
+    max-width: 42rem;
+  }
+  
+  /* ========================================
+     PRESETS & SNIPPETS SECTIONS
+     ======================================== */
+  
+  .presets-section {
+    margin-top: spacing.$spacing-07;
+    margin-bottom: spacing.$spacing-09;
+  }
+  
+  .presets-section__header {
+    margin-bottom: spacing.$spacing-03;
+  }
+  
+  .presets-section__description {
+    margin-bottom: spacing.$spacing-06;
+    max-width: 42rem;
+  }
+  
+  .presets-category {
+    margin-bottom: spacing.$spacing-09;
+    
+    &:last-child {
+      margin-bottom: spacing.$spacing-09;
+    }
+  }
+  
+  .presets-category__header {
+    display: flex;
+    align-items: center;
+    gap: spacing.$spacing-03;
+    margin-bottom: spacing.$spacing-05;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .presets-category__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: spacing.$spacing-03;
+  }
+  
+  /* ========================================
+     CODE SNIPPETS SECTION
+     ======================================== */
+  
+  .snippets-section {
+    margin-top: spacing.$spacing-09;
+  }
+  
+  .snippets-section__header {
+    margin-bottom: spacing.$spacing-03;
+  }
+  
+  .snippets-section__description {
+    margin-bottom: spacing.$spacing-06;
+    max-width: 42rem;
+  }
+  
+  .snippet-tab-description {
+    margin-bottom: spacing.$spacing-05;
+    color: var(--cds-text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  /* ========================================
+     PRESET TILE CONTENT
+     ======================================== */
+  
+  .preset-tile__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: spacing.$spacing-03;
+  }
+  
+  .preset-tile__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.29;
+  }
+  
+  .preset-tile__arrow {
+    margin-left: spacing.$spacing-03;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+  
+  .preset-tile__description {
+    font-size: 0.75rem;
+    line-height: 1.34;
+    color: var(--cds-text-secondary);
+    margin: 0;
+  }
+}

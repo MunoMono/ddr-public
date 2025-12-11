@@ -1,8 +1,8 @@
-# Linked data in practice: DDR archive technical implementation
+# Linked data in practice: DDR Archive technical implementation
 
 ## Executive summary
 
-The DDR archive implements a comprehensive linked-data infrastructure that achieves 100% compliance with Tim Berners-Lee's principles for the semantic web. Our system transforms archival records into machine-readable, permanently addressable resources using international standards adopted by leading GLAM institutions (galleries, libraries, archives, museums) worldwide.
+The DDR Archive implements a comprehensive linked-data infrastructure that achieves 100% compliance with Tim Berners-Lee's principles for the semantic web. Our system transforms archival records into machine-readable, permanently addressable resources using international standards adopted by leading GLAM institutions (galleries, libraries, archives and museums) worldwide.
 
 Every item in our collection receives a persistent identifier and canonical URI, published in multiple semantic formats through HTTP content negotiation. We use Linked Art for cultural heritage description, IIIF for image delivery, and establish rich graph relationships through outbound links to controlled vocabularies, agent authorities, and collection hierarchies.
 
@@ -16,7 +16,7 @@ This document provides a comprehensive technical explanation of our linked-data 
 
 Linked data is a method for publishing structured information on the web so that it can be interlinked and become more useful through semantic queries. Unlike traditional web pages designed for human readers, linked data creates machine-readable connections between resources, enabling automated discovery and analysis across institutional boundaries.
 
-The DDR archive implements linked data by:
+The DDR Archive implements linked data by:
 
 1. **Assigning persistent identifiers**: every record receives a unique 12-digit PID (persistent identifier) that forms part of its canonical URI
 2. **Using HTTP URIs**: these identifiers are web-addressable, so anyone can dereference them to retrieve information
@@ -27,14 +27,14 @@ The DDR archive implements linked data by:
 
 Our implementation follows the four principles for linked data established by Tim Berners-Lee:
 
-| Principle | DDR implementation | Compliance status |
+| Principle | DDR Archive implementation | Compliance status |
 |-----------|-------------------|-------------------|
 | **1. Use URIs as names for things** | Every record has a canonical URI: `https://ddrarchive.org/id/record/{PID}` | ✅ 100% |
 | **2. Use HTTP URIs so people can look up those names** | All URIs are dereferenceable via standard HTTP GET requests | ✅ 100% |
 | **3. Provide useful information using standards** | Returns JSON-LD with Dublin Core and Schema.org vocabularies | ✅ 100% |
 | **4. Include links to other URIs** | Links to creators, subjects, collections, rights statements, media | ✅ 100% |
 
-This compliance positions the DDR archive among institutions like the Metropolitan Museum of Art, Cooper Hewitt Smithsonian, Europeana, and the Rijksmuseum, all of which implement Berners-Lee-compliant linked-data infrastructure.
+This compliance positions the DDR Archive among institutions like the Metropolitan Museum of Art, Cooper Hewitt Smithsonian, Europeana and the Rijksmuseum, all of which implement Berners-Lee-compliant linked-data infrastructure.
 
 ---
 
@@ -42,7 +42,7 @@ This compliance positions the DDR archive among institutions like the Metropolit
 
 ### Persistent identifiers and canonical URIs
 
-Every record in the DDR archive receives a **12-digit persistent identifier** (PID) generated from its internal system ID. This PID becomes part of the record's canonical URI and never changes, even if internal database IDs are restructured.
+Every record in the DDR Archive receives a **12-digit persistent identifier** (PID) generated from its internal system ID. This PID becomes part of the record's canonical URI and never changes, even if internal database IDs are restructured.
 
 **URI structure:**
 ```
@@ -121,7 +121,7 @@ This enables:
 
 ## Linked Art: cultural heritage vocabulary
 
-The DDR archive uses **Linked Art**, a community-developed application profile for describing cultural heritage using the CIDOC Conceptual Reference Model (CRM). Linked Art is designed specifically for art museums and cultural heritage organisations, providing consistent semantics for describing objects, people, events, and concepts.
+The DDR Archive uses **Linked Art**, a community-developed application profile for describing cultural heritage using the CIDOC Conceptual Reference Model (CRM). Linked Art is designed specifically for art museums and cultural heritage organisations, providing consistent semantics for describing objects, people, events, and concepts.
 
 ### Why Linked Art?
 
@@ -216,7 +216,7 @@ This structure enables:
 
 ## Getty vocabularies and external linking
 
-The DDR archive links extensively to **Getty Vocabularies**, a set of structured terminology maintained by the Getty Research Institute. These vocabularies provide stable URIs for concepts, ensuring our metadata uses the same terminology as institutions worldwide.
+The DDR Archive links extensively to **Getty Vocabularies**, a set of structured terminology maintained by the Getty Research Institute. These vocabularies provide stable URIs for concepts, ensuring our metadata uses the same terminology as institutions worldwide.
 
 ### Getty AAT (Art & Architecture Thesaurus)
 
@@ -255,7 +255,7 @@ Beyond Getty, we have database support for:
 
 ## Access control and information security
 
-Not all archival materials can be made fully public. The DDR archive implements a **three-tier access control system** that operates at the linked-data level, ensuring sensitive materials are protected while maintaining semantic-web compliance.
+Not all archival materials can be made fully public. The DDR Archive implements a **three-tier access control system** that operates at the linked-data level, ensuring sensitive materials are protected while maintaining semantic-web compliance.
 
 ### Access levels
 
@@ -358,7 +358,7 @@ This ensures linked data respects archival access policies while maintaining tec
 
 ## Record-media relationships: parent-child linking
 
-The DDR archive models complex archival materials through **parent-child relationships** between records and media items. This allows a single intellectual entity (an oral history project, a photograph collection, a manuscript series) to have multiple digital surrogates attached.
+The DDR Archive models complex archival materials through **parent-child relationships** between records and media items. This allows a single intellectual entity (an oral history project, a photograph collection, a manuscript series) to have multiple digital surrogates attached.
 
 ### Use cases
 
@@ -483,7 +483,7 @@ mutation AttachMedia {
 
 ## Integration with ingestion workflows
 
-Unlike many linked-data implementations that require post-processing or batch conversion, the DDR archive generates linked data **in real time during ingestion**. When archival staff create or edit records, they populate structured fields that automatically produce semantically rich metadata.
+Unlike many linked-data implementations that require post-processing or batch conversion, the DDR Archive generates linked data **in real time during ingestion**. When archival staff create or edit records, they populate structured fields that automatically produce semantically rich metadata.
 
 ### RecordWizard and MediaWizard
 
@@ -535,7 +535,7 @@ Staff use RecordWizard and MediaWizard forms to populate structured fields that 
 
 ## IIIF integration
 
-The DDR archive implements **IIIF (International Image Interoperability Framework)**, a set of standards for delivering images and audio/video over the web. IIIF enables:
+The DDR Archive implements **IIIF (International Image Interoperability Framework)**, a set of standards for delivering images and audio/video over the web. IIIF enables:
 
 - **Zoomable images**: deep zoom into high-resolution scans
 - **Standardised access**: any IIIF-compatible viewer can display our images
@@ -605,7 +605,7 @@ This enables automatic discovery: given a record URI, a client can:
 
 ## GraphQL API for linked data
 
-In addition to HTTP content negotiation, the DDR archive provides a **GraphQL API** for querying linked-data fields programmatically. This enables researchers, developers, and partner institutions to:
+In addition to HTTP content negotiation, the DDR Archive provides a **GraphQL API** for querying linked-data fields programmatically. This enables researchers, developers, and partner institutions to:
 
 - Search across collections
 - Retrieve specific records with linked data
@@ -686,7 +686,7 @@ The `creators`, `subjects`, and `parent_collection` fields return JSON objects m
 
 ## Compliance with modern GLAM strategy
 
-The DDR archive's linked-data implementation aligns with the strategic priorities of leading cultural heritage institutions worldwide. We meet or exceed the standards set by:
+The DDR Archive's linked-data implementation aligns with the strategic priorities of leading cultural heritage institutions worldwide. We meet or exceed the standards set by:
 
 ### Europeana: European digital cultural heritage
 
@@ -888,7 +888,7 @@ CREATE INDEX idx_items_access ON items (access_level);
 
 ## Measuring success: metrics and impact
 
-The DDR archive tracks the following metrics to assess linked-data adoption:
+The DDR Archive tracks the following metrics to assess linked-data adoption:
 
 ### Usage metrics
 
@@ -922,7 +922,7 @@ The DDR archive tracks the following metrics to assess linked-data adoption:
 
 ## Conclusion
 
-The DDR archive's linked-data infrastructure transforms our collections from an isolated database into an interconnected node in the global knowledge graph. By implementing Tim Berners-Lee's principles, adopting Linked Art vocabulary, linking to authoritative vocabularies like Getty AAT, and providing both REST and GraphQL interfaces, we enable:
+The DDR Archive's linked-data infrastructure transforms our collections from an isolated database into an interconnected node in the global knowledge graph. By implementing Tim Berners-Lee's principles, adopting Linked Art vocabulary, linking to authoritative vocabularies like Getty AAT, and providing both REST and GraphQL interfaces, we enable:
 
 1. **Permanent addressability**: every record has a stable URI that never changes
 2. **Machine readability**: semantic formats (JSON-LD, Turtle, RDF/XML) enable automated processing
@@ -931,7 +931,7 @@ The DDR archive's linked-data infrastructure transforms our collections from an 
 5. **Access control**: three-tier system protects sensitive materials while maintaining discoverability
 6. **Workflow integration**: linked data is generated automatically during ingestion, not as post-processing
 
-This positions the DDR archive among leading institutions like the Metropolitan Museum of Art, Europeana, and the Rijksmuseum—ensuring our collections reach the widest possible audience, now and in the future.
+This positions the DDR Archive among leading institutions like the Metropolitan Museum of Art, Europeana, and the Rijksmuseum—ensuring our collections reach the widest possible audience, now and in the future.
 
 ---
 
@@ -947,4 +947,4 @@ This positions the DDR archive among leading institutions like the Metropolitan 
 
 ---
 
-*This documentation reflects the DDR archive's linked-data implementation as of December 2024. For API documentation and developer resources, see `/docs/LINKED_DATA_API.md`. For deployment history and technical notes, see `/docs/LINKED_DATA_DEPLOYMENT_2025-12-02.md`.*
+*This documentation reflects the DDR Archive's linked-data implementation as of December 2024. For API documentation and developer resources, see `/docs/LINKED_DATA_API.md`. For deployment history and technical notes, see `/docs/LINKED_DATA_DEPLOYMENT_2025-12-02.md`.*

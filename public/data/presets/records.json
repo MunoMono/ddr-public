@@ -1,0 +1,68 @@
+{
+  "id": "records",
+  "label": "Records",
+  "description": "GraphQL queries for DDR archive records, items, and reference data",
+  "presets": [
+    {
+      "id": "kennethAgnewPhotos",
+      "label": "Kenneth Agnew photos",
+      "description": "Browse sample images from the Agnew archive at RCA Special Collections",
+      "query": "",
+      "disabled": true
+    },
+    {
+      "id": "recentItems",
+      "label": "Recent items",
+      "description": "Recently updated DDR items with Linked Data endpoints",
+      "query": "# Recent DDR items with Linked Data endpoints\n{\n  items_recent(limit: 12) {\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    project_team_staff\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+    },
+    {
+      "id": "allRecords",
+      "label": "All records",
+      "description": "All records (both S3 media items and postgres records)",
+      "query": "# All records (both S3 media items and postgres records)\n{\n  items_recent(limit: 50) {\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+    },
+    {
+      "id": "recordsWithImages",
+      "label": "Records with images",
+      "description": "Records that have image derivatives",
+      "query": "# Records with images\n{\n  records_v1 {\n    id\n    pid\n    title\n    date_begin\n    copyright_holder\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+    },
+    {
+      "id": "recordsWithPDFs",
+      "label": "Records with PDFs",
+      "description": "Records with PDF file attachments",
+      "query": "# Records with PDF files\n{\n  items_recent(limit: 50) {\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+    },
+    {
+      "id": "singleRecord",
+      "label": "Single record",
+      "description": "Single record with attached media and Linked Data",
+      "query": "# Single record with attached media + Linked Data\n{\n  record_v1(id: \"19\") {\n    pid\n    title\n    payload\n    copyright_holder\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n    attached_media {\n      pid\n      title\n      copyright_holder\n      pdf_files {\n        signed_url\n        filename\n      }\n      jpg_derivatives {\n        signed_url\n        filename\n      }\n      linked_art_jsonld_url\n      linked_art_turtle_url\n      linked_art_rdfxml_url\n    }\n  }\n}"
+    },
+    {
+      "id": "refFonds",
+      "label": "Reference: Fonds",
+      "description": "DDR reference data for fonds",
+      "query": "# Reference: Fonds\n{\n  ref_fonds {\n    id\n    code\n    label\n    notes\n  }\n}"
+    },
+    {
+      "id": "refPeriods",
+      "label": "Reference: Periods",
+      "description": "DDR reference data for time periods",
+      "query": "# Reference: DDR Periods\n{\n  ref_ddr_period {\n    slug\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "ddrPeople",
+      "label": "DDR People",
+      "description": "DDR staff and agents",
+      "query": "# DDR People\n{\n  agents {\n    staff_code\n    slug\n    display_name\n  }\n}"
+    },
+    {
+      "id": "ddrProjects",
+      "label": "DDR Projects",
+      "description": "DDR project register",
+      "query": "# DDR Projects\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    start_year\n    end_year\n    duration_text\n    project_lead_name\n    researcher1_name\n    researcher2_name\n    ddr_period_label\n  }\n}"
+    }
+  ]
+}

@@ -15,10 +15,10 @@
 Last updated: 17 November 2025
 
 ## Purpose of this website
-This website forms part of a non-commercial academic research initiative. Its aim is to share scholarly insights, methodologies, data visualisations, and reference material with students, researchers, and educators.
+This website forms part of a non-commercial academic research initiative. Its aim is to share scholarly insights, methodologies, data visualisations and reference material with students, researchers and educators.
 
 ## Use of content
-Unless otherwise specified, all content is the intellectual property of the author or affiliated institution. You are permitted to read, download, and cite materials for educational and research purposes. Commercial use or redistribution without written consent is not permitted.
+Unless otherwise specified, all content is the intellectual property of the author or affiliated institution. You are permitted to read, download and cite materials for educational and research purposes. Commercial use or redistribution without written consent is not permitted.
 
 ## License
 The contents of this application are licensed under a **Creative Commons Attribution-NonCommercial-NoDerivativeWorks 4.0 International License.** You are free to share, copy, and redistribute the material in any medium or format. The licensor can revoke these freedoms as long as you follow the license terms. Under the following terms:

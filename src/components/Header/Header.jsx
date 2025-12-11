@@ -29,14 +29,19 @@ const Header = () => {
   const is = (path) => location.pathname === path;
   const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
   
+  // Bypass Auth0 in local development
+  const isLocalDev = import.meta.env.DEV;
+  
   // Switcher panel state
   const [isSwitcherOpen, setIsSwitcherOpen] = useState(false);
 
   const handleLogin = () => {
+    if (isLocalDev) return; // Skip in dev
     loginWithRedirect();
   };
 
   const handleLogout = () => {
+    if (isLocalDev) return; // Skip in dev
     logout({
       logoutParams: {
         returnTo: window.location.origin,
@@ -86,23 +91,27 @@ const Header = () => {
 
               {/* App Switcher & User Menu */}
               <HeaderGlobalBar>
-                {/* User avatar / login */}
-                {isAuthenticated ? (
-                  <HeaderGlobalAction
-                    aria-label="Log out"
-                    tooltipAlignment="end"
-                    onClick={handleLogout}
-                  >
-                    <UserAvatar size={20} />
-                  </HeaderGlobalAction>
-                ) : (
-                  <HeaderGlobalAction
-                    aria-label="Log in"
-                    tooltipAlignment="end"
-                    onClick={handleLogin}
-                  >
-                    <UserAvatar size={20} />
-                  </HeaderGlobalAction>
+                {/* User avatar / login - hide in local dev */}
+                {!isLocalDev && (
+                  <>
+                    {isAuthenticated ? (
+                      <HeaderGlobalAction
+                        aria-label="Log out"
+                        tooltipAlignment="end"
+                        onClick={handleLogout}
+                      >
+                        <UserAvatar size={20} />
+                      </HeaderGlobalAction>
+                    ) : (
+                      <HeaderGlobalAction
+                        aria-label="Log in"
+                        tooltipAlignment="end"
+                        onClick={handleLogin}
+                      >
+                        <UserAvatar size={20} />
+                      </HeaderGlobalAction>
+                    )}
+                  </>
                 )}
 
                 {/* App Switcher */}

@@ -13,7 +13,7 @@ const HOME_TABS = [
 
 const OVERVIEW_ANCHORS = [
   { id: "overview", label: "Overview" },
-  { id: "linked-data-best-practice", label: "Linked Data Best Practice" },
+  { id: "linked-data-best-practice", label: "Linked data best practice" },
 ];
 
 const WORKSTREAMS_ANCHORS = [
@@ -53,9 +53,9 @@ const Home = () => {
     <div className="page home-page">
       <PageHero
         id="home"
-        eyebrow="Department of Design Research"
+        eyebrow="Royal College of Art Department of Design Research"
         title="DDR public preview"
-        lead="A lightweight frontend that mirrors the internal research shell for public collaboration."
+        lead="A streamlined public interface to explore the DDR digital archive"
         style={heroStyle}
         tabs={HOME_TABS}
         activeTab={activeTab}

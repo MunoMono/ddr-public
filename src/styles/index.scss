@@ -13,6 +13,7 @@
 @use './components/page-hero';
 @use './components/tabs';
 @use './components/anchor-links';
+@use './pages/api';
 
 /* Force light (g10) and dark (g90) theme tokens */
 :root[data-theme="g10"] {

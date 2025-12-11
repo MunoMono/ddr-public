@@ -11,8 +11,14 @@ import "@styles/index.scss";
 const App = () => {
   const { isAuthenticated, isLoading, loginWithRedirect, error } = useAuth0();
   const navigate = useNavigate();
+  
+  // Bypass Auth0 in local development
+  const isLocalDev = import.meta.env.DEV;
 
   useEffect(() => {
+    // Skip auth entirely in local development
+    if (isLocalDev) return;
+    
     // Skip redirect if we're already handling the callback
     const searchParams = new URLSearchParams(window.location.search);
     const hasAuthParams = searchParams.has('code') || searchParams.has('error');
@@ -22,9 +28,9 @@ const App = () => {
         appState: { returnTo: window.location.pathname } 
       });
     }
-  }, [isAuthenticated, isLoading, loginWithRedirect]);
+  }, [isAuthenticated, isLoading, loginWithRedirect, isLocalDev]);
 
-  if (error) {
+  if (error && !isLocalDev) {
     return (
       <div style={{ padding: "4rem", textAlign: "center" }}>
         <h2>Authentication Error</h2>
@@ -33,7 +39,7 @@ const App = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading && !isLocalDev) {
     return (
       <div style={{ padding: "4rem", textAlign: "center" }}>
         <Loading description="Checking session…" withOverlay={false} />
@@ -41,7 +47,7 @@ const App = () => {
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated && !isLocalDev) return null;
 
   return (
     <>

@@ -1,0 +1,88 @@
+{
+  "id": "authorities",
+  "label": "DB Authorities",
+  "description": "GraphQL queries for DDR database authorities and controlled vocabularies",
+  "presets": [
+    {
+      "id": "authDdrStaff",
+      "label": "DDR Staff (core agent)",
+      "description": "Database authority for DDR staff members",
+      "query": "# DDR Staff (core agent authority)\n{\n  agents {\n    staff_code\n    slug\n    display_name\n    email\n    kind\n    active\n  }\n}"
+    },
+    {
+      "id": "authJobList",
+      "label": "DDR Job List (project register)",
+      "description": "Database authority for DDR projects",
+      "query": "# DDR Job List (project register authority)\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    start_year\n    end_year\n    project_lead_name\n  }\n}"
+    },
+    {
+      "id": "authBeneficiaryAudience",
+      "label": "Beneficiary Audience",
+      "description": "Database authority for beneficiary audiences",
+      "query": "# Beneficiary Audience authority\n{\n  ref_beneficiary_audience {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authDdrPeriod",
+      "label": "DDR Period",
+      "description": "Database authority for DDR time periods",
+      "query": "# DDR Period authority\n{\n  ref_ddr_period {\n    slug\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authDepartment",
+      "label": "DDR Department (department unit)",
+      "description": "Database authority for DDR departments",
+      "query": "# DDR Department authority\n{\n  ref_department {\n    id\n    code\n    label\n  }\n}",
+      "disabled": true
+    },
+    {
+      "id": "authEpistemicStance",
+      "label": "Epistemic Stance",
+      "description": "Database authority for epistemic stances",
+      "query": "# Epistemic Stance authority\n{\n  ref_epistemic_stance {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authArtefactType",
+      "label": "Artefact Type (extent unit)",
+      "description": "Database authority for artefact types",
+      "query": "# Artefact Type authority\n{\n  ref_artefact_type {\n    id\n    label\n    description\n  }\n}",
+      "disabled": true
+    },
+    {
+      "id": "authFonds",
+      "label": "Fonds",
+      "description": "Database authority for fonds",
+      "query": "# Fonds authority\n{\n  ref_fonds {\n    id\n    code\n    label\n    notes\n  }\n}"
+    },
+    {
+      "id": "authMethodology",
+      "label": "Methodology",
+      "description": "Database authority for research methodologies",
+      "query": "# Methodology authority\n{\n  ref_methodology {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authProjectOutcome",
+      "label": "Project Outcome",
+      "description": "Database authority for project outcomes",
+      "query": "# Project Outcome authority\n{\n  ref_project_outcome {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authProjectTheme",
+      "label": "Project Theme",
+      "description": "Database authority for project themes",
+      "query": "# Project Theme authority\n{\n  ref_project_theme {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authPublicationType",
+      "label": "Publication Type",
+      "description": "Database authority for publication types",
+      "query": "# Publication Type authority\n{\n  ref_publication_type {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authCategory",
+      "label": "Category (series category)",
+      "description": "Database authority for series categories",
+      "query": "# Category (series category authority)\n{\n  ref_category {\n    id\n    label\n    description\n  }\n}",
+      "disabled": true
+    }
+  ]
+}

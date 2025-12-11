@@ -12,13 +12,13 @@ import Contact from "./pages/Contact.jsx";
 import Privacy from "./pages/Privacy.jsx";
 import Terms from "./pages/Terms.jsx";
 
-// Auth0 configuration (same tenant as admin.ddrarchive.org)
+// Auth0 configuration - uses environment variables for flexibility
 const auth0Config = {
-  domain: "dev-i4m880asz7y6j5sk.us.auth0.com",
-  clientId: "1tKb110HavDT3KsqC5P894JEOZ3fQXMm",
+  domain: import.meta.env.VITE_AUTH0_DOMAIN || "dev-i4m880asz7y6j5sk.us.auth0.com",
+  clientId: import.meta.env.VITE_AUTH0_CLIENT_ID || "1tKb110HavDT3KsqC5P894JEOZ3fQXMm",
   authorizationParams: {
-    redirect_uri: window.location.origin,
-    audience: "https://api.ddrarchive.org",
+    redirect_uri: import.meta.env.VITE_AUTH0_REDIRECT_URI || window.location.origin,
+    audience: import.meta.env.VITE_AUTH0_AUDIENCE || "https://api.ddrarchive.org",
   },
 };
 

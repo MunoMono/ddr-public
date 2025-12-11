@@ -6,10 +6,10 @@ The DDR archive provides a comprehensive digital research environment for archiv
 
 ### Key features
 
-- **Linked data compliance**: 100% implementation of Tim Berners-Lee's semantic web principles
+- **Linked-data compliance**: 100% implementation of Tim Berners-Lee's semantic web principles
 - **Persistent identifiers**: Every record receives a stable, permanent URI
-- **International standards**: Full integration with Linked Art, IIIF, and Getty vocabularies
-- **Access control**: Three-tier system (Public, Restricted, Internal) protecting sensitive materials
+- **International standards**: Full integration with Linked Art, IIIF and Getty vocabularies
+- **Access control**: Three-tier system (public, restricted, internal) protecting sensitive materials
 - **GraphQL API**: Flexible querying for researchers and developers
 
 ### Architecture highlights
@@ -30,7 +30,7 @@ The archive provides multiple access methods:
 2. **REST API**: Programmatic access to metadata
 3. **GraphQL endpoint**: Flexible queries across relationships
 4. **IIIF viewers**: Deep zoom into high-resolution images
-5. **Linked data URIs**: Machine-readable semantic metadata
+5. **Linked-data URIs**: Machine-readable semantic metadata
 
 ### For developers
 
@@ -43,4 +43,4 @@ Our open infrastructure enables:
 
 ---
 
-For detailed technical documentation, see the Linked Data Best Practice section below.
+For detailed technical documentation, see the Linked data best practice section below.

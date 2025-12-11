@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import {
   Button,
   ButtonSet,
+  ClickableTile,
   CodeSnippet,
   Column,
   ComboBox,
@@ -22,7 +23,7 @@ import {
   Tile,
   ToastNotification,
 } from "@carbon/react";
-import { Save } from "@carbon/icons-react";
+import { Save, ArrowRight, DataBase, Catalog } from "@carbon/icons-react";
 
 import PageHero from "../components/PageHero/PageHero";
 import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
@@ -102,59 +103,8 @@ const REST_PRESETS = [
   },
 ];
 
-const SNIPPETS = [
-  {
-    id: "curl",
-    label: "cURL",
-    code: `curl -X POST https://ddrarchive.org/graphql \\
-  -H "Content-Type: application/json" \\
-  -d '{"query":"{ items_recent(limit: 10) { pid title } }"}'`
-  },
-  {
-    id: "js",
-    label: "JavaScript fetch",
-    code: `const response = await fetch("https://ddrarchive.org/graphql", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    query: \`{
-      items_recent(limit: 10) {
-        pid
-        title
-        jpg_derivatives { signed_url }
-      }
-    }\`
-  })
-});
-const data = await response.json();`,
-  },
-  {
-    id: "python",
-    label: "Python requests",
-    code: `import requests
-
-query = """
-{
-  records_v1 {
-    pid
-    title
-    jpg_derivatives {
-      signed_url
-      filename
-    }
-  }
-}
-"""
-
-response = requests.post(
-    "https://ddrarchive.org/graphql",
-    json={"query": query}
-)
-data = response.json()`,
-  },
-];
-
 const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
+const PRESETS_BASE_URL = `${import.meta.env.BASE_URL}data/presets`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
@@ -182,321 +132,13 @@ const DEFAULT_QUERY = `# Recent DDR Archive items
   }
 }`;
 
-const DESIGNER_PRESETS = {
-  recentItems: `# Recent DDR items with Linked Data endpoints
-{
-  items_recent(limit: 12) {
-    pid
-    title
-    scope_and_content
-    project_theme
-    extent_unit
-    creatorcorporate_id
-    ddr_period
-    fonds_code
-    access_level
-    copyright_holder
-    date_begin
-    date_end
-    reference_code
-    project_team_staff
-    jpg_derivatives {
-      signed_url
-      filename
-    }
-    pdf_files {
-      signed_url
-      filename
-    }
-    linked_art_jsonld_url
-    linked_art_turtle_url
-    linked_art_rdfxml_url
-  }
-}`,
-  allRecords: `# All records (both S3 media items and postgres records)
-{
-  items_recent(limit: 50) {
-    pid
-    title
-    scope_and_content
-    project_theme
-    extent_unit
-    creatorcorporate_id
-    ddr_period
-    fonds_code
-    access_level
-    copyright_holder
-    date_begin
-    date_end
-    reference_code
-    jpg_derivatives {
-      signed_url
-      filename
-    }
-    pdf_files {
-      signed_url
-      filename
-    }
-    linked_art_jsonld_url
-    linked_art_turtle_url
-    linked_art_rdfxml_url
-  }
-}`,
-  recordsWithImages: `# Records with images
-{
-  records_v1 {
-    id
-    pid
-    title
-    date_begin
-    copyright_holder
-    jpg_derivatives {
-      signed_url
-      filename
-    }
-    linked_art_jsonld_url
-    linked_art_turtle_url
-    linked_art_rdfxml_url
-  }
-}`,
-  recordsWithPDFs: `# Records with PDF files
-{
-  items_recent(limit: 50) {
-    pid
-    title
-    scope_and_content
-    copyright_holder
-    jpg_derivatives {
-      signed_url
-      filename
-    }
-    pdf_files {
-      signed_url
-      filename
-    }
-    linked_art_jsonld_url
-    linked_art_turtle_url
-    linked_art_rdfxml_url
-  }
-}`,
-  singleRecord: `# Single record with attached media + Linked Data
-{
-  record_v1(id: "19") {
-    pid
-    title
-    payload
-    copyright_holder
-    linked_art_jsonld_url
-    linked_art_turtle_url
-    linked_art_rdfxml_url
-    attached_media {
-      pid
-      title
-      copyright_holder
-      pdf_files {
-        signed_url
-        filename
-      }
-      jpg_derivatives {
-        signed_url
-        filename
-      }
-      linked_art_jsonld_url
-      linked_art_turtle_url
-      linked_art_rdfxml_url
-    }
-  }
-}`,
-  refFonds: `# Reference: Fonds
-{
-  ref_fonds {
-    id
-    code
-    label
-    notes
-  }
-}`,
-  refPeriods: `# Reference: DDR Periods
-{
-  ref_ddr_period {
-    slug
-    label
-    description
-  }
-}`,
-  ddrPeople: `# DDR People
-{
-  agents {
-    staff_code
-    slug
-    display_name
-  }
-}`,
-  ddrProjects: `# DDR Projects
-{
-  ddr_projects {
-    job_number
-    title
-    funder_name
-    start_year
-    end_year
-    duration_text
-    project_lead_name
-    researcher1_name
-    researcher2_name
-    ddr_period_label
-  }
-}`,
-  // Authority presets - showcasing database authorities
-  authDdrStaff: `# DDR Staff (Core Agent)
-{
-  ref_ddr_staff {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authJobList: `# DDR Job List (Project Register)
-{
-  ref_job_title {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authBeneficiaryAudience: `# Beneficiary Audience
-{
-  ref_beneficiary_audience {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authDdrPeriod: `# DDR Period
-{
-  ref_ddr_period {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authDepartment: `# DDR Department (Department Unit)
-{
-  ref_department_unit {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authEpistemicStance: `# Epistemic Stance
-{
-  ref_epistemic_stance {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authArtefactType: `# Artefact Type (Extent Unit)
-{
-  ref_extent_unit {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authFonds: `# Fonds
-{
-  ref_fonds {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authMethodology: `# Methodology
-{
-  ref_methodology {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authProjectOutcome: `# Project Outcome
-{
-  ref_project_outcome {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authProjectTheme: `# Project Theme
-{
-  ref_project_theme {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authPublicationType: `# Publication Type
-{
-  ref_publication_type {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-  authCategory: `# Category (Series Category)
-{
-  ref_series_category {
-    id
-    code
-    label
-    slug
-    description
-    notes
-  }
-}`,
-};
+
 
 const API_NAV_TABS = [
   { id: "api-getting-started", label: "Getting started" },
   { id: "api-graphql-sandbox", label: "GraphQL sandbox" },
   { id: "api-presets", label: "Presets and snippets" },
+  { id: "api-glossary", label: "Glossary" },
 ];
 
 const GETTING_STARTED_ANCHORS = [
@@ -507,10 +149,15 @@ const GETTING_STARTED_ANCHORS = [
 ];
 
 const PRESETS_ANCHORS = [
-  { id: "rest-examples", label: "REST examples" },
-  { id: "graphql-presets", label: "GraphQL presets" },
+  { id: "graphql-query-presets", label: "GraphQL query presets" },
   { id: "code-snippets", label: "Code snippets" },
-  { id: "response-formats", label: "Response formats" },
+];
+
+const GLOSSARY_ANCHORS = [
+  { id: "glam", label: "GLAM" },
+  { id: "ddr", label: "DDR" },
+  { id: "computer-science", label: "Computer science" },
+  { id: "api-concepts", label: "API concepts" },
 ];
 
 const getThemePreference = () => {
@@ -524,13 +171,14 @@ const getThemePreference = () => {
 
 const ApiSandbox = () => {
   const [selectedPreset, setSelectedPreset] = useState(REST_PRESETS[0]);
-  const [activeSnippet, setActiveSnippet] = useState(SNIPPETS[0].id);
+  const [activeSnippet, setActiveSnippet] = useState('curl');
   const [isDark, setIsDark] = useState(getThemePreference);
   const [query, setQuery] = useState(DEFAULT_QUERY);
   const [loading, setLoading] = useState(false);
   const [json, setJson] = useState(null);
   const [error, setError] = useState(null);
   const [snippetsMd, setSnippetsMd] = useState("Loading...");
+  const [glossaryMd, setGlossaryMd] = useState("Loading...");
   const sandboxRef = useRef(null);
   const [activeApiTab, setActiveApiTab] = useState(0);
   const [variables, setVariables] = useState('{}');
@@ -546,10 +194,15 @@ const ApiSandbox = () => {
       return [];
     }
   });
+  
+  // Load presets and snippets from JSON files
+  const [recordsPresets, setRecordsPresets] = useState([]);
+  const [authoritiesPresets, setAuthoritiesPresets] = useState([]);
+  const [codeSnippets, setCodeSnippets] = useState([]);
 
   const currentSnippet = useMemo(
-    () => SNIPPETS.find((snippet) => snippet.id === activeSnippet) || SNIPPETS[0],
-    [activeSnippet]
+    () => codeSnippets.find((snippet) => snippet.id === activeSnippet) || codeSnippets[0],
+    [activeSnippet, codeSnippets]
   );
 
   useEffect(() => {
@@ -560,6 +213,40 @@ const ApiSandbox = () => {
       attributeFilter: ["class"],
     });
     return () => observer.disconnect();
+  }, []);
+
+  // Load presets and snippets from JSON files
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [recordsRes, authoritiesRes, snippetsRes] = await Promise.all([
+          fetch(`${PRESETS_BASE_URL}/records.json`),
+          fetch(`${PRESETS_BASE_URL}/authorities.json`),
+          fetch(`${PRESETS_BASE_URL}/snippets.json`),
+        ]);
+        
+        if (recordsRes.ok) {
+          const recordsData = await recordsRes.json();
+          setRecordsPresets(recordsData.presets || []);
+        }
+        
+        if (authoritiesRes.ok) {
+          const authoritiesData = await authoritiesRes.json();
+          setAuthoritiesPresets(authoritiesData.presets || []);
+        }
+        
+        if (snippetsRes.ok) {
+          const snippetsData = await snippetsRes.json();
+          setCodeSnippets(snippetsData.snippets || []);
+          if (snippetsData.snippets?.length > 0) {
+            setActiveSnippet(snippetsData.snippets[0].id);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load presets/snippets:', err);
+      }
+    };
+    loadData();
   }, []);
 
   const monacoTheme = isDark ? "vs-dark" : "vs-light";
@@ -690,6 +377,24 @@ const ApiSandbox = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}docs/api/glossary.md`);
+        const text = res.ok
+          ? await res.text()
+          : "Could not load glossary.";
+        if (active) setGlossaryMd(text);
+      } catch {
+        if (active) setGlossaryMd("Could not load glossary.");
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const mdComponents = useMemo(
     () => ({
       pre: ({ children }) => <>{children}</>,
@@ -764,7 +469,7 @@ const ApiSandbox = () => {
     return src;
   }
 
-  const selectedIndex = SNIPPETS.findIndex((snippet) => snippet.id === activeSnippet);
+  const selectedIndex = codeSnippets.findIndex((snippet) => snippet.id === activeSnippet);
 
   return (
     <div className="page api-page">
@@ -861,12 +566,19 @@ const ApiSandbox = () => {
                     {/* Editor & Controls Column - Compact for max results space */}
                     <Column lg={6} md={4} sm={4} className="sandbox-editor-column">
                       <div className="sandbox-toolbar-wrapper">
+                        <div className="toolbar-header">
+                          <Heading className="toolbar-heading">Query editor</Heading>
+                          <Tag type="cool-gray" size="sm">
+                            {endpoint.replace('https://', '').replace('http://', '')}
+                          </Tag>
+                        </div>
                         <div className="toolbar-primary">
                           <ButtonSet>
                             <Button 
                               onClick={() => runQuery()} 
                               kind="primary" 
                               disabled={loading}
+                              size="md"
                             >
                               {loading ? <InlineLoading description="Running..." /> : "Run query"}
                             </Button>
@@ -874,6 +586,7 @@ const ApiSandbox = () => {
                               onClick={clearAll} 
                               kind="secondary" 
                               disabled={loading}
+                              size="md"
                             >
                               Clear
                             </Button>
@@ -882,45 +595,19 @@ const ApiSandbox = () => {
                         <div className="toolbar-secondary">
                           <ComboBox
                             id="records-preset-picker"
-                            titleText=""
-                            placeholder="Records..."
+                            titleText="Load preset"
+                            placeholder="Select records query..."
                             size="md"
-                            light
-                            items={[
-                              { id: 'recentItems', label: 'Recent items', query: DESIGNER_PRESETS.recentItems },
-                              { id: 'allRecords', label: 'All records', query: DESIGNER_PRESETS.allRecords },
-                              { id: 'recordsWithImages', label: 'Records with images', query: DESIGNER_PRESETS.recordsWithImages },
-                              { id: 'recordsWithPDFs', label: 'Records with PDFs', query: DESIGNER_PRESETS.recordsWithPDFs },
-                              { id: 'singleRecord', label: 'Single record', query: DESIGNER_PRESETS.singleRecord },
-                              { id: 'refFonds', label: 'Reference: Fonds', query: DESIGNER_PRESETS.refFonds },
-                              { id: 'refPeriods', label: 'Reference: Periods', query: DESIGNER_PRESETS.refPeriods },
-                              { id: 'ddrPeople', label: 'DDR People', query: DESIGNER_PRESETS.ddrPeople },
-                              { id: 'ddrProjects', label: 'DDR Projects', query: DESIGNER_PRESETS.ddrProjects },
-                            ]}
+                            items={recordsPresets}
                             itemToString={(item) => (item ? item.label : '')}
                             onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
                           />
                           <ComboBox
                             id="authorities-preset-picker"
                             titleText=""
-                            placeholder="DB Authorities..."
+                            placeholder="Select authorities query..."
                             size="md"
-                            light
-                            items={[
-                              { id: 'authDdrStaff', label: 'DDR Staff (core agent)', query: DESIGNER_PRESETS.authDdrStaff },
-                              { id: 'authJobList', label: 'DDR Job List (project register)', query: DESIGNER_PRESETS.authJobList },
-                              { id: 'authBeneficiaryAudience', label: 'Beneficiary Audience', query: DESIGNER_PRESETS.authBeneficiaryAudience },
-                              { id: 'authDdrPeriod', label: 'DDR Period', query: DESIGNER_PRESETS.authDdrPeriod },
-                              { id: 'authDepartment', label: 'DDR Department (department unit)', query: DESIGNER_PRESETS.authDepartment },
-                              { id: 'authEpistemicStance', label: 'Epistemic Stance', query: DESIGNER_PRESETS.authEpistemicStance },
-                              { id: 'authArtefactType', label: 'Artefact Type (extent unit)', query: DESIGNER_PRESETS.authArtefactType },
-                              { id: 'authFonds', label: 'Fonds', query: DESIGNER_PRESETS.authFonds },
-                              { id: 'authMethodology', label: 'Methodology', query: DESIGNER_PRESETS.authMethodology },
-                              { id: 'authProjectOutcome', label: 'Project Outcome', query: DESIGNER_PRESETS.authProjectOutcome },
-                              { id: 'authProjectTheme', label: 'Project Theme', query: DESIGNER_PRESETS.authProjectTheme },
-                              { id: 'authPublicationType', label: 'Publication Type', query: DESIGNER_PRESETS.authPublicationType },
-                              { id: 'authCategory', label: 'Category (series category)', query: DESIGNER_PRESETS.authCategory },
-                            ]}
+                            items={authoritiesPresets}
                             itemToString={(item) => (item ? item.label : '')}
                             onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
                           />
@@ -928,6 +615,14 @@ const ApiSandbox = () => {
                       </div>
 
                       <div className="editor-card">
+                        <div className="editor-header">
+                          <span className="editor-label">GraphQL query</span>
+                          {query && (
+                            <Tag type="outline" size="sm">
+                              {query.split('\n').filter(line => line.trim()).length} lines
+                            </Tag>
+                          )}
+                        </div>
                         <div className="editor-container">
                           <Editor
                             height="100%"
@@ -944,6 +639,8 @@ const ApiSandbox = () => {
                               readOnly: loading,
                               scrollBeyondLastLine: false,
                               renderLineHighlight: 'all',
+                              cursorBlinking: 'smooth',
+                              cursorSmoothCaretAnimation: 'on',
                             }}
                           />
                         </div>
@@ -1025,15 +722,38 @@ const ApiSandbox = () => {
 
                     {/* Results Column - Maximized for TIFF/PDF display */}
                     <Column lg={10} md={4} sm={4} className="sandbox-results-column">
-                      <div className="sandbox-toolbar-wrapper">
+                      <div className="results-panel-wrapper">
+                        <div className="results-panel-header">
+                          <div className="results-header-content">
+                            <Heading className="results-heading">Response</Heading>
+                            {json && (
+                              <Tag type="green" size="sm">
+                                {Object.keys(json).length} field{Object.keys(json).length !== 1 ? 's' : ''}
+                              </Tag>
+                            )}
+                            {error && (
+                              <Tag type="red" size="sm">Error</Tag>
+                            )}
+                            {loading && (
+                              <Tag type="blue" size="sm">Loading...</Tag>
+                            )}
+                          </div>
+                        </div>
                       <div className="results-wrapper">
                       <div className="cds-card results-panel">
-                        <h3 className="cds-heading">Results</h3>
                         {error && (
-                          <p style={{ color: "var(--cds-support-error)" }}>{error}</p>
+                          <InlineNotification
+                            kind="error"
+                            title="Query error"
+                            subtitle={error}
+                            lowContrast
+                            hideCloseButton
+                          />
                         )}
                         {!error && !json && !loading && (
-                          <p className="cds-subtle">Run a query to see results.</p>
+                          <div className="results-empty-state">
+                            <p className="cds-subtle">Run a GraphQL query to see results here.</p>
+                          </div>
                         )}
 
                         {/* Handle DDR items_recent, records_v1, etc */}
@@ -1065,11 +785,13 @@ const ApiSandbox = () => {
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           title={pdf ? `View PDF: ${titleText}` : `View image: ${titleText}`}
+                                          className="card-tile-link"
                                         >
                                           <img
                                             src={thumbUrl}
                                             alt={titleText}
                                             className="cds-thumb"
+                                            loading="lazy"
                                           />
                                         </a>
                                       ) : pdf ? (
@@ -1078,24 +800,29 @@ const ApiSandbox = () => {
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           title={`View PDF: ${titleText}`}
+                                          className="card-tile-link"
                                         >
-                                          <div className="cds-thumb cds-thumb--placeholder" style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '3rem',
-                                            color: '#525252'
-                                          }}>
-                                            📄
+                                          <div className="cds-thumb cds-thumb--placeholder cds-thumb--pdf">
+                                            <span className="pdf-icon">📄</span>
                                           </div>
                                         </a>
                                       ) : (
-                                        <div className="cds-thumb cds-thumb--placeholder">no image</div>
+                                        <div className="cds-thumb cds-thumb--placeholder">No preview</div>
                                       )}
                                       <figcaption className="cds-figcaption">
-                                        <strong>{titleText}</strong>
-                                        {pdf && <><br/><div style={{marginTop: '0.5rem'}}><a href={pdf.signed_url} target="_blank" rel="noopener noreferrer" style={{color: '#0f62fe', textDecoration: 'none'}}>📄 View artefact</a></div></>}
-                                        {jpg && !pdf && <><br/><div style={{marginTop: '0.5rem'}}><small style={{color: '#525252'}}>View image</small></div></>}
+                                        <strong className="card-title">{titleText}</strong>
+                                        {pdf && (
+                                          <div className="card-link-wrapper">
+                                            <a href={pdf.signed_url} target="_blank" rel="noopener noreferrer" className="card-link">
+                                              <span className="link-icon">📄</span> View artefact
+                                            </a>
+                                          </div>
+                                        )}
+                                        {jpg && !pdf && (
+                                          <div className="card-meta">
+                                            <small>Image preview</small>
+                                          </div>
+                                        )}
                                       </figcaption>
                                     </figure>
                                   );
@@ -1238,98 +965,124 @@ const ApiSandbox = () => {
               {activeApiTab === 2 && (
               <>
                 <Heading type="heading-03" className="tab-lead">
-                  Example REST endpoints for reference. DDR's production API follows similar patterns with authentication and structured responses. Load GraphQL presets directly into the sandbox editor.
+                  Load GraphQL query presets into the sandbox editor or copy code snippets for your own implementation.
                 </Heading>
                 <AnchorLinks links={PRESETS_ANCHORS} />
-                <h2>Presets</h2>
-                <p>
-                  Example REST endpoints for reference. DDR's production API will follow similar patterns
-                  with authentication and structured responses.
-                </p>
-                <ComboBox
-                  id="preset-picker"
-                  titleText="Choose a preset"
-                  helperText={selectedPreset.description}
-                  items={REST_PRESETS}
-                  itemToString={(item) => (item ? item.name : "")}
-                  selectedItem={selectedPreset}
-                  onChange={({ selectedItem }) => selectedItem && setSelectedPreset(selectedItem)}
-                />
-                <p className="eyebrow">Request</p>
-                <CodeSnippet type="multi" wrapText>
-                  {selectedPreset.request}
-                </CodeSnippet>
-                <p className="eyebrow">Sample response</p>
-                <CodeSnippet type="multi" wrapText>
-                  {selectedPreset.response}
-                </CodeSnippet>
+                
+                {/* GraphQL Presets Section */}
+                <section id="graphql-query-presets" className="presets-section">
+                  <Heading as="h2" className="presets-section__header">
+                    GraphQL query presets
+                  </Heading>
+                  <p className="presets-section__description">
+                    Click any preset to load it directly into the GraphQL sandbox editor.
+                  </p>
 
-                <div style={{ marginTop: "var(--cds-spacing-07)" }}>
-                  <div className="cds-card">
-                    <h3 className="cds-heading">DDR query presets</h3>
-                    <p className="cds-subtle">Load directly into the GraphQL editor.</p>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "var(--cds-spacing-03)",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.recentItems)}>
-                        Recent Items
-                      </Button>
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.allRecords)}>
-                        All Records
-                      </Button>
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.recordsWithPDFs)}>
-                        Records with PDFs
-                      </Button>
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.singleRecord)}>
-                        Single Record
-                      </Button>
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.refFonds)}>
-                        Reference: Fonds
-                      </Button>
-                      <Button kind="tertiary" onClick={() => loadPreset(DESIGNER_PRESETS.refPeriods)}>
-                        Reference: Periods
-                      </Button>
+                  <div className="presets-category">
+                    <div className="presets-category__header">
+                      <Catalog size={20} />
+                      <Heading as="h3" type="heading-compact-01">
+                        Archive records
+                      </Heading>
+                    </div>
+                    <div className="presets-category__grid">
+                      {recordsPresets.filter(p => !p.disabled).map((preset) => (
+                        <ClickableTile 
+                          key={preset.id} 
+                          className="preset-tile"
+                          onClick={() => loadPreset(preset.query)}
+                        >
+                          <div className="preset-tile__header">
+                            <strong className="preset-tile__title">{preset.label}</strong>
+                            <ArrowRight size={16} className="preset-tile__arrow" />
+                          </div>
+                          <p className="preset-tile__description">
+                            {preset.description}
+                          </p>
+                        </ClickableTile>
+                      ))}
                     </div>
                   </div>
-                </div>
 
-                <h2 style={{ marginTop: "var(--cds-spacing-09)" }}>Snippets</h2>
-                <p>Use these quick copies when you need a cURL test, a fetch helper, or DDR GraphQL.</p>
-                <Tabs
-                  selectedIndex={selectedIndex >= 0 ? selectedIndex : 0}
-                  onChange={({ selectedIndex: index }) => {
-                    const nextSnippet = SNIPPETS[index];
-                    if (nextSnippet) {
-                      setActiveSnippet(nextSnippet.id);
-                    }
-                  }}
-                >
-                  <TabList aria-label="Snippets">
-                    {SNIPPETS.map((snippet) => (
-                      <Tab key={snippet.id}>{snippet.label}</Tab>
-                    ))}
-                  </TabList>
-                  <TabPanels>
-                    {SNIPPETS.map((snippet) => (
-                      <TabPanel key={`${snippet.id}-panel`}>
-                        <CodeSnippet type="multi" wrapText>
-                          {snippet.code}
-                        </CodeSnippet>
-                      </TabPanel>
-                    ))}
-                  </TabPanels>
-                </Tabs>
-
-                <div style={{ marginTop: "var(--cds-spacing-07)" }}>
-                  <div className="cds-card">
-                    <Tag type="cool-gray">Source: DDR GraphQL Examples</Tag>
-                    <div className="carbon-markdown" style={{ marginTop: "1rem" }}>
-                      <ReactMarkdown components={mdComponents}>{snippetsMd}</ReactMarkdown>
+                  <div className="presets-category">
+                    <div className="presets-category__header">
+                      <DataBase size={20} />
+                      <Heading as="h3" type="heading-compact-01">
+                        Database authorities
+                      </Heading>
                     </div>
+                    <div className="presets-category__grid">
+                      {authoritiesPresets.filter(p => !p.disabled).map((preset) => (
+                        <ClickableTile 
+                          key={preset.id} 
+                          className="preset-tile"
+                          onClick={() => loadPreset(preset.query)}
+                        >
+                          <div className="preset-tile__header">
+                            <strong className="preset-tile__title">{preset.label}</strong>
+                            <ArrowRight size={16} className="preset-tile__arrow" />
+                          </div>
+                          <p className="preset-tile__description">
+                            {preset.description}
+                          </p>
+                        </ClickableTile>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                {/* Code Snippets Section */}
+                <section id="code-snippets" className="snippets-section">
+                  <Heading as="h2" className="snippets-section__header">
+                    Code snippets
+                  </Heading>
+                  <p className="snippets-section__description">
+                    Copy these code examples to integrate the DDR GraphQL API into your application.
+                  </p>
+                  
+                  <Tabs
+                    selectedIndex={selectedIndex >= 0 ? selectedIndex : 0}
+                    onChange={({ selectedIndex: index }) => {
+                      const nextSnippet = codeSnippets[index];
+                      if (nextSnippet) {
+                        setActiveSnippet(nextSnippet.id);
+                      }
+                    }}
+                  >
+                    <TabList aria-label="Code snippet examples" contained>
+                      {codeSnippets.map((snippet) => (
+                        <Tab key={snippet.id}>{snippet.label}</Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      {codeSnippets.map((snippet) => (
+                        <TabPanel key={`${snippet.id}-panel`}>
+                          {snippet.description && (
+                            <p className="snippet-tab-description">
+                              {snippet.description}
+                            </p>
+                          )}
+                          <CodeSnippet type="multi" wrapText feedback="Copied to clipboard">
+                            {snippet.code}
+                          </CodeSnippet>
+                        </TabPanel>
+                      ))}
+                    </TabPanels>
+                  </Tabs>
+                </section>
+                </>
+              )}
+
+              {activeApiTab === 3 && (
+              <>
+                <Heading type="heading-03" className="tab-lead">
+                  Key terms and definitions for understanding the DDR Archive API, GLAM practices, and related technical concepts.
+                </Heading>
+                <AnchorLinks links={GLOSSARY_ANCHORS} />
+                
+                <div style={{ marginTop: "var(--cds-spacing-07)" }}>
+                  <div className="carbon-markdown">
+                    <ReactMarkdown components={mdComponents}>{glossaryMd}</ReactMarkdown>
                   </div>
                 </div>
                 </>
