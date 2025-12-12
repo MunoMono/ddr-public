@@ -892,8 +892,8 @@ const ApiSandbox = () => {
                                       </figcaption>
                                     </figure>
                                   );
-                                })(); // Close the IIFE
-                              }}
+                                }); // Close the .map()
+                                })()}
                               </div>
                             )}
 
