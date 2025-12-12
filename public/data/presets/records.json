@@ -5,7 +5,7 @@
   "presets": [
     {
       "id": "kennethAgnewPhotos",
-      "label": "Kenneth Agnew photos",
+      "label": "Kenneth Agnew selected photographs",
       "description": "Browse sample images from the Agnew archive at RCA Special Collections",
       "query": "# Kenneth Agnew selected photographs\n{\n  record_v1(id: \"53\") {\n    pid\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
