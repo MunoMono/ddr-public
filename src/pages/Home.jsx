@@ -31,7 +31,7 @@ const ROADMAP_ANCHORS = [
 ];
 
 const Home = () => {
-  const heroImage = `${import.meta.env.BASE_URL}assets/hero_shot.jpg`;
+  const heroImage = `${import.meta.env.BASE_URL}assets/hero_shot.jpg?v=20251212`;
   const [activeTab, setActiveTab] = useState(0);
 
   const overviewMd = useMarkdown(`${import.meta.env.BASE_URL}docs/pages/home/overview.md`);
