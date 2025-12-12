@@ -259,7 +259,7 @@ const ApiSandbox = () => {
     const loadData = async () => {
       try {
         const [recordsRes, authoritiesRes, snippetsRes] = await Promise.all([
-          fetch(`${PRESETS_BASE_URL}/records.json`),
+          fetch(`${PRESETS_BASE_URL}/records_v2.json`),
           fetch(`${PRESETS_BASE_URL}/authorities.json`),
           fetch(`${PRESETS_BASE_URL}/snippets.json`),
         ]);
