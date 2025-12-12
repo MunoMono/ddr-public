@@ -7,38 +7,43 @@
       "id": "kennethAgnewPhotos",
       "label": "Kenneth Agnew photos",
       "description": "Browse sample images from the Agnew archive at RCA Special Collections",
-      "query": "",
-      "disabled": true
+      "query": "# Kenneth Agnew selected photographs\n{\n  record_v1(id: \"53\") {\n    pid\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recentItems",
       "label": "Recent items",
       "description": "Recently updated DDR items with Linked Data endpoints",
-      "query": "# Recent DDR items with Linked Data endpoints\n{\n  items_recent(limit: 12) {\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    project_team_staff\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# Recent DDR items with Linked Data endpoints\n{\n  items_recent(limit: 12) {\n    id\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    project_team_staff\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "allRecords",
       "label": "All records",
       "description": "All records (both S3 media items and postgres records)",
-      "query": "# All records (both S3 media items and postgres records)\n{\n  items_recent(limit: 50) {\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# All records (both S3 media items and postgres records)\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    date_begin\n    date_end\n    reference_code\n    creator_agent_label\n    funder_agent_label\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recordsWithImages",
       "label": "Records with images",
-      "description": "Records that have image derivatives",
-      "query": "# Records with images\n{\n  records_v1 {\n    id\n    pid\n    title\n    date_begin\n    copyright_holder\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "description": "Record with 30 TIFF-derived images (Kenneth Agnew)",
+      "query": "# Record with actual images (not PDF thumbnails)\n# Uses items_recent which merges child media assets\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    date_begin\n    date_end\n    copyright_holder\n    scope_and_content\n    extent_unit\n    fonds_code\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recordsWithPDFs",
       "label": "Records with PDFs",
       "description": "Records with PDF file attachments",
-      "query": "# Records with PDF files\n{\n  items_recent(limit: 50) {\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n    pdf_files {\n      signed_url\n      filename\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# Records with PDF files\n# Uses items_recent which merges child media assets\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    date_begin\n    date_end\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "singleRecord",
       "label": "Single record",
       "description": "Single record with attached media and Linked Data",
-      "query": "# Single record with attached media + Linked Data\n{\n  record_v1(id: \"19\") {\n    pid\n    title\n    payload\n    copyright_holder\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n    attached_media {\n      pid\n      title\n      copyright_holder\n      pdf_files {\n        signed_url\n        filename\n      }\n      jpg_derivatives {\n        signed_url\n        filename\n      }\n      linked_art_jsonld_url\n      linked_art_turtle_url\n      linked_art_rdfxml_url\n    }\n  }\n}"
+      "query": "# Single record with attached media + Linked Data\n{\n  record_v1(id: \"19\") {\n    id\n    pid\n    title\n    status\n    scope_and_content\n    copyright_holder\n    date_begin\n    date_end\n    creator_agent_label\n    funder_agent_label\n    project_theme\n    extent_unit\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n    attached_media {\n      id\n      pid\n      title\n      copyright_holder\n      pdf_files {\n        signed_url\n        filename\n        role\n      label\n      copyright_holder\n      rights_holders\n      }\n      jpg_derivatives {\n        signed_url\n        filename\n        role\n      label\n      copyright_holder\n      rights_holders\n      }\n      linked_art_jsonld_url\n      linked_art_turtle_url\n      linked_art_rdfxml_url\n    }\n  }\n}"
+    },
+    {
+      "id": "comprehensiveRecord",
+      "label": "Comprehensive single record",
+      "description": "Complete metadata for recent records",
+      "query": "# Comprehensive record with all available metadata\n# Uses items_recent (first result) which merges child media assets\n{\n  items_recent(limit: 1) {\n    id\n    pid\n    title\n    status\n    updated_at\n    level\n    scope_and_content\n    abstract\n    date_begin\n    date_end\n    reference_code\n    fonds_code\n    series_id\n    extent_unit\n    extent_number\n    access_level\n    copyright_holder\n    copyright_holder_other\n    rights_holders\n    rights_statement_uri\n    ddr_period\n    project_theme\n    project_title\n    project_job_number\n    project_start_date\n    project_end_date\n    project_duration\n    project_outcome\n    project_beneficiary_audience\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    funder_agent\n    creatorcorporate_id\n    project_team_staff\n    contributor_agents\n    location_repository\n    location_accession\n    location_box\n    location_note\n    methodology\n    epistemic_stance\n    current_consent_status\n    consent_evidence_uri\n    takedown_contact\n    language_codes\n    transcript_present\n    interviewees\n    interview_date\n    interview_location\n    interview_format\n    interview_runtime_minutes\n    interview_session_number\n    recording_equipment\n    publication_links\n    jpg_derivatives {\n      signed_url\n      url\n      filename\n      role\n      mime\n      bytes\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      url\n      filename\n      role\n      mime\n      bytes\n      label\n      copyright_holder\n      rights_holders\n    }\n    creators\n    subjects\n    parent_collection\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n    public_uri\n  }\n}"
     },
     {
       "id": "refFonds",
@@ -50,19 +55,31 @@
       "id": "refPeriods",
       "label": "Reference: Periods",
       "description": "DDR reference data for time periods",
-      "query": "# Reference: DDR Periods\n{\n  ref_ddr_period {\n    slug\n    label\n    description\n  }\n}"
+      "query": "# Reference: DDR Periods\n{\n  ref_ddr_period {\n    id\n    slug\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "refProjectThemes",
+      "label": "Reference: Project Themes",
+      "description": "DDR project theme vocabulary",
+      "query": "# Reference: Project Themes\n{\n  ref_project_theme {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "refExtentUnits",
+      "label": "Reference: Extent Units",
+      "description": "DDR artefact/extent unit vocabulary",
+      "query": "# Reference: Extent Units\n{\n  ref_extent_unit {\n    id\n    label\n    description\n  }\n}"
     },
     {
       "id": "ddrPeople",
       "label": "DDR People",
-      "description": "DDR staff and agents",
-      "query": "# DDR People\n{\n  agents {\n    staff_code\n    slug\n    display_name\n  }\n}"
+      "description": "DDR staff and agents authority (89 people)",
+      "query": "# DDR People - core agents authority\n{\n  agents {\n    staff_code\n    slug\n    display_name\n    email\n    kind\n    active\n  }\n}"
     },
     {
       "id": "ddrProjects",
       "label": "DDR Projects",
-      "description": "DDR project register",
-      "query": "# DDR Projects\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    start_year\n    end_year\n    duration_text\n    project_lead_name\n    researcher1_name\n    researcher2_name\n    ddr_period_label\n  }\n}"
+      "description": "DDR project register authority (92 projects)",
+      "query": "# DDR Projects - complete job register\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    start_year\n    end_year\n    duration_text\n    project_lead_name\n    researcher1_name\n    researcher2_name\n    ddr_period_label\n  }\n}"
     }
   ]
 }
