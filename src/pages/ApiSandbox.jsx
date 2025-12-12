@@ -178,6 +178,7 @@ const ApiSandbox = () => {
   const [loading, setLoading] = useState(false);
   const [json, setJson] = useState(null);
   const [error, setError] = useState(null);
+  const [activePresetId, setActivePresetId] = useState(null);
   const [snippetsMd, setSnippetsMd] = useState("Loading...");
 
   // Helper to generate response title
@@ -638,7 +639,12 @@ const ApiSandbox = () => {
                             size="md"
                             items={recordsPresets}
                             itemToString={(item) => (item ? item.label : '')}
-                            onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
+                            onChange={({ selectedItem }) => {
+                              if (selectedItem) {
+                                setActivePresetId(selectedItem.id);
+                                loadPreset(selectedItem.query);
+                              }
+                            }}
                           />
                           <ComboBox
                             id="authorities-preset-picker"
@@ -647,7 +653,12 @@ const ApiSandbox = () => {
                             size="md"
                             items={authoritiesPresets}
                             itemToString={(item) => (item ? item.label : '')}
-                            onChange={({ selectedItem }) => selectedItem && loadPreset(selectedItem.query)}
+                            onChange={({ selectedItem }) => {
+                              if (selectedItem) {
+                                setActivePresetId(selectedItem.id);
+                                loadPreset(selectedItem.query);
+                              }
+                            }}
                           />
                         </div>
                       </div>
@@ -799,7 +810,16 @@ const ApiSandbox = () => {
                           <>
                             {(json.items_recent || json.records_v1) && (
                               <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
-                                {(json.items_recent || json.records_v1)?.map((item) => {
+                                {(() => {
+                                  // Get the items array
+                                  let items = json.items_recent || json.records_v1;
+                                  
+                                  // Filter for "Records with PDFs" preset - only show items that have PDFs
+                                  if (activePresetId === 'recordsWithPDFs') {
+                                    items = items.filter(item => item.pdf_files && item.pdf_files.length > 0);
+                                  }
+                                  
+                                  return items.map((item) => {
                                   // Extract JPG thumbnail - prefer thumb, then display, then any jpg
                                   const jpgThumb = item.jpg_derivatives?.find(d => d.role === 'jpg_thumb' || d.filename?.includes('thumb'));
                                   const jpgDisplay = item.jpg_derivatives?.find(d => d.role === 'jpg_display' || d.filename?.includes('display'));
@@ -872,7 +892,8 @@ const ApiSandbox = () => {
                                       </figcaption>
                                     </figure>
                                   );
-                                })}
+                                })(); // Close the IIFE
+                              }}
                               </div>
                             )}
 
