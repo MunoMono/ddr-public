@@ -23,7 +23,7 @@ import {
   Tile,
   ToastNotification,
 } from "@carbon/react";
-import { Save, ArrowRight, DataBase, Catalog } from "@carbon/icons-react";
+import { Save, ArrowRight, DataBase, Catalog, Image, Document } from "@carbon/icons-react";
 
 import PageHero from "../components/PageHero/PageHero";
 import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
@@ -124,6 +124,7 @@ const DEFAULT_QUERY = `# Recent DDR Archive items
     jpg_derivatives {
       signed_url
       filename
+      label
     }
     pdf_files {
       signed_url
@@ -178,6 +179,43 @@ const ApiSandbox = () => {
   const [json, setJson] = useState(null);
   const [error, setError] = useState(null);
   const [snippetsMd, setSnippetsMd] = useState("Loading...");
+
+  // Helper to generate response title
+  const getResponseTitle = (data) => {
+    if (!data) return null;
+    
+    // Check for items_recent
+    if (data.items_recent && Array.isArray(data.items_recent)) {
+      return `Items recent (${data.items_recent.length} items)`;
+    }
+    
+    // Check for records_v1
+    if (data.records_v1 && Array.isArray(data.records_v1)) {
+      return `Records (${data.records_v1.length} items)`;
+    }
+    
+    // Check for record_v1 with images
+    if (data.record_v1?.jpg_derivatives) {
+      const thumbs = data.record_v1.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
+      if (thumbs.length > 0) {
+        return `Images (${thumbs.length} items)`;
+      }
+    }
+    
+    // Check for record_v1 with media
+    if (data.record_v1?.media && Array.isArray(data.record_v1.media)) {
+      return `Media (${data.record_v1.media.length} items)`;
+    }
+    
+    // Check for record_v1
+    if (data.record_v1) {
+      return 'Record details';
+    }
+    
+    // Fallback to field count
+    const fieldCount = Object.keys(data).length;
+    return `${fieldCount} field${fieldCount !== 1 ? 's' : ''}`;
+  };
   const [glossaryMd, setGlossaryMd] = useState("Loading...");
   const sandboxRef = useRef(null);
   const [activeApiTab, setActiveApiTab] = useState(0);
@@ -728,7 +766,7 @@ const ApiSandbox = () => {
                             <Heading className="results-heading">Response</Heading>
                             {json && (
                               <Tag type="green" size="sm">
-                                {Object.keys(json).length} field{Object.keys(json).length !== 1 ? 's' : ''}
+                                {getResponseTitle(json)}
                               </Tag>
                             )}
                             {error && (
@@ -770,33 +808,41 @@ const ApiSandbox = () => {
                                   // Extract first PDF from pdf_files array
                                   const pdf = item.pdf_files?.[0];
                                   
-                                  // Determine link target (PDF if available, otherwise JPG)
-                                  const linkUrl = pdf?.signed_url || jpg?.signed_url;
-                                  const thumbUrl = jpg?.signed_url;
+                                  // Use signed_url for links
+                                  const pdfUrl = pdf?.signed_url;
+                                  const imgUrl = jpg?.signed_url;
                                   
                                   const titleText = item.title || item.pid || item.id;
                                   const content = item.scope_and_content;
 
                                   return (
                                     <figure key={item.id || item.pid} className="cds-figure cds-card-tile">
-                                      {thumbUrl ? (
+                                      {imgUrl ? (
                                         <a
-                                          href={linkUrl}
+                                          href={pdfUrl || imgUrl}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           title={pdf ? `View PDF: ${titleText}` : `View image: ${titleText}`}
                                           className="card-tile-link"
                                         >
                                           <img
-                                            src={thumbUrl}
+                                            src={imgUrl}
                                             alt={titleText}
                                             className="cds-thumb"
                                             loading="lazy"
+                                            onError={(e) => {
+                                              console.error('Image failed to load:', imgUrl);
+                                              e.target.style.display = 'none';
+                                              const placeholder = document.createElement('div');
+                                              placeholder.className = 'cds-thumb cds-thumb--placeholder';
+                                              placeholder.textContent = 'Image unavailable';
+                                              e.target.parentElement.appendChild(placeholder);
+                                            }}
                                           />
                                         </a>
-                                      ) : pdf ? (
+                                      ) : pdfUrl ? (
                                         <a
-                                          href={pdf.signed_url}
+                                          href={pdfUrl}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           title={`View PDF: ${titleText}`}
@@ -811,14 +857,14 @@ const ApiSandbox = () => {
                                       )}
                                       <figcaption className="cds-figcaption">
                                         <strong className="card-title">{titleText}</strong>
-                                        {pdf && (
+                                        {pdfUrl && (
                                           <div className="card-link-wrapper">
-                                            <a href={pdf.signed_url} target="_blank" rel="noopener noreferrer" className="card-link">
-                                              <span className="link-icon">📄</span> View artefact
+                                            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="card-link">
+                                              <Document size={16} style={{marginRight: '0.25rem'}} /> View artefact <ArrowRight size={16} style={{marginLeft: '0.25rem'}} />
                                             </a>
                                           </div>
                                         )}
-                                        {jpg && !pdf && (
+                                        {imgUrl && !pdfUrl && (
                                           <div className="card-meta">
                                             <small>Image preview</small>
                                           </div>
@@ -882,26 +928,52 @@ const ApiSandbox = () => {
                                 )}
                                 
                                 {/* Show record's own jpg_derivatives if available */}
-                                {json.record_v1.jpg_derivatives && json.record_v1.jpg_derivatives.length > 0 && (
-                                  <>
-                                    <h5 style={{ marginTop: "var(--cds-spacing-05)", marginBottom: "var(--cds-spacing-03)" }}>
-                                      Images
-                                    </h5>
-                                    <div className="cds-grid">
-                                      {json.record_v1.jpg_derivatives.map((jpg, idx) => (
-                                        <figure key={idx} className="cds-figure cds-card-tile">
-                                          <a href={jpg.signed_url} target="_blank" rel="noopener noreferrer">
-                                            <img src={jpg.signed_url} alt={json.record_v1.title} className="cds-thumb" />
-                                          </a>
-                                          <figcaption className="cds-figcaption">
-                                            <strong>{json.record_v1.title}</strong>
-                                            <br/><small>{jpg.filename}</small>
-                                          </figcaption>
-                                        </figure>
-                                      ))}
-                                    </div>
-                                  </>
-                                )}
+                                {json.record_v1.jpg_derivatives && json.record_v1.jpg_derivatives.length > 0 && (() => {
+                                  // Group images by their asset ID (extract from filename)
+                                  const thumbs = json.record_v1.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
+                                  const displays = json.record_v1.jpg_derivatives.filter(j => j.role === 'jpg_display');
+                                  
+                                  // Create pairs of thumb + display for each image
+                                  const imagePairs = thumbs.map((thumb, idx) => ({
+                                    thumb: thumb,
+                                    display: displays[idx] || thumb // Fallback to thumb if no display
+                                  }));
+                                  
+                                  return (
+                                    <>
+                                      <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-05)" }}>
+                                        {imagePairs.map((pair, idx) => (
+                                          <figure key={idx} className="cds-figure cds-card-tile">
+                                            <a href={pair.display.signed_url} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                              <img src={pair.thumb.signed_url} alt={`${json.record_v1.title} - Image ${idx + 1}`} className="cds-thumb" />
+                                            </a>
+                                            <figcaption className="cds-figcaption">
+                                              <strong>{pair.thumb.label || pair.thumb.filename?.split('/').pop().split('.')[0].replace(/_/g, ' ') || `Image ${idx + 1}`}</strong>
+                                              <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}><Image size={16} /> Image {idx + 1} of {imagePairs.length}</small>
+                                              <br/><a 
+                                                href={pair.display.signed_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                  color: '#0f62fe',
+                                                  textDecoration: 'none',
+                                                  fontSize: '0.875rem',
+                                                  display: 'inline-flex',
+                                                  alignItems: 'center',
+                                                  gap: '0.25rem',
+                                                  marginTop: '0.25rem'
+                                                }}
+                                                title="Open hi-res image in new tab"
+                                              >
+                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                              </a>
+                                            </figcaption>
+                                          </figure>
+                                        ))}
+                                      </div>
+                                    </>
+                                  );
+                                })()}
                                 
                                 {/* Show record's own pdf_files if available */}
                                 {json.record_v1.pdf_files && json.record_v1.pdf_files.length > 0 && (
@@ -926,6 +998,22 @@ const ApiSandbox = () => {
                                           <figcaption className="cds-figcaption">
                                             <strong>{json.record_v1.title}</strong>
                                             <br/><small style={{color: '#525252'}}>📄 {pdf.filename}</small>
+                                            <br/><a 
+                                              href={pdf.signed_url} 
+                                              target="_blank" 
+                                              rel="noopener noreferrer"
+                                              style={{
+                                                color: '#0f62fe',
+                                                textDecoration: 'none',
+                                                fontSize: '0.875rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.25rem',
+                                                marginTop: '0.25rem'
+                                              }}
+                                            >
+                                              <Document size={16} /> View artefact <ArrowRight size={16} />
+                                            </a>
                                           </figcaption>
                                         </figure>
                                       ))}
