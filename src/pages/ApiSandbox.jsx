@@ -112,7 +112,7 @@ const endpoint = import.meta.env.DEV
 
 const displayEndpoint = import.meta.env.DEV
   ? "localhost:8000/graphql"
-  : "api.ddrarchive.org/graphql";
+  : "ddrarchive.org/graphql";
 
 const DEFAULT_QUERY = `# Recent DDR Archive items
 {
