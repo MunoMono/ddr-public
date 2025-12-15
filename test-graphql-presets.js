@@ -3,7 +3,7 @@
  * Tests queries from records.json, authorities.json, and validates snippets.json
  */
 
-const GRAPHQL_ENDPOINT = 'https://ddrarchive.org/graphql';
+const GRAPHQL_ENDPOINT = 'https://api.ddrarchive.org/graphql';
 
 // Check if server is available first
 async function checkServerHealth() {

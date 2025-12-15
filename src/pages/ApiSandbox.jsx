@@ -34,7 +34,7 @@ const REST_PRESETS = [
     name: "Recent DDR items",
     description: "Fetch the most recently updated items from the DDR archive.",
     request:
-      "POST https://ddrarchive.org/graphql",
+      "POST https://api.ddrarchive.org/graphql",
     response: `{
   "data": {
     "items_recent": [
@@ -52,7 +52,7 @@ const REST_PRESETS = [
     name: "All archive records",
     description: "Query all records in the DDR archive with metadata.",
     request:
-      "POST https://ddrarchive.org/graphql",
+      "POST https://api.ddrarchive.org/graphql",
     response: `{
   "data": {
     "records_v1": [
@@ -71,7 +71,7 @@ const REST_PRESETS = [
     name: "Reference data",
     description: "Fetch DDR taxonomy reference data like fonds and periods.",
     request:
-      "POST https://ddrarchive.org/graphql",
+      "POST https://api.ddrarchive.org/graphql",
     response: `{
   "data": {
     "ref_fonds": [
@@ -89,7 +89,7 @@ const REST_PRESETS = [
     name: "Single record detail",
     description: "Get detailed information for a specific archive record by ID.",
     request:
-      "POST https://ddrarchive.org/graphql",
+      "POST https://api.ddrarchive.org/graphql",
     response: `{
   "data": {
     "record_v1": {
@@ -108,11 +108,11 @@ const PRESETS_BASE_URL = `${import.meta.env.BASE_URL}data/presets`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
-  : "https://ddrarchive.org/graphql";
+  : "https://api.ddrarchive.org/graphql";
 
 const displayEndpoint = import.meta.env.DEV
   ? "localhost:8000/graphql"
-  : "ddrarchive.org/graphql";
+  : "api.ddrarchive.org/graphql";
 
 const DEFAULT_QUERY = `# Recent DDR Archive items
 {
@@ -537,13 +537,13 @@ const ApiSandbox = () => {
                 <h2>Three simple steps</h2>
                 <p>
                   The DDR Archive API uses GraphQL to query archival records, items, and reference data.
-                  The GraphQL sandbox below connects to <code>ddrarchive.org/graphql</code> for live
+                  The GraphQL sandbox below connects to <code>api.ddrarchive.org/graphql</code> for live
                   queries during development and demos.
                 </p>
                 <ol className="api-page__list">
                   <li>
                     <strong>Endpoint:</strong> All queries go to
-                    <code> https://ddrarchive.org/graphql</code> via POST request.
+                    <code> https://api.ddrarchive.org/graphql</code> via POST request.
                   </li>
                   <li>
                     <strong>Authentication:</strong> Currently open for development. Production deployments
@@ -572,7 +572,7 @@ const ApiSandbox = () => {
 
                 <h3 style={{ marginTop: "var(--cds-spacing-07)" }}>Example request</h3>
                 <CodeSnippet type="multi" wrapText>
-                  {`curl -X POST https://ddrarchive.org/graphql \\
+                  {`curl -X POST https://api.ddrarchive.org/graphql \\
   -H "Content-Type: application/json" \\
   -d '{"query":"{ items_recent(limit: 5) { pid title } }"}'`}
                 </CodeSnippet>

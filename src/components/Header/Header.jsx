@@ -145,7 +145,7 @@ const Header = () => {
                   </SwitcherItem>
                   <SwitcherDivider />
                   <SwitcherItem
-                    href="https://ddrarchive.org/graphql"
+                    href="https://api.ddrarchive.org/graphql"
                     target="_blank"
                     aria-label="GraphQL playground"
                   >

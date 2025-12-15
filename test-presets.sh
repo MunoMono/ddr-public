@@ -1,7 +1,7 @@
 #!/bin/bash
 # Test all GraphQL presets against the live endpoint
 
-ENDPOINT="https://admin.ddrarchive.org/graphql"
+ENDPOINT="https://api.ddrarchive.org/graphql"
 PASS=0
 FAIL=0
 

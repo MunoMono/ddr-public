@@ -25,13 +25,13 @@
       "id": "recordsWithImages",
       "label": "Records with images",
       "description": "Record with 30 TIFF-derived images (Kenneth Agnew)",
-      "query": "# Record with actual images (not PDF thumbnails)\n# Uses items_recent which merges child media assets\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    date_begin\n    date_end\n    copyright_holder\n    scope_and_content\n    extent_unit\n    fonds_code\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# Record with actual images (Kenneth Agnew photographs)\\n# Uses record_v1 to get a specific record with jpg_display images\\n{\\n  record_v1(id: \\\"53\\\") {\\n    id\\n    pid\\n    title\\n    scope_and_content\\n    copyright_holder\\n    date_begin\\n    date_end\\n    fonds_code\\n    extent_unit\\n    jpg_derivatives {\\n      signed_url\\n      filename\\n      role\\n      label\\n      copyright_holder\\n      rights_holders\\n    }\\n    linked_art_jsonld_url\\n    linked_art_turtle_url\\n    linked_art_rdfxml_url\\n  }\\n}"
     },
     {
       "id": "recordsWithPDFs",
       "label": "Records with PDFs",
-      "description": "COMDAC and Strathclyde Police reports (PDF attachments)",
-      "query": "# Records with PDF files - showing 2 specific examples\n# ID 20: COMDAC report\n# ID 19: Strathclyde Police project\n{\n  record1: items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    date_begin\n    date_end\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "description": "COMDAC and Strathclyde Police reports (PDF attachments with thumbnails)",
+      "query": "# Records with PDF files\n# jpg_derivatives with role='jpg_thumb' are PDF thumbnails\n# Look for records where pdf_files array is not empty\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    date_begin\n    date_end\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "singleRecord",

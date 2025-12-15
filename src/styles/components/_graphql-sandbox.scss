@@ -196,10 +196,11 @@
     }
     
     .cds--combo-box {
-      flex: 1;
+      flex: 0 0 calc(50% - (spacing.$spacing-05 / 2));
       min-width: 200px;
       
       @include breakpoint.breakpoint-down(md) {
+        flex: 1 1 100%;
         width: 100%;
         min-width: 100%;
       }

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const GRAPHQL_ENDPOINT = 'https://ddrarchive.org/graphql';
+const GRAPHQL_ENDPOINT = 'https://api.ddrarchive.org/graphql';
 
 // Read JSON files
 const recordsPath = path.join(__dirname, '../public/data/presets/records.json');
