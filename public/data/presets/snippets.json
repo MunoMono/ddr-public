@@ -8,42 +8,42 @@
       "label": "cURL",
       "language": "bash",
       "description": "Query the DDR API using cURL from the command line",
-      "code": "curl -X POST https://api.ddrarchive.org/graphql \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\":\"{ items_recent(limit: 10) { pid title } }\"}'"
+      "code": "curl -X POST https://api.ddrarchive.org/graphql \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\":\"{ items_recent(limit: 10) { pid title copyright_holder rights_holders } }\"}'"
     },
     {
       "id": "js-fetch",
       "label": "JavaScript fetch",
       "language": "javascript",
       "description": "Query the DDR API using JavaScript fetch API",
-      "code": "const response = await fetch(\"https://api.ddrarchive.org/graphql\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({\n    query: `{\n      items_recent(limit: 10) {\n        pid\n        title\n        jpg_derivatives { signed_url }\n      }\n    }`\n  })\n});\nconst data = await response.json();"
+      "code": "const response = await fetch(\"https://api.ddrarchive.org/graphql\", {\n  method: \"POST\",\n  headers: { \"Content-Type\": \"application/json\" },\n  body: JSON.stringify({\n    query: `{\n      items_recent(limit: 10) {\n        pid\n        title\n        copyright_holder\n        rights_holders\n        jpg_derivatives { signed_url }\n      }\n    }`\n  })\n});\nconst data = await response.json();"
     },
     {
       "id": "python-requests",
       "label": "Python requests",
       "language": "python",
       "description": "Query the DDR API using Python requests library",
-      "code": "import requests\n\nquery = \"\"\"\n{\n  records_v1 {\n    pid\n    title\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n  }\n}\n\"\"\"\n\nresponse = requests.post(\n    \"https://api.ddrarchive.org/graphql\",\n    json={\"query\": query}\n)\ndata = response.json()"
+      "code": "import requests\n\nquery = \"\"\"\n{\n  records_v1 {\n    pid\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n    }\n  }\n}\n\"\"\"\n\nresponse = requests.post(\n    \"https://api.ddrarchive.org/graphql\",\n    json={\"query\": query}\n)\ndata = response.json()"
     },
     {
       "id": "js-axios",
       "label": "JavaScript axios",
       "language": "javascript",
       "description": "Query the DDR API using axios HTTP client",
-      "code": "import axios from 'axios';\n\nconst { data } = await axios.post(\n  'https://api.ddrarchive.org/graphql',\n  {\n    query: `{\n      items_recent(limit: 10) {\n        pid\n        title\n        scope_and_content\n      }\n    }`\n  },\n  {\n    headers: { 'Content-Type': 'application/json' }\n  }\n);"
+      "code": "import axios from 'axios';\n\nconst { data } = await axios.post(\n  'https://api.ddrarchive.org/graphql',\n  {\n    query: `{\n      items_recent(limit: 10) {\n        pid\n        title\n        scope_and_content\n        copyright_holder\n        rights_holders\n      }\n    }`\n  },\n  {\n    headers: { 'Content-Type': 'application/json' }\n  }\n);"
     },
     {
       "id": "node-fetch",
       "label": "Node.js fetch",
       "language": "javascript",
       "description": "Query the DDR API using Node.js with native fetch",
-      "code": "const response = await fetch('https://api.ddrarchive.org/graphql', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    query: `{\n      ddr_projects {\n        job_number\n        title\n        funder_name\n      }\n    }`\n  })\n});\n\nconst { data } = await response.json();\nconsole.log(data);"
+      "code": "const response = await fetch('https://api.ddrarchive.org/graphql', {\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({\n    query: `{\n      items_recent(limit: 10) {\n        pid\n        title\n        copyright_holder\n        rights_holders\n      }\n    }`\n  })\n});\n\nconst { data } = await response.json();\nconsole.log(data);"
     },
     {
       "id": "ruby-httparty",
       "label": "Ruby HTTParty",
       "language": "ruby",
       "description": "Query the DDR API using Ruby HTTParty gem",
-      "code": "require 'httparty'\nrequire 'json'\n\nquery = <<~GRAPHQL\n  {\n    items_recent(limit: 10) {\n      pid\n      title\n    }\n  }\nGRAPHQL\n\nresponse = HTTParty.post(\n  'https://api.ddrarchive.org/graphql',\n  body: { query: query }.to_json,\n  headers: { 'Content-Type' => 'application/json' }\n)\n\ndata = JSON.parse(response.body)"
+      "code": "require 'httparty'\nrequire 'json'\n\nquery = <<~GRAPHQL\n  {\n    items_recent(limit: 10) {\n      pid\n      title\n      copyright_holder\n      rights_holders\n    }\n  }\nGRAPHQL\n\nresponse = HTTParty.post(\n  'https://api.ddrarchive.org/graphql',\n  body: { query: query }.to_json,\n  headers: { 'Content-Type' => 'application/json' }\n)\n\ndata = JSON.parse(response.body)"
     }
   ]
 }

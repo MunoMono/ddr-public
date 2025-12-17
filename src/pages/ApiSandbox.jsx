@@ -121,6 +121,7 @@ const DEFAULT_QUERY = `# Recent DDR Archive items
     title
     scope_and_content
     copyright_holder
+    rights_holders
     jpg_derivatives {
       signed_url
       filename
