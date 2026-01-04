@@ -7,11 +7,19 @@ export default defineConfig({
   base: "/", // 👈 served from root domain (ddrarchive.org)
   plugins: [react()],
   build: {
+    // Optimize build performance
+    chunkSizeWarningLimit: 1000,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
         chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
-        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`
+        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`,
+        // Improve chunk splitting to prevent hang during rendering
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'carbon-vendor': ['@carbon/react'],
+        }
       }
     }
   },
