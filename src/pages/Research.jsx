@@ -47,9 +47,9 @@ const Research = () => {
     <div className="page research-page">
       <PageHero
         id="research"
-        eyebrow="Research"
-        title="Shared workflow"
-        lead="This page keeps the same anchor layout from the parent repo so you can plug in real sections such as Taxonomy, Data Visualisation, and Modelling."
+        // eyebrow="Research"
+        title="Archive research and development"
+        // lead="This page keeps the same anchor layout from the parent repo so you can plug in real sections such as Taxonomy, Data Visualisation, and Modelling."
         tabs={RESEARCH_TABS}
         activeTab={activeTab}
         onTabSelect={handleTabSelect}
@@ -63,7 +63,7 @@ const Research = () => {
                 {activeTab === 0 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      DDR's research workflow mirrors the internal process so external collaborators can understand how data moves through collection, analysis, and publication stages.
+                      DDR's research workflow mirrors the internal process so external collaborators can understand how data moves through collection, analysis, and publication stages
                     </Heading>
                     <AnchorLinks links={WORKFLOW_ANCHORS} />
                     <MarkdownContent 
@@ -76,7 +76,7 @@ const Research = () => {
                 {activeTab === 1 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Available datasets follow consistent structure and metadata standards. Each dataset includes documentation for access protocols and usage guidelines.
+                      Available datasets follow consistent structure and metadata standards with documentation for access protocols and usage guidelines
                     </Heading>
                     <AnchorLinks links={DATASETS_ANCHORS} />
                     <MarkdownContent 
@@ -89,7 +89,7 @@ const Research = () => {
                 {activeTab === 2 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Collaboration happens through defined channels with clear contribution guidelines. Partners work within agreed licensing terms that protect sensitive research.
+                      Collaboration happens through defined channels with clear contribution guidelines and licensing terms that protect sensitive research
                     </Heading>
                     <AnchorLinks links={COLLABORATION_ANCHORS} />
                     <MarkdownContent 

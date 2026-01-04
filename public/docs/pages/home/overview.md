@@ -1,9 +1,5 @@
 # Overview
 
-## Welcome to DDR Archive
-
-The DDR archive provides a comprehensive digital research environment for archival materials, combining traditional archival description with modern linked-data infrastructure.
-
 ### Key features
 
 - **Linked-data compliance**: 100% implementation of Tim Berners-Lee's semantic web principles

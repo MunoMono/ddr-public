@@ -169,8 +169,8 @@
       }
     }
     
-    // Mobile: Stack buttons vertically
-    @include breakpoint.breakpoint-down(md) {
+    // Mobile & Tablet: Stack buttons vertically
+    @include breakpoint.breakpoint-down(xlg) {
       .cds--btn-set {
         display: flex !important;
         flex-direction: column !important;

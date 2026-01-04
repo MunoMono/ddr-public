@@ -23,7 +23,7 @@ import {
   Tile,
   ToastNotification,
 } from "@carbon/react";
-import { Save, ArrowRight, DataBase, Catalog, Image, Document } from "@carbon/icons-react";
+import { Save, ArrowRight, DataBase, Catalog, Image, Document, Copy } from "@carbon/icons-react";
 
 import PageHero from "../components/PageHero/PageHero";
 import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
@@ -515,9 +515,9 @@ const ApiSandbox = () => {
     <div className="page api-page">
       <PageHero
         id="api"
-        eyebrow="API"
+        // eyebrow="API"
         title="DDR API landing"
-        lead="Carbon-native tabs keep the narrative intact while the DDR GraphQL sandbox runs live queries for demos and workshops."
+        // lead="Carbon-native tabs keep the narrative intact while the DDR GraphQL sandbox runs live queries for demos and workshops."
         tabs={API_NAV_TABS}
         tabAriaLabel="API sections"
         activeTab={activeApiTab}
@@ -532,7 +532,7 @@ const ApiSandbox = () => {
               {activeApiTab === 0 && (
                 <>
                   <Heading type="heading-03" className="tab-lead">
-                    DDR's API uses GraphQL and REST endpoints. The GraphQL sandbox connects to the DDR archive for live queries during development and demos. Follow these steps to get started with authentication and rate limits.
+                    DDR's API uses GraphQL to query archival records, items and reference data with a live sandbox for testing queries
                   </Heading>
                   <AnchorLinks links={GETTING_STARTED_ANCHORS} />
                 <h2>Three simple steps</h2>
@@ -632,46 +632,64 @@ const ApiSandbox = () => {
                             </Button>
                           </ButtonSet>
                         </div>
-                        <div className="toolbar-secondary">
-                          <ComboBox
-                            id="records-preset-picker"
-                            titleText="Load preset"
-                            placeholder="Select records query..."
-                            size="md"
-                            items={recordsPresets}
-                            itemToString={(item) => (item ? item.label : '')}
-                            onChange={({ selectedItem }) => {
-                              if (selectedItem) {
-                                setActivePresetId(selectedItem.id);
-                                loadPreset(selectedItem.query);
-                              }
-                            }}
-                          />
-                          <ComboBox
-                            id="authorities-preset-picker"
-                            titleText=""
-                            placeholder="Select authorities query..."
-                            size="md"
-                            items={authoritiesPresets}
-                            itemToString={(item) => (item ? item.label : '')}
-                            onChange={({ selectedItem }) => {
-                              if (selectedItem) {
-                                setActivePresetId(selectedItem.id);
-                                loadPreset(selectedItem.query);
-                              }
-                            }}
-                          />
+                        <div className="toolbar-secondary" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+                          <div style={{ width: '100%' }}>
+                            <ComboBox
+                              id="records-preset-picker"
+                              titleText="Load preset"
+                              placeholder="Select records query..."
+                              size="lg"
+                              items={recordsPresets}
+                              itemToString={(item) => (item ? item.label : '')}
+                              onChange={({ selectedItem }) => {
+                                if (selectedItem) {
+                                  setActivePresetId(selectedItem.id);
+                                  loadPreset(selectedItem.query);
+                                }
+                              }}
+                            />
+                          </div>
+                          <div style={{ width: '100%' }}>
+                            <ComboBox
+                              id="authorities-preset-picker"
+                              titleText=""
+                              placeholder="Select authorities query..."
+                              size="lg"
+                              items={authoritiesPresets}
+                              itemToString={(item) => (item ? item.label : '')}
+                              onChange={({ selectedItem }) => {
+                                if (selectedItem) {
+                                  setActivePresetId(selectedItem.id);
+                                  loadPreset(selectedItem.query);
+                                }
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
 
                       <div className="editor-card">
                         <div className="editor-header">
                           <span className="editor-label">GraphQL query</span>
-                          {query && (
-                            <Tag type="outline" size="sm">
-                              {query.split('\n').filter(line => line.trim()).length} lines
-                            </Tag>
-                          )}
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                            {query && (
+                              <Tag type="outline" size="sm">
+                                {query.split('\n').filter(line => line.trim()).length} lines
+                              </Tag>
+                            )}
+                            {query && (
+                              <Button
+                                kind="ghost"
+                                size="sm"
+                                renderIcon={Copy}
+                                iconDescription="Copy query"
+                                hasIconOnly
+                                onClick={() => {
+                                  navigator.clipboard.writeText(query);
+                                }}
+                              />
+                            )}
+                          </div>
                         </div>
                         <div className="editor-container">
                           <Editor
@@ -898,82 +916,38 @@ const ApiSandbox = () => {
                               </div>
                             )}
 
-                            {/* Handle single record_v1 with attached_media */}
-                            {json.record_v1 && (
-                              <div style={{ marginTop: "var(--cds-spacing-05)" }}>
-                                <h4 style={{ marginBottom: "var(--cds-spacing-03)" }}>
-                                  {json.record_v1.title}
-                                </h4>
-                                
-                                {/* Show attached media if available */}
-                                {json.record_v1.attached_media && json.record_v1.attached_media.length > 0 && (
-                                  <>
-                                    <h5 style={{ marginTop: "var(--cds-spacing-05)", marginBottom: "var(--cds-spacing-03)" }}>
-                                      Attached Media
-                                    </h5>
-                                    <div className="cds-grid">
-                                      {json.record_v1.attached_media.map((media, idx) => {
-                                        const jpg = media.jpg_derivatives?.[0];
-                                        const pdf = media.pdf_files?.[0];
-                                        const linkUrl = pdf?.signed_url || jpg?.signed_url;
-                                        const thumbUrl = jpg?.signed_url;
+                            {/* Handle single record_v1 - use same grid layout as items_recent */}
+                            {json.record_v1 && (() => {
+                              // Normalize record_v1 to items array format for consistent rendering
+                              const items = [json.record_v1];
+                              
+                              return (
+                                <div className="cds-grid">
+                                  {items.flatMap((item) => {
+                                    const results = [];
+                                    
+                                    // Handle jpg_derivatives (images)
+                                    if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                      const thumbs = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
+                                      const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display');
+                                      
+                                      thumbs.forEach((thumb, idx) => {
+                                        const display = displays[idx] || thumb;
+                                        const imgUrl = thumb.signed_url;
+                                        const linkUrl = display.signed_url;
                                         
-                                        return (
-                                          <figure key={idx} className="cds-figure cds-card-tile">
-                                            {thumbUrl ? (
-                                              <a href={linkUrl} target="_blank" rel="noopener noreferrer" title={`View ${pdf ? 'PDF' : 'image'}: ${media.title}`}>
-                                                <img src={thumbUrl} alt={media.title} className="cds-thumb" />
-                                              </a>
-                                            ) : pdf ? (
-                                              <a href={pdf.signed_url} target="_blank" rel="noopener noreferrer" title={`View PDF: ${media.title}`}>
-                                                <div className="cds-thumb cds-thumb--placeholder" style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  fontSize: '3rem',
-                                                  color: '#525252'
-                                                }}>
-                                                  📄
-                                                </div>
-                                              </a>
-                                            ) : null}
-                                            <figcaption className="cds-figcaption">
-                                              <strong>{media.title}</strong>
-                                              {pdf && <><br/><small style={{color: '#525252'}}>📄 {pdf.filename}</small></>}
-                                              {jpg && !pdf && <><br/><small>{jpg.filename}</small></>}
-                                            </figcaption>
-                                          </figure>
-                                        );
-                                      })}
-                                    </div>
-                                  </>
-                                )}
-                                
-                                {/* Show record's own jpg_derivatives if available */}
-                                {json.record_v1.jpg_derivatives && json.record_v1.jpg_derivatives.length > 0 && (() => {
-                                  // Group images by their asset ID (extract from filename)
-                                  const thumbs = json.record_v1.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
-                                  const displays = json.record_v1.jpg_derivatives.filter(j => j.role === 'jpg_display');
-                                  
-                                  // Create pairs of thumb + display for each image
-                                  const imagePairs = thumbs.map((thumb, idx) => ({
-                                    thumb: thumb,
-                                    display: displays[idx] || thumb // Fallback to thumb if no display
-                                  }));
-                                  
-                                  return (
-                                    <>
-                                      <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-05)" }}>
-                                        {imagePairs.map((pair, idx) => (
-                                          <figure key={idx} className="cds-figure cds-card-tile">
-                                            <a href={pair.display.signed_url} target="_blank" rel="noopener noreferrer" title="View hi-res image">
-                                              <img src={pair.thumb.signed_url} alt={`${json.record_v1.title} - Image ${idx + 1}`} className="cds-thumb" />
+                                        results.push(
+                                          <figure key={`img-${item.id}-${idx}`} className="cds-figure cds-card-tile">
+                                            <a href={linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                              <img src={imgUrl} alt={thumb.label || `Image ${idx + 1}`} className="cds-thumb" />
                                             </a>
                                             <figcaption className="cds-figcaption">
-                                              <strong>{pair.thumb.label || pair.thumb.filename?.split('/').pop().split('.')[0].replace(/_/g, ' ') || `Image ${idx + 1}`}</strong>
-                                              <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}><Image size={16} /> Image {idx + 1} of {imagePairs.length}</small>
+                                              <strong>{thumb.label || item.title || `Image ${idx + 1}`}</strong>
+                                              <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                <Image size={16} /> Image {idx + 1} of {thumbs.length}
+                                              </small>
                                               <br/><a 
-                                                href={pair.display.signed_url} 
+                                                href={linkUrl} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 style={{
@@ -985,65 +959,161 @@ const ApiSandbox = () => {
                                                   gap: '0.25rem',
                                                   marginTop: '0.25rem'
                                                 }}
-                                                title="Open hi-res image in new tab"
                                               >
                                                 <Document size={16} /> View artefact <ArrowRight size={16} />
                                               </a>
                                             </figcaption>
                                           </figure>
-                                        ))}
-                                      </div>
-                                    </>
-                                  );
-                                })()}
-                                
-                                {/* Show record's own pdf_files if available */}
-                                {json.record_v1.pdf_files && json.record_v1.pdf_files.length > 0 && (
-                                  <>
-                                    <h5 style={{ marginTop: "var(--cds-spacing-05)", marginBottom: "var(--cds-spacing-03)" }}>
-                                      PDF Files
-                                    </h5>
-                                    <div className="cds-grid">
-                                      {json.record_v1.pdf_files.map((pdf, idx) => (
-                                        <figure key={`pdf-${idx}`} className="cds-figure cds-card-tile">
-                                          <a href={pdf.signed_url} target="_blank" rel="noopener noreferrer">
-                                            <div className="cds-thumb cds-thumb--placeholder" style={{
-                                              display: 'flex',
-                                              alignItems: 'center',
-                                              justifyContent: 'center',
-                                              fontSize: '3rem',
-                                              color: '#525252'
-                                            }}>
-                                              📄
-                                            </div>
-                                          </a>
-                                          <figcaption className="cds-figcaption">
-                                            <strong>{json.record_v1.title}</strong>
-                                            <br/><small style={{color: '#525252'}}>📄 {pdf.filename}</small>
-                                            <br/><a 
-                                              href={pdf.signed_url} 
-                                              target="_blank" 
-                                              rel="noopener noreferrer"
-                                              style={{
-                                                color: '#0f62fe',
-                                                textDecoration: 'none',
-                                                fontSize: '0.875rem',
-                                                display: 'inline-flex',
+                                        );
+                                      });
+                                    }
+                                    
+                                    // Handle pdf_files
+                                    if (item.pdf_files && Array.isArray(item.pdf_files)) {
+                                      item.pdf_files.forEach((pdf, idx) => {
+                                        const pdfUrl = pdf.signed_url;
+                                        
+                                        results.push(
+                                          <figure key={`pdf-${item.id}-${idx}`} className="cds-figure cds-card-tile">
+                                            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                              <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '0.25rem',
-                                                marginTop: '0.25rem'
-                                              }}
-                                            >
-                                              <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                justifyContent: 'center',
+                                                fontSize: '3rem',
+                                                color: '#525252'
+                                              }}>
+                                                📄
+                                              </div>
                                             </a>
-                                          </figcaption>
-                                        </figure>
-                                      ))}
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            )}
+                                            <figcaption className="cds-figcaption">
+                                              <strong>{pdf.label || item.title}</strong>
+                                              <br/><small style={{color: '#525252'}}>📄 PDF</small>
+                                              <br/><a 
+                                                href={pdfUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                  color: '#0f62fe',
+                                                  textDecoration: 'none',
+                                                  fontSize: '0.875rem',
+                                                  display: 'inline-flex',
+                                                  alignItems: 'center',
+                                                  gap: '0.25rem',
+                                                  marginTop: '0.25rem'
+                                                }}
+                                              >
+                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                              </a>
+                                            </figcaption>
+                                          </figure>
+                                        );
+                                      });
+                                    }
+                                    
+                                    // Handle attached_media (for record_v1 with child media items)
+                                    if (item.attached_media && Array.isArray(item.attached_media)) {
+                                      item.attached_media.forEach((media) => {
+                                        // Handle PDFs from attached media
+                                        if (media.pdf_files && Array.isArray(media.pdf_files)) {
+                                          media.pdf_files.forEach((pdf, idx) => {
+                                            const pdfUrl = pdf.signed_url;
+                                            // Look for corresponding thumbnail
+                                            const thumb = media.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
+                                            const imgUrl = thumb?.signed_url;
+                                            
+                                            results.push(
+                                              <figure key={`media-pdf-${media.id}-${idx}`} className="cds-figure cds-card-tile">
+                                                <a href={pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                                  {imgUrl ? (
+                                                    <img src={imgUrl} alt={pdf.label || media.title} className="cds-thumb" />
+                                                  ) : (
+                                                    <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                      display: 'flex',
+                                                      alignItems: 'center',
+                                                      justifyContent: 'center',
+                                                      fontSize: '3rem',
+                                                      color: '#525252'
+                                                    }}>
+                                                      📄
+                                                    </div>
+                                                  )}
+                                                </a>
+                                                <figcaption className="cds-figcaption">
+                                                  <strong>{pdf.label || media.title || 'PDF Document'}</strong>
+                                                  <br/><small style={{color: '#525252'}}>📄 PDF</small>
+                                                  <br/><a 
+                                                    href={pdfUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                      color: '#0f62fe',
+                                                      textDecoration: 'none',
+                                                      fontSize: '0.875rem',
+                                                      display: 'inline-flex',
+                                                      alignItems: 'center',
+                                                      gap: '0.25rem',
+                                                      marginTop: '0.25rem'
+                                                    }}
+                                                  >
+                                                    <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                  </a>
+                                                </figcaption>
+                                              </figure>
+                                            );
+                                          });
+                                        }
+                                        
+                                        // Handle images from attached media (if no PDF)
+                                        if (media.jpg_derivatives && Array.isArray(media.jpg_derivatives) && 
+                                            (!media.pdf_files || media.pdf_files.length === 0)) {
+                                          const thumbs = media.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
+                                          const displays = media.jpg_derivatives.filter(j => j.role === 'jpg_display');
+                                          
+                                          thumbs.forEach((thumb, idx) => {
+                                            const display = displays[idx] || thumb;
+                                            const imgUrl = thumb.signed_url;
+                                            const linkUrl = display.signed_url;
+                                            
+                                            results.push(
+                                              <figure key={`media-img-${media.id}-${idx}`} className="cds-figure cds-card-tile">
+                                                <a href={linkUrl} target="_blank" rel="noopener noreferrer" title="View image">
+                                                  <img src={imgUrl} alt={thumb.label || media.title} className="cds-thumb" />
+                                                </a>
+                                                <figcaption className="cds-figcaption">
+                                                  <strong>{thumb.label || media.title}</strong>
+                                                  <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                    <Image size={16} /> Image
+                                                  </small>
+                                                  <br/><a 
+                                                    href={linkUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                      color: '#0f62fe',
+                                                      textDecoration: 'none',
+                                                      fontSize: '0.875rem',
+                                                      display: 'inline-flex',
+                                                      alignItems: 'center',
+                                                      gap: '0.25rem',
+                                                      marginTop: '0.25rem'
+                                                    }}
+                                                  >
+                                                    <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                  </a>
+                                                </figcaption>
+                                              </figure>
+                                            );
+                                          });
+                                        }
+                                      });
+                                    }
+                                    
+                                    return results;
+                                  })}
+                                </div>
+                              );
+                            })()}
 
                             {/* Show message if no visual results */}
                             {!json.items_recent && !json.records_v1 && !json.record_v1 && (
@@ -1057,7 +1127,19 @@ const ApiSandbox = () => {
 
                       {showResults && (
                         <div className="cds-card">
-                          <h3 className="cds-heading">Raw JSON</h3>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 className="cds-heading">Raw JSON</h3>
+                            <Button
+                              kind="ghost"
+                              size="sm"
+                              renderIcon={Copy}
+                              iconDescription="Copy JSON"
+                              hasIconOnly
+                              onClick={() => {
+                                navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+                              }}
+                            />
+                          </div>
                           <pre className="cds-json">{json ? JSON.stringify(json, null, 2) : "{}"}</pre>
                         </div>
                       )}
@@ -1075,7 +1157,7 @@ const ApiSandbox = () => {
               {activeApiTab === 2 && (
               <>
                 <Heading type="heading-03" className="tab-lead">
-                  Load GraphQL query presets into the sandbox editor or copy code snippets for your own implementation.
+                  Load GraphQL query presets into the sandbox editor or copy code snippets
                 </Heading>
                 <AnchorLinks links={PRESETS_ANCHORS} />
                 
@@ -1186,7 +1268,7 @@ const ApiSandbox = () => {
               {activeApiTab === 3 && (
               <>
                 <Heading type="heading-03" className="tab-lead">
-                  Key terms and definitions for understanding the DDR Archive API, GLAM practices, and related technical concepts.
+                  Key terms and definitions for understanding the DDR Archive API, GLAM practices, and related technical concepts
                 </Heading>
                 <AnchorLinks links={GLOSSARY_ANCHORS} />
                 

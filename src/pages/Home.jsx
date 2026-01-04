@@ -55,7 +55,7 @@ const Home = () => {
         id="home"
         eyebrow="Royal College of Art Department of Design Research"
         title="DDR public preview"
-        lead="A streamlined public interface to explore the DDR digital archive"
+        // lead="A streamlined public interface to explore the DDR digital archive"
         style={heroStyle}
         tabs={HOME_TABS}
         activeTab={activeTab}
@@ -70,7 +70,7 @@ const Home = () => {
                 {activeTab === 0 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Partners asked to see the scaffolding that shapes DDR's internal work. This view keeps sensitive research inside the parent application while still exposing the information architecture, typography, and Carbon baseline.
+                      A streamlined public interface to explore the DDR digital archive
                     </Heading>
                     <AnchorLinks links={OVERVIEW_ANCHORS} />
                     <MarkdownContent 
@@ -90,7 +90,7 @@ const Home = () => {
                 {activeTab === 1 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Current workstreams show where DDR focuses effort. Each project follows a similar workflow structure so external collaborators can build context quickly.
+                      Current workstreams show where DDR focuses effort. Each project follows a similar workflow structure so external collaborators can build context quickly
                     </Heading>
                     <AnchorLinks links={WORKSTREAMS_ANCHORS} />
                     <MarkdownContent 
@@ -103,7 +103,7 @@ const Home = () => {
                 {activeTab === 2 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      The roadmap tracks upcoming features and improvements. Timelines remain flexible to accommodate changing research priorities and partner needs.
+                      The roadmap tracks upcoming features and improvements. Timelines remain flexible to accommodate changing research priorities
                     </Heading>
                     <AnchorLinks links={ROADMAP_ANCHORS} />
                     <MarkdownContent 

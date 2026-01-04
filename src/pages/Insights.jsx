@@ -38,9 +38,9 @@ const Insights = () => {
     <div className="page insights-page">
       <PageHero
         id="insights"
-        eyebrow="Insights"
-        title="Systems snapshot"
-        lead="Placeholder analytics wiring so you can attach Carbon charts and cards just like the internal dashboard."
+        // eyebrow="Insights"
+        title="Research insights"
+        // lead="Placeholder analytics wiring so you can attach Carbon charts and cards just like the internal dashboard."
         tabs={INSIGHTS_TABS}
         activeTab={activeTab}
         onTabSelect={handleTabSelect}
@@ -54,7 +54,7 @@ const Insights = () => {
                 {activeTab === 0 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Systems analytics track architecture performance and data flows. This dashboard wiring lets you attach Carbon charts showing real metrics from the internal platform.
+                      Systems analytics track architecture performance and data flows with dashboard wiring for Carbon charts showing real metrics from the internal platform
                     </Heading>
                     <AnchorLinks links={SYSTEMS_ANCHORS} />
                     <MarkdownContent 
@@ -67,7 +67,7 @@ const Insights = () => {
                 {activeTab === 1 && (
                   <>
                     <Heading type="heading-03" className="tab-lead">
-                      Upcoming work covers planned features, open research questions, and technical improvements. Community feedback helps shape priorities and timelines.
+                      Upcoming work covers planned features, open research questions and technical improvements shaped by community feedback
                     </Heading>
                     <AnchorLinks links={NEXTUP_ANCHORS} />
                     <MarkdownContent 
