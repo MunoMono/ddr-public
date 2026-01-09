@@ -4,10 +4,10 @@
   "description": "GraphQL queries for DDR archive records and items",
   "presets": [
     {
-      "id": "rcaRectorsReports",
-      "label": "RCA Rector's reports | 1967-85",
-      "description": "Collection of RCA Rector's reports with PDF files and Linked Data",
-      "query": "# RCA Rector's reports | 1967-85\n# Record with PDF files and Linked Data endpoints\n{\n  record_v1(id: \"83\") {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    fonds_code\n    extent_unit\n    creator_agent_label\n    project_theme\n    pdf_files {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    jpg_derivatives {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "id": "kennethAgnewPhotos",
+      "label": "Kenneth Agnew selected photographs",
+      "description": "Browse sample images from the Agnew archive at RCA Special Collections",
+      "query": "# Kenneth Agnew selected photographs\n{\n  record_v1(id: \"53\") {\n    pid\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n    copyright_holder\n    rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recentItems",
@@ -19,19 +19,19 @@
       "id": "allRecords",
       "label": "All records",
       "description": "All records (both S3 media items and postgres records)",
-      "query": "# All records (both S3 media items and postgres records)\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    reference_code\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    project_team_staff\n    jpg_derivatives {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# All records (both S3 media items and postgres records)\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    project_theme\n    extent_unit\n    creatorcorporate_id\n    ddr_period\n    fonds_code\n    access_level\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    reference_code\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    project_team_staff\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recordsWithImages",
       "label": "Records with images",
-      "description": "Records with TIFF-derived images and thumbnails",
+      "description": "Record with 30 TIFF-derived images (Kenneth Agnew)",
       "query": "# Record with actual images (Kenneth Agnew photographs)\n# Uses record_v1 to get a specific record with jpg_display images\n{\n  record_v1(id: \"53\") {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    fonds_code\n    extent_unit\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recordsWithPDFs",
       "label": "Records with PDFs",
-      "description": "Records with PDF files and generated thumbnails",
-      "query": "# Records with PDF files\n# jpg_derivatives with role='jpg_thumb' are PDF thumbnails\n# Look for records where pdf_files array is not empty\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    project_theme\n    extent_unit\n    project_team_staff\n    jpg_derivatives {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      asset_id\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "description": "COMDAC and Strathclyde Police reports (PDF attachments with thumbnails)",
+      "query": "# Records with PDF files\n# jpg_derivatives with role='jpg_thumb' are PDF thumbnails\n# Look for records where pdf_files array is not empty\n{\n  items_recent(limit: 50) {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    project_theme\n    extent_unit\n    project_team_staff\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "singleRecord",

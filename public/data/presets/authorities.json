@@ -1,91 +1,94 @@
 {
   "id": "authorities",
-  "label": "Database Authorities",
+  "label": "DB Authorities",
   "description": "GraphQL queries for DDR database authorities and controlled vocabularies",
-  "categories": [
+  "presets": [
     {
-      "id": "core-intended",
-      "label": "Core intended categories",
-      "presets": [
-        {
-          "id": "authDdrStaff",
-          "label": "DDR staff (core agent)",
-          "description": "DDR staff employment history with names, roles and tenure",
-          "query": "# DDR staff - employment history with names, roles and tenure\n{\n  agent_employment {\n    staff_code\n    agent_name\n    job_title_code\n    job_title_label\n    start_date\n    end_date\n    is_primary\n  }\n}"
-        },
-        {
-          "id": "authStaffRegistry",
-          "label": "DDR staff registry (with roles and tenure)",
-          "description": "Staff members with employment roles and tenure - requires joining 3 queries",
-          "query": "# DDR staff registry - Get name, role, tenure\n# Query 1: Get staff names\n# { agents { staff_code display_name } }\n#\n# Query 2: Get employment data  \n# { agent_employment { staff_code job_title_code start_date end_date is_primary } }\n#\n# Query 3: Get role labels\n# { ref_job_title { code label } }\n#\n# Then join client-side:\n# - Match staff_code from agents + agent_employment\n# - Match job_title_code + ref_job_title.code to get role label\n# - Format tenure: start_date - end_date\n# - Filter is_primary == true for main roles\n{\n  agents {\n    staff_code\n    display_name\n  }\n}"
-        },
-        {
-          "id": "authJobList",
-          "label": "DDR job list (project register)",
-          "description": "Database authority for DDR projects",
-          "query": "# DDR job list (project register authority)\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    duration_text\n    project_lead_name\n  }\n}"
-        },
-        {
-          "id": "authStudents",
-          "label": "DDR students",
-          "description": "DDR postgraduate students with degrees and thesis titles",
-          "query": "# DDR students authority\n{\n  ref_students {\n    code\n    label\n    year\n    degree\n    thesis_title\n  }\n}"
-        },
-        {
-          "id": "authFonds",
-          "label": "Fonds",
-          "description": "Database authority for fonds",
-          "query": "# Fonds authority\n{\n  ref_fonds {\n    id\n    code\n    label\n    notes\n  }\n}"
-        },
-        {
-          "id": "authPublicationType",
-          "label": "Publication type",
-          "description": "Database authority for publication types",
-          "query": "# Publication type authority\n{\n  ref_publication_type {\n    id\n    label\n    description\n  }\n}"
-        }
-      ]
+      "id": "authDdrStaff",
+      "label": "DDR Staff (core agent)",
+      "description": "DDR staff employment history with names, roles and tenure",
+      "query": "# DDR Staff - employment history with names, roles and tenure\n{\n  agent_employment {\n    staff_code\n    agent_name\n    job_title_code\n    job_title_label\n    start_date\n    end_date\n    is_primary\n  }\n}"
     },
     {
-      "id": "critical-categories",
-      "label": "Critical categories",
-      "presets": [
-        {
-          "id": "authBeneficiaryAudience",
-          "label": "Beneficiary audience",
-          "description": "Database authority for beneficiary audiences",
-          "query": "# Beneficiary audience authority\n{\n  ref_beneficiary_audience {\n    id\n    label\n    description\n  }\n}"
-        },
-        {
-          "id": "authDdrPeriod",
-          "label": "DDR period",
-          "description": "Database authority for DDR time periods",
-          "query": "# DDR period authority\n{\n  ref_ddr_period {\n    slug\n    label\n    description\n  }\n}"
-        },
-        {
-          "id": "authEpistemicStance",
-          "label": "Epistemic stance",
-          "description": "Database authority for epistemic stances",
-          "query": "# Epistemic stance authority\n{\n  ref_epistemic_stance {\n    id\n    label\n    description\n  }\n}"
-        },
-        {
-          "id": "authMethodology",
-          "label": "Methodology",
-          "description": "Database authority for research methodologies",
-          "query": "# Methodology authority\n{\n  ref_methodology {\n    id\n    label\n    description\n  }\n}"
-        },
-        {
-          "id": "authProjectOutcome",
-          "label": "Project outcome",
-          "description": "Database authority for project outcomes",
-          "query": "# Project outcome authority\n{\n  ref_project_outcome {\n    id\n    label\n    description\n  }\n}"
-        },
-        {
-          "id": "authProjectTheme",
-          "label": "Project theme",
-          "description": "Database authority for project themes",
-          "query": "# Project theme authority\n{\n  ref_project_theme {\n    id\n    label\n    description\n  }\n}"
-        }
-      ]
+      "id": "authStaffRegistry",
+      "label": "DDR Staff Registry (with roles and tenure)",
+      "description": "Staff members with employment roles and tenure - requires joining 3 queries",
+      "query": "# DDR Staff Registry - Get name, role, tenure\n# Query 1: Get staff names\n# { agents { staff_code display_name } }\n#\n# Query 2: Get employment data  \n# { agent_employment { staff_code job_title_code start_date end_date is_primary } }\n#\n# Query 3: Get role labels\n# { ref_job_title { code label } }\n#\n# Then join client-side:\n# - Match staff_code from agents + agent_employment\n# - Match job_title_code + ref_job_title.code to get role label\n# - Format tenure: start_date - end_date\n# - Filter is_primary == true for main roles\n{\n  agents {\n    staff_code\n    display_name\n  }\n}"
+    },
+    {
+      "id": "authJobList",
+      "label": "DDR Job List (project register)",
+      "description": "Database authority for DDR projects",
+      "query": "# DDR Job List (project register authority)\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    duration_text\n    project_lead_name\n  }\n}"
+    },
+    {
+      "id": "authBeneficiaryAudience",
+      "label": "Beneficiary Audience",
+      "description": "Database authority for beneficiary audiences",
+      "query": "# Beneficiary Audience authority\n{\n  ref_beneficiary_audience {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authDdrPeriod",
+      "label": "DDR Period",
+      "description": "Database authority for DDR time periods",
+      "query": "# DDR Period authority\n{\n  ref_ddr_period {\n    slug\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authDepartment",
+      "label": "DDR Department (department unit)",
+      "description": "Database authority for DDR departments",
+      "query": "# DDR Department authority\n{\n  ref_department {\n    id\n    code\n    label\n  }\n}",
+      "disabled": true
+    },
+    {
+      "id": "authEpistemicStance",
+      "label": "Epistemic Stance",
+      "description": "Database authority for epistemic stances",
+      "query": "# Epistemic Stance authority\n{\n  ref_epistemic_stance {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authArtefactType",
+      "label": "Artefact Type (extent unit)",
+      "description": "Database authority for artefact types",
+      "query": "# Artefact Type authority\n{\n  ref_artefact_type {\n    id\n    label\n    description\n  }\n}",
+      "disabled": true
+    },
+    {
+      "id": "authFonds",
+      "label": "Fonds",
+      "description": "Database authority for fonds",
+      "query": "# Fonds authority\n{\n  ref_fonds {\n    id\n    code\n    label\n    notes\n  }\n}"
+    },
+    {
+      "id": "authMethodology",
+      "label": "Methodology",
+      "description": "Database authority for research methodologies",
+      "query": "# Methodology authority\n{\n  ref_methodology {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authProjectOutcome",
+      "label": "Project Outcome",
+      "description": "Database authority for project outcomes",
+      "query": "# Project Outcome authority\n{\n  ref_project_outcome {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authProjectTheme",
+      "label": "Project Theme",
+      "description": "Database authority for project themes",
+      "query": "# Project Theme authority\n{\n  ref_project_theme {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authPublicationType",
+      "label": "Publication Type",
+      "description": "Database authority for publication types",
+      "query": "# Publication Type authority\n{\n  ref_publication_type {\n    id\n    label\n    description\n  }\n}"
+    },
+    {
+      "id": "authCategory",
+      "label": "Category (series category)",
+      "description": "Database authority for series categories",
+      "query": "# Category (series category authority)\n{\n  ref_category {\n    id\n    label\n    description\n  }\n}",
+      "disabled": true
     }
   ]
 }
