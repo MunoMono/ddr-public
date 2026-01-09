@@ -272,7 +272,9 @@ const ApiSandbox = () => {
         
         if (authoritiesRes.ok) {
           const authoritiesData = await authoritiesRes.json();
-          setAuthoritiesPresets(authoritiesData.presets || []);
+          // Flatten categories into a single array of presets
+          const allPresets = authoritiesData.categories?.flatMap(cat => cat.presets) || authoritiesData.presets || [];
+          setAuthoritiesPresets(allPresets);
         }
         
         if (snippetsRes.ok) {
