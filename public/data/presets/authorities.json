@@ -26,12 +26,6 @@
           "query": "# DDR job list (project register authority)\n{\n  ddr_projects {\n    job_number\n    title\n    funder_name\n    duration_text\n    project_lead_name\n  }\n}"
         },
         {
-          "id": "authStudents",
-          "label": "DDR students",
-          "description": "DDR postgraduate students with degrees and thesis titles",
-          "query": "# DDR students authority\n{\n  ref_students {\n    code\n    label\n    year\n    degree\n    thesis_title\n  }\n}"
-        },
-        {
           "id": "authFonds",
           "label": "Fonds",
           "description": "Database authority for fonds",
@@ -42,6 +36,12 @@
           "label": "Publication type",
           "description": "Database authority for publication types",
           "query": "# Publication type authority\n{\n  ref_publication_type {\n    id\n    label\n    description\n  }\n}"
+        },
+        {
+          "id": "authStudents",
+          "label": "DDR students",
+          "description": "DDR postgraduate students with degrees and thesis titles",
+          "query": "# DDR students authority\n{\n  ref_students {\n    code\n    label\n    year\n    degree\n    thesis_title\n  }\n}"
         }
       ]
     },
