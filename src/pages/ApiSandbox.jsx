@@ -934,8 +934,11 @@ const ApiSandbox = () => {
                                     
                                     // Handle jpg_derivatives (images)
                                     if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
-                                      const thumbs = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
-                                      const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display');
+                                      // Get PDF labels to exclude their thumbnails from image rendering
+                                      const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                      
+                                      const thumbs = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                      const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
                                       
                                       thumbs.forEach((thumb, idx) => {
                                         const display = displays[idx] || thumb;
