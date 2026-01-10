@@ -978,23 +978,29 @@ const ApiSandbox = () => {
                                     if (item.pdf_files && Array.isArray(item.pdf_files)) {
                                       item.pdf_files.forEach((pdf, idx) => {
                                         const pdfUrl = pdf.signed_url;
+                                        // Look for matching thumbnail by label
+                                        const thumb = item.jpg_derivatives?.find(j => j.role === 'jpg_thumb' && j.label === pdf.label);
+                                        const imgUrl = thumb?.signed_url;
                                         
                                         results.push(
                                           <figure key={`pdf-${item.id}-${idx}`} className="cds-figure cds-card-tile">
                                             <a href={pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
-                                              <div className="cds-thumb cds-thumb--placeholder" style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                fontSize: '3rem',
-                                                color: '#525252'
-                                              }}>
-                                                📄
-                                              </div>
+                                              {imgUrl ? (
+                                                <img src={imgUrl} alt={pdf.label || item.title} className="cds-thumb" />
+                                              ) : (
+                                                <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  fontSize: '3rem',
+                                                  color: '#525252'
+                                                }}>
+                                                  📄
+                                                </div>
+                                              )}
                                             </a>
                                             <figcaption className="cds-figcaption">
                                               <strong>{pdf.label || item.title}</strong>
-                                              <br/><small style={{color: '#525252'}}>📄 PDF</small>
                                               <br/><a 
                                                 href={pdfUrl} 
                                                 target="_blank" 
