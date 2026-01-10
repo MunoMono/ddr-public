@@ -7,7 +7,7 @@
       "id": "rcaRectorsReports",
       "label": "RCA Rector's reports",
       "description": "Browse RCA Rector's annual reports",
-      "query": "# RCA Rector's reports\n{\n  record_v1(id: \"723540083596\") {\n    pid\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+      "query": "# RCA Rector's reports\n{\n  record_v1(id: \"83\") {\n    title\n    copyright_holder\n    rights_holders\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     },
     {
       "id": "recentItems",
