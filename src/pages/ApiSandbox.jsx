@@ -237,7 +237,8 @@ const ApiSandbox = () => {
   
   // Load presets and snippets from JSON files
   const [recordsPresets, setRecordsPresets] = useState([]);
-  const [authoritiesPresets, setAuthoritiesPresets] = useState([]);
+  const [coreAuthorities, setCoreAuthorities] = useState([]);
+  const [criticalAuthorities, setCriticalAuthorities] = useState([]);
   const [codeSnippets, setCodeSnippets] = useState([]);
 
   const currentSnippet = useMemo(
@@ -272,9 +273,12 @@ const ApiSandbox = () => {
         
         if (authoritiesRes.ok) {
           const authoritiesData = await authoritiesRes.json();
-          // Flatten categories into a single array of presets
-          const allPresets = authoritiesData.categories?.flatMap(cat => cat.presets) || authoritiesData.presets || [];
-          setAuthoritiesPresets(allPresets);
+          // Separate presets by category
+          const coreCategory = authoritiesData.categories?.find(cat => cat.id === 'core-intended');
+          const criticalCategory = authoritiesData.categories?.find(cat => cat.id === 'critical-categories');
+          
+          setCoreAuthorities(coreCategory?.presets || []);
+          setCriticalAuthorities(criticalCategory?.presets || []);
         }
         
         if (snippetsRes.ok) {
@@ -657,11 +661,11 @@ const ApiSandbox = () => {
                               titleText=""
                               placeholder="Select authorities query..."
                               size="lg"
-                              items={authoritiesPresets}
+                              items={[...coreAuthorities, ...criticalAuthorities]}
                               itemToString={(item) => (item ? item.label : '')}
                               onChange={({ selectedItem }) => {
                                 if (selectedItem) {
-                                  setActivePresetId(selectedItem.id);
+                              setActivePresetId(selectedItem.id);
                                   loadPreset(selectedItem.query);
                                 }
                               }}
@@ -1174,13 +1178,38 @@ const ApiSandbox = () => {
 
                   <div className="presets-category">
                     <div className="presets-category__header">
-                      <Catalog size={20} />
+                      <DataBase size={20} />
                       <Heading as="h3" type="heading-compact-01">
-                        Archive records
+                        Database authorities
                       </Heading>
                     </div>
+                    
+                    <Heading as="h4" type="heading-compact-01" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', marginLeft: '0.5rem' }}>
+                      Core intended categories
+                    </Heading>
                     <div className="presets-category__grid">
-                      {recordsPresets.filter(p => !p.disabled).map((preset) => (
+                      {coreAuthorities.filter(p => !p.disabled).map((preset) => (
+                        <ClickableTile 
+                          key={preset.id} 
+                          className="preset-tile"
+                          onClick={() => loadPreset(preset.query)}
+                        >
+                          <div className="preset-tile__header">
+                            <strong className="preset-tile__title">{preset.label}</strong>
+                            <ArrowRight size={16} className="preset-tile__arrow" />
+                          </div>
+                          <p className="preset-tile__description">
+                            {preset.description}
+                          </p>
+                        </ClickableTile>
+                      ))}
+                    </div>
+
+                    <Heading as="h4" type="heading-compact-01" style={{ marginTop: '2rem', marginBottom: '0.5rem', marginLeft: '0.5rem' }}>
+                      Critical categories
+                    </Heading>
+                    <div className="presets-category__grid">
+                      {criticalAuthorities.filter(p => !p.disabled).map((preset) => (
                         <ClickableTile 
                           key={preset.id} 
                           className="preset-tile"
@@ -1200,13 +1229,13 @@ const ApiSandbox = () => {
 
                   <div className="presets-category">
                     <div className="presets-category__header">
-                      <DataBase size={20} />
+                      <Catalog size={20} />
                       <Heading as="h3" type="heading-compact-01">
-                        Database authorities
+                        Archive records
                       </Heading>
                     </div>
                     <div className="presets-category__grid">
-                      {authoritiesPresets.filter(p => !p.disabled).map((preset) => (
+                      {recordsPresets.filter(p => !p.disabled).map((preset) => (
                         <ClickableTile 
                           key={preset.id} 
                           className="preset-tile"
