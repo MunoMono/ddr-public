@@ -44,6 +44,18 @@
       "label": "Comprehensive single record",
       "description": "Complete metadata for recent records",
       "query": "# Comprehensive record with all available metadata\n# Uses items_recent (first result) which merges child media assets\n{\n  items_recent(limit: 1) {\n    id\n    pid\n    title\n    status\n    updated_at\n    level\n    scope_and_content\n    abstract\n    date_begin\n    date_end\n    reference_code\n    fonds_code\n    series_id\n    extent_unit\n    extent_number\n    access_level\n    copyright_holder\n    copyright_holder_other\n    rights_holders\n    rights_statement_uri\n    ddr_period\n    project_theme\n    project_title\n    project_job_number\n    project_start_date\n    project_end_date\n    project_duration\n    project_outcome\n    project_beneficiary_audience\n    creator_agent_label\n    creator_agent\n    funder_agent_label\n    funder_agent\n    creatorcorporate_id\n    project_team_staff\n    contributor_agents\n    location_repository\n    location_accession\n    location_box\n    location_note\n    methodology\n    epistemic_stance\n    current_consent_status\n    consent_evidence_uri\n    takedown_contact\n    language_codes\n    transcript_present\n    interviewees\n    interview_date\n    interview_location\n    interview_format\n    interview_runtime_minutes\n    interview_session_number\n    recording_equipment\n    publication_links\n    jpg_derivatives {\n      signed_url\n      url\n      filename\n      role\n      mime\n      bytes\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      url\n      filename\n      role\n      mime\n      bytes\n      label\n      copyright_holder\n      rights_holders\n    }\n    creators\n    subjects\n    parent_collection\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n    public_uri\n  }\n}"
+    },
+    {
+      "id": "rcaProspectuses",
+      "label": "RCA Prospectuses 1965-85",
+      "description": "RCA Prospectuses PDF collection with thumbnails (PID 964614721622)",
+      "query": "# RCA Prospectuses | 1965-85\n# PID: 964614721622, Record ID: 89\n# Tests PDF upload with derivative JPG thumbnails\n{\n  record_v1(id: \"89\") {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    pdf_files {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
+    },
+    {
+      "id": "job73SurgicalTable",
+      "label": "Lower limb surgical plaster table | Job 73",
+      "description": "TIFF images with JPG derivatives (PID 511370898115)",
+      "query": "# Lower limb surgical plaster table | Job 73\n# PID: 511370898115, Record ID: 90\n# Tests TIFF upload with derivative JPG display and thumb images\n{\n  record_v1(id: \"90\") {\n    id\n    pid\n    title\n    scope_and_content\n    copyright_holder\n    rights_holders\n    date_begin\n    date_end\n    jpg_derivatives {\n      signed_url\n      filename\n      role\n      label\n      copyright_holder\n      rights_holders\n    }\n    linked_art_jsonld_url\n    linked_art_turtle_url\n    linked_art_rdfxml_url\n  }\n}"
     }
   ]
 }
