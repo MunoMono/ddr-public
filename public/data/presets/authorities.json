@@ -41,7 +41,7 @@
           "id": "authStudents",
           "label": "DDR students",
           "description": "DDR postgraduate students with degrees and thesis titles",
-          "query": "# DDR students authority\n{\n  ref_students {\n    code\n    label\n    year\n    degree\n    thesis_title\n  }\n}"
+          "query": "# DDR students authority\n{\n  ref_students {\n    label\n    year\n    degree\n    thesis_title\n  }\n}"
         }
       ]
     },

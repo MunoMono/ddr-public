@@ -167,7 +167,10 @@ async function runTests() {
   console.log('TESTING AUTHORITIES PRESETS');
   console.log('='.repeat(80));
   
-  for (const preset of authoritiesData.presets) {
+  // Flatten categories into single array of presets
+  const authoritiesPresets = authoritiesData.categories?.flatMap(cat => cat.presets) || authoritiesData.presets || [];
+  
+  for (const preset of authoritiesPresets) {
     const result = await testPreset(preset, 'Authorities', serverUp);
     results.push(result);
   }
