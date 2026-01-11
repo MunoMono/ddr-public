@@ -984,10 +984,13 @@ const ApiSandbox = () => {
                                         // Look for matching thumbnail by filename hash prefix
                                         // Extract hash from PDF filename (e.g., "1f2097b5...pdf_master__v1.pdf" -> "1f2097b5")
                                         const pdfHash = pdf.filename?.split('__')[0];
-                                        const thumb = item.jpg_derivatives?.find(j => 
-                                          j.role === 'jpg_thumb' && 
-                                          (j.label === pdf.label || (pdfHash && j.filename?.startsWith(pdfHash)))
-                                        );
+                                        const thumb = item.jpg_derivatives?.find(j => {
+                                          if (j.role !== 'jpg_thumb') return false;
+                                          // Match by label only if both labels exist and match
+                                          if (pdf.label && j.label && j.label === pdf.label) return true;
+                                          // Otherwise match by filename hash prefix
+                                          return pdfHash && j.filename?.startsWith(pdfHash);
+                                        });
                                         const imgUrl = thumb?.signed_url;
                                         
                                         results.push(
