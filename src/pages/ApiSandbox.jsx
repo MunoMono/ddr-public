@@ -981,8 +981,13 @@ const ApiSandbox = () => {
                                     if (item.pdf_files && Array.isArray(item.pdf_files)) {
                                       item.pdf_files.forEach((pdf, idx) => {
                                         const pdfUrl = pdf.signed_url;
-                                        // Look for matching thumbnail by label
-                                        const thumb = item.jpg_derivatives?.find(j => j.role === 'jpg_thumb' && j.label === pdf.label);
+                                        // Look for matching thumbnail by filename hash prefix
+                                        // Extract hash from PDF filename (e.g., "1f2097b5...pdf_master__v1.pdf" -> "1f2097b5")
+                                        const pdfHash = pdf.filename?.split('__')[0];
+                                        const thumb = item.jpg_derivatives?.find(j => 
+                                          j.role === 'jpg_thumb' && 
+                                          (j.label === pdf.label || (pdfHash && j.filename?.startsWith(pdfHash)))
+                                        );
                                         const imgUrl = thumb?.signed_url;
                                         
                                         results.push(
