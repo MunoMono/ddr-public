@@ -736,7 +736,7 @@ const ApiSandbox = () => {
                       </div>
 
                       <div className="history-card">
-                        <ButtonSet stacked={false}>
+                        <ButtonSet>
                           <Button 
                             kind="ghost" 
                             size="sm" 

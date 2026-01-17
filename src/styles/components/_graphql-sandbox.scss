@@ -299,35 +299,17 @@
       padding: spacing.$spacing-05;
     }
     
-    // Mobile and Tablet: Stack save buttons vertically
-    @include breakpoint.breakpoint-down(lg) {
-      > .cds--btn-set {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: spacing.$spacing-03;
-        margin-bottom: spacing.$spacing-05;
-        
-        .cds--btn {
-          width: 100%;
-          justify-content: flex-start;
-          
-          &:hover:not(:disabled) {
-            transform: translateX(2px);
-          }
-        }
-      }
-    }
-    
-    // Desktop: Horizontal save buttons
-    @include breakpoint.breakpoint(lg) {
-      > .cds--btn-set {
-        display: flex;
-        flex-direction: row;
-        gap: spacing.$spacing-03;
-        margin-bottom: spacing.$spacing-05;
-        
-        .cds--btn {
-          transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+    // Force buttons to stack vertically always
+    .cds--btn-set {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: spacing.$spacing-03 !important;
+      margin-bottom: spacing.$spacing-05;
+      
+      .cds--btn {
+        width: 100% !important;
+        justify-content: flex-start;
+        transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
           
           &:hover:not(:disabled) {
             transform: translateY(-1px);
