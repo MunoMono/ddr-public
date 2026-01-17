@@ -299,7 +299,7 @@
       padding: spacing.$spacing-05;
     }
     
-    // Tablet: Stack save buttons vertically
+    // Mobile and Tablet: Stack save buttons vertically
     @include breakpoint.breakpoint-down(lg) {
       > .cds--btn-set {
         display: flex !important;
@@ -318,8 +318,8 @@
       }
     }
     
-    // Tablet and up: Horizontal save buttons
-    @include breakpoint.breakpoint(md) {
+    // Desktop: Horizontal save buttons
+    @include breakpoint.breakpoint(lg) {
       > .cds--btn-set {
         display: flex;
         flex-direction: row;
