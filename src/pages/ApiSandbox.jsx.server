@@ -105,7 +105,7 @@ const REST_PRESETS = [
 ];
 
 const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
-const PRESETS_BASE_URL = `https://ddrarchive.org/presets`;
+const PRESETS_BASE_URL = `${import.meta.env.BASE_URL}data/presets`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
@@ -1173,12 +1173,9 @@ const ApiSandbox = () => {
                                 // Flatten items to individual assets (same logic as all_media_items)
                                 const allAssets = [];
                                 items.forEach(item => {
-                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  // Add each JPG derivative as separate asset
                                   const jpgs = item.jpg_derivatives || [];
-                                  const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                  const displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
-                                  
-                                  displays.forEach((jpg) => {
+                                  jpgs.forEach((jpg) => {
                                     allAssets.push({
                                       type: 'image',
                                       key: jpg.key || `${item.id}-jpg-${jpg.role}`,
@@ -1189,17 +1186,11 @@ const ApiSandbox = () => {
                                     });
                                   });
                                   
-                                  // Handle pdf_files
+                                  // Add each PDF as separate asset
                                   const pdfs = item.pdf_files || [];
                                   pdfs.forEach((pdf) => {
                                     // Get thumbnail from jpg_derivatives if available
-                                    const pdfHash = pdf.filename?.split('__')[0];
-                                    const thumbJpg = jpgs.find(j => {
-                                      if (j.role !== 'jpg_thumb') return false;
-                                      if (pdf.label && j.label && j.label === pdf.label) return true;
-                                      return pdfHash && j.filename?.startsWith(pdfHash);
-                                    });
-                                    
+                                    const thumbJpg = jpgs.find(j => j.role === 'jpg_thumb' || j.role === 'thumbnail');
                                     allAssets.push({
                                       type: 'pdf',
                                       key: pdf.key || `${item.id}-pdf-${pdf.role}`,
@@ -1323,6 +1314,213 @@ const ApiSandbox = () => {
                         )}
                       </div>
 
+                      {showResults && (
+                        <div className="cds-card">
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 className="cds-heading">Raw JSON</h3>
+                              // Normalize record_v1 to items array format for consistent rendering
+                              const items = [json.record_v1];
+                              
+                              // Collect ALL assets first
+                              const allAssets = items.flatMap((item) => {
+                                const results = [];
+                                
+                                // Handle jpg_derivatives (images) - only jpg_display
+                                if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                  // Get PDF labels to exclude their thumbnails from image rendering
+                                  const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                  
+                                  const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                  
+                                  displays.forEach((display, idx) => {
+                                    const imgUrl = display.signed_url;
+                                    const linkUrl = display.signed_url;
+                                    
+                                    results.push({
+                                      type: 'image',
+                                      key: `img-${item.id}-${idx}`,
+                                      imgUrl,
+                                      linkUrl,
+                                      label: display.label || item.title || `Image ${idx + 1}`,
+                                      title: item.title,
+                                      index: idx,
+                                      total: displays.length
+                                    });
+                                  });
+                                }
+                                
+                                // Handle pdf_files
+                                if (item.pdf_files && Array.isArray(item.pdf_files)) {
+                                  item.pdf_files.forEach((pdf, idx) => {
+                                    const pdfUrl = pdf.signed_url;
+                                    const pdfHash = pdf.filename?.split('__')[0];
+                                    const thumb = item.jpg_derivatives?.find(j => {
+                                      if (j.role !== 'jpg_thumb') return false;
+                                      if (pdf.label && j.label && j.label === pdf.label) return true;
+                                      return pdfHash && j.filename?.startsWith(pdfHash);
+                                    });
+                                    const imgUrl = thumb?.signed_url;
+                                    
+                                    results.push({
+                                      type: 'pdf',
+                                      key: `pdf-${item.id}-${idx}`,
+                                      pdfUrl,
+                                      imgUrl,
+                                      label: pdf.label || item.title,
+                                      title: item.title
+                                    });
+                                  });
+                                }
+                                
+                                // Handle attached_media
+                                if (item.attached_media && Array.isArray(item.attached_media)) {
+                                  item.attached_media.forEach((media) => {
+                                    if (media.pdf_files && Array.isArray(media.pdf_files)) {
+                                      media.pdf_files.forEach((pdf, idx) => {
+                                        const pdfUrl = pdf.signed_url;
+                                        const thumb = media.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
+                                        const imgUrl = thumb?.signed_url;
+                                        
+                                        results.push({
+                                          type: 'pdf',
+                                          key: `media-pdf-${media.id}-${idx}`,
+                                          pdfUrl,
+                                          imgUrl,
+                                          label: pdf.label || media.title || 'PDF Document',
+                                          title: media.title
+                                        });
+                                      });
+                                    }
+                                    
+                                    if (media.jpg_derivatives && Array.isArray(media.jpg_derivatives) && 
+                                        (!media.pdf_files || media.pdf_files.length === 0)) {
+                                      const displays = media.jpg_derivatives.filter(j => j.role === 'jpg_display');
+                                      
+                                      displays.forEach((display, idx) => {
+                                        const imgUrl = display.signed_url;
+                                        const linkUrl = display.signed_url;
+                                        
+                                        results.push({
+                                          type: 'image',
+                                          key: `media-img-${media.id}-${idx}`,
+                                          imgUrl,
+                                          linkUrl,
+                                          label: display.label || media.title,
+                                          title: media.title
+                                        });
+                                      });
+                                    }
+                                  });
+                                }
+                                
+                                return results;
+                              });
+                              
+                              // Apply pagination
+                              const startIndex = (currentPage - 1) * pageSize;
+                              const endIndex = startIndex + pageSize;
+                              const paginatedAssets = allAssets.slice(startIndex, endIndex);
+                              const totalItems = allAssets.length;
+                              
+                              return (
+                                <>
+                                  <div className="cds-grid">
+                                    {paginatedAssets.map((asset) => {
+                                      if (asset.type === 'image') {
+                                        return (
+                                          <figure key={asset.key} className="cds-figure cds-card-tile">
+                                            <a href={asset.linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                              <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                            </a>
+                                            <figcaption className="cds-figcaption">
+                                              <strong>{asset.label}</strong>
+                                              <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                <Image size={16} /> Image
+                                              </small>
+                                              <br/><a 
+                                                href={asset.linkUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                  color: '#0f62fe',
+                                                  textDecoration: 'none',
+                                                  fontSize: '0.875rem',
+                                                  display: 'inline-flex',
+                                                  alignItems: 'center',
+                                                  gap: '0.25rem',
+                                                  marginTop: '0.25rem'
+                                                }}
+                                              >
+                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                              </a>
+                                            </figcaption>
+                                          </figure>
+                                        );
+                                      } else {
+                                        return (
+                                          <figure key={asset.key} className="cds-figure cds-card-tile">
+                                            <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                              {asset.imgUrl ? (
+                                                <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                              ) : (
+                                                <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  fontSize: '3rem',
+                                                  color: '#525252'
+                                                }}>
+                                                  📄
+                                                </div>
+                                              )}
+                                            </a>
+                                            <figcaption className="cds-figcaption">
+                                              <strong>{asset.label}</strong>
+                                              <br/><a 
+                                                href={asset.pdfUrl} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                  color: '#0f62fe',
+                                                  textDecoration: 'none',
+                                                  fontSize: '0.875rem',
+                                                  display: 'inline-flex',
+                                                  alignItems: 'center',
+                                                  gap: '0.25rem',
+                                                  marginTop: '0.25rem'
+                                                }}
+                                              >
+                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                              </a>
+                                            </figcaption>
+                                          </figure>
+                                        );
+                                      }
+                                    })}
+                                  </div>
+                                  {totalItems > 13 && (
+                                    <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+                                      <Pagination
+                                        backwardText="Previous page"
+                                        forwardText="Next page"
+                                        itemsPerPageText="Items per page:"
+                                        page={currentPage}
+                                        pageSize={pageSize}
+                                        pageSizes={[12, 24, 48, 96]}
+                                        totalItems={totalItems}
+                                        onChange={({ page, pageSize }) => {
+                                          setCurrentPage(page);
+                                          setPageSize(pageSize);
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </>
+                        )}
+                      </div>
 
                       {showResults && (
                         <div className="cds-card">

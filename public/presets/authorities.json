@@ -14,12 +14,6 @@
           "query": "# DDR staff - employment history with names, roles and tenure\n{\n  agent_employment {\n    staff_code\n    agent_name\n    job_title_code\n    job_title_label\n    start_date\n    end_date\n    is_primary\n  }\n}"
         },
         {
-          "id": "authStaffRegistry",
-          "label": "DDR staff registry (with roles and tenure)",
-          "description": "Staff members with employment roles and tenure - requires joining 3 queries",
-          "query": "# DDR staff registry - Get name, role, tenure\n# Query 1: Get staff names\n# { agents { staff_code display_name } }\n#\n# Query 2: Get employment data  \n# { agent_employment { staff_code job_title_code start_date end_date is_primary } }\n#\n# Query 3: Get role labels\n# { ref_job_title { code label } }\n#\n# Then join client-side:\n# - Match staff_code from agents + agent_employment\n# - Match job_title_code + ref_job_title.code to get role label\n# - Format tenure: start_date - end_date\n# - Filter is_primary == true for main roles\n{\n  agents {\n    staff_code\n    display_name\n  }\n}"
-        },
-        {
           "id": "authJobList",
           "label": "DDR job list (project register)",
           "description": "Database authority for DDR projects",

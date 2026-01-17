@@ -51,6 +51,7 @@ docker load < /tmp/ddr-public.tar.gz
 # Stop and remove existing container if it exists
 echo "Stopping existing container..."
 docker compose -f docker-compose.prod.yml down 2>/dev/null || true
+docker rm -f ddr-public 2>/dev/null || true
 
 # Start new container
 echo "Starting new container..."
