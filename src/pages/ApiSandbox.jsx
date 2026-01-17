@@ -13,6 +13,7 @@ import {
   InlineLoading,
   InlineNotification,
   Loading,
+  Pagination,
   Tab,
   TabList,
   TabPanel,
@@ -23,7 +24,7 @@ import {
   Tile,
   ToastNotification,
 } from "@carbon/react";
-import { Save, ArrowRight, DataBase, Catalog, Image, Document, Copy } from "@carbon/icons-react";
+import { Save, ArrowRight, DataBase, Catalog, Image, Document, Copy, Download } from "@carbon/icons-react";
 
 import PageHero from "../components/PageHero/PageHero";
 import AnchorLinks from "../components/AnchorLinks/AnchorLinks";
@@ -191,8 +192,18 @@ const ApiSandbox = () => {
       return `Items recent (${data.items_recent.length} items)`;
     }
     
-    // Check for records_v1
+    // Check for records_v1 - count assets for allArtefacts preset
     if (data.records_v1 && Array.isArray(data.records_v1)) {
+      if (activePresetId === 'allArtefacts') {
+        // Count all individual assets (JPG displays + PDFs)
+        let totalAssets = 0;
+        data.records_v1.forEach(record => {
+          const displayJpgs = record.jpg_derivatives?.filter(j => j.role === 'jpg_display').length || 0;
+          const pdfs = record.pdf_files?.length || 0;
+          totalAssets += displayJpgs + pdfs;
+        });
+        return `Artefacts (${totalAssets} assets)`;
+      }
       return `Records (${data.records_v1.length} items)`;
     }
     
@@ -226,6 +237,8 @@ const ApiSandbox = () => {
   const [showResults, setShowResults] = useState(true);
   const [presetLoadedNotification, setPresetLoadedNotification] = useState(false);
   const [queryHistory, setQueryHistory] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
   const [savedQueries, setSavedQueries] = useState(() => {
     try {
       const saved = localStorage.getItem('ddr-graphql-saved-queries');
@@ -260,10 +273,12 @@ const ApiSandbox = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Cache-busting timestamp to FORCE fresh JSON every time
+        const cacheBuster = `?v=${Date.now()}`;
         const [recordsRes, authoritiesRes, snippetsRes] = await Promise.all([
-          fetch(`${PRESETS_BASE_URL}/records.json`),
-          fetch(`${PRESETS_BASE_URL}/authorities.json`),
-          fetch(`${PRESETS_BASE_URL}/snippets.json`),
+          fetch(`${PRESETS_BASE_URL}/records.json${cacheBuster}`),
+          fetch(`${PRESETS_BASE_URL}/authorities.json${cacheBuster}`),
+          fetch(`${PRESETS_BASE_URL}/snippets.json${cacheBuster}`),
         ]);
         
         if (recordsRes.ok) {
@@ -833,320 +848,481 @@ const ApiSandbox = () => {
                         {/* Handle DDR items_recent, records_v1, etc */}
                         {!error && json && (
                           <>
-                            {(json.items_recent || json.records_v1) && (
-                              <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
-                                {(() => {
-                                  // Get the items array
-                                  let items = json.items_recent || json.records_v1;
+                            {(json.items_recent || json.records_v1 || json.all_media_items) && (() => {
+                              // Special handling for allArtefacts preset - flatten all assets
+                              if (activePresetId === 'allArtefacts' && json.records_v1) {
+                                const items = json.records_v1;
+                                
+                                // Collect ALL assets from all records
+                                const allAssets = items.flatMap((item) => {
+                                  const results = [];
                                   
-                                  // Filter for "Records with PDFs" preset - only show items that have PDFs
-                                  if (activePresetId === 'recordsWithPDFs') {
-                                    items = items.filter(item => item.pdf_files && item.pdf_files.length > 0);
+                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                    const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                    const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    
+                                    displays.forEach((display, idx) => {
+                                      results.push({
+                                        type: 'image',
+                                        key: `img-${item.id}-${idx}`,
+                                        imgUrl: display.signed_url,
+                                        linkUrl: display.signed_url,
+                                        label: display.label || item.title || `Image ${idx + 1}`,
+                                        title: item.title
+                                      });
+                                    });
                                   }
                                   
-                                  return items.map((item) => {
-                                  // Extract JPG thumbnail - prefer thumb, then display, then any jpg
-                                  const jpgThumb = item.jpg_derivatives?.find(d => d.role === 'jpg_thumb' || d.filename?.includes('thumb'));
-                                  const jpgDisplay = item.jpg_derivatives?.find(d => d.role === 'jpg_display' || d.filename?.includes('display'));
-                                  const jpg = jpgThumb || jpgDisplay || item.jpg_derivatives?.[0];
+                                  // Handle pdf_files
+                                  if (item.pdf_files && Array.isArray(item.pdf_files)) {
+                                    item.pdf_files.forEach((pdf, idx) => {
+                                      const pdfHash = pdf.filename?.split('__')[0];
+                                      const thumb = item.jpg_derivatives?.find(j => {
+                                        if (j.role !== 'jpg_thumb') return false;
+                                        if (pdf.label && j.label && j.label === pdf.label) return true;
+                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                      });
+                                      
+                                      results.push({
+                                        type: 'pdf',
+                                        key: `pdf-${item.id}-${idx}`,
+                                        pdfUrl: pdf.signed_url,
+                                        imgUrl: thumb?.signed_url,
+                                        label: pdf.label || item.title,
+                                        title: item.title
+                                      });
+                                    });
+                                  }
                                   
-                                  // Extract first PDF from pdf_files array
-                                  const pdf = item.pdf_files?.[0];
-                                  
-                                  // Use signed_url for links
-                                  const pdfUrl = pdf?.signed_url;
-                                  const imgUrl = jpg?.signed_url;
-                                  
-                                  const titleText = item.title || item.pid || item.id;
-                                  const content = item.scope_and_content;
-
-                                  return (
-                                    <figure key={item.id || item.pid} className="cds-figure cds-card-tile">
-                                      {imgUrl ? (
-                                        <a
-                                          href={pdfUrl || imgUrl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          title={pdf ? `View PDF: ${titleText}` : `View image: ${titleText}`}
-                                          className="card-tile-link"
-                                        >
-                                          <img
-                                            src={imgUrl}
-                                            alt={titleText}
-                                            className="cds-thumb"
-                                            loading="lazy"
-                                            onError={(e) => {
-                                              console.error('Image failed to load:', imgUrl);
-                                              e.target.style.display = 'none';
-                                              const placeholder = document.createElement('div');
-                                              placeholder.className = 'cds-thumb cds-thumb--placeholder';
-                                              placeholder.textContent = 'Image unavailable';
-                                              e.target.parentElement.appendChild(placeholder);
-                                            }}
-                                          />
-                                        </a>
-                                      ) : pdfUrl ? (
-                                        <a
-                                          href={pdfUrl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          title={`View PDF: ${titleText}`}
-                                          className="card-tile-link"
-                                        >
-                                          <div className="cds-thumb cds-thumb--placeholder cds-thumb--pdf">
-                                            <span className="pdf-icon">📄</span>
-                                          </div>
-                                        </a>
-                                      ) : (
-                                        <div className="cds-thumb cds-thumb--placeholder">No preview</div>
-                                      )}
-                                      <figcaption className="cds-figcaption">
-                                        <strong className="card-title">{titleText}</strong>
-                                        {pdfUrl && (
-                                          <div className="card-link-wrapper">
-                                            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="card-link">
-                                              <Document size={16} style={{marginRight: '0.25rem'}} /> View artefact <ArrowRight size={16} style={{marginLeft: '0.25rem'}} />
-                                            </a>
-                                          </div>
-                                        )}
-                                        {imgUrl && !pdfUrl && (
-                                          <div className="card-meta">
-                                            <small>Image preview</small>
-                                          </div>
-                                        )}
-                                      </figcaption>
-                                    </figure>
-                                  );
-                                }); // Close the .map()
-                                })()}
-                              </div>
-                            )}
-
-                            {/* Handle single record_v1 - use same grid layout as items_recent */}
-                            {json.record_v1 && (() => {
-                              // Normalize record_v1 to items array format for consistent rendering
-                              const items = [json.record_v1];
+                                  return results;
+                                });
+                                
+                                // Apply pagination
+                                const startIndex = (currentPage - 1) * pageSize;
+                                const endIndex = startIndex + pageSize;
+                                const paginatedAssets = allAssets.slice(startIndex, endIndex);
+                                const totalItems = allAssets.length;
+                                
+                                return (
+                                  <>
+                                    <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
+                                      {paginatedAssets.map((asset) => {
+                                        if (asset.type === 'image') {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                                <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                              </a>
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Image size={16} /> Image
+                                                </small>
+                                                <br/><a 
+                                                  href={asset.linkUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                </a>
+                                              </figcaption>
+                                            </figure>
+                                          );
+                                        } else {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                                {asset.imgUrl ? (
+                                                  <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                                ) : (
+                                                  <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '3rem',
+                                                    color: '#525252'
+                                                  }}>
+                                                    📄
+                                                  </div>
+                                                )}
+                                              </a>
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Document size={16} /> Document
+                                                </small>
+                                                <br/><a 
+                                                  href={asset.pdfUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                </a>
+                                              </figcaption>
+                                            </figure>
+                                          );
+                                        }
+                                      })}
+                                    </div>
+                                    {totalItems > 13 && (
+                                      <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+                                        <Pagination
+                                          backwardText="Previous page"
+                                          forwardText="Next page"
+                                          itemsPerPageText="Items per page:"
+                                          page={currentPage}
+                                          pageSize={pageSize}
+                                          pageSizes={[12, 24, 48, 96]}
+                                          totalItems={totalItems}
+                                          onChange={({ page, pageSize }) => {
+                                            setCurrentPage(page);
+                                            setPageSize(pageSize);
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              }
                               
-                              return (
-                                <div className="cds-grid">
-                                  {items.flatMap((item) => {
-                                    const results = [];
+                              // Handle all_media_items query - flatten media items with their derivatives
+                              if (json.all_media_items) {
+                                const items = json.all_media_items;
+                                
+                                // Collect ALL assets from all media items
+                                const allAssets = items.flatMap((item) => {
+                                  const results = [];
+                                  
+                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                    const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                    const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
                                     
-                                    // Handle jpg_derivatives (images)
-                                    if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
-                                      // Get PDF labels to exclude their thumbnails from image rendering
-                                      const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                    displays.forEach((display, idx) => {
+                                      results.push({
+                                        type: 'image',
+                                        key: `img-${item.id}-${idx}`,
+                                        imgUrl: display.signed_url,
+                                        linkUrl: display.signed_url,
+                                        label: display.label || item.title || `Image ${idx + 1}`,
+                                        title: item.title,
+                                        caption: item.caption
+                                      });
+                                    });
+                                  }
+                                  
+                                  // Handle pdf_files
+                                  if (item.pdf_files && Array.isArray(item.pdf_files)) {
+                                    item.pdf_files.forEach((pdf, idx) => {
+                                      const pdfHash = pdf.filename?.split('__')[0];
+                                      const thumb = item.jpg_derivatives?.find(j => {
+                                        if (j.role !== 'jpg_thumb') return false;
+                                        if (pdf.label && j.label && j.label === pdf.label) return true;
+                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                      });
                                       
-                                      const thumbs = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
-                                      const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
-                                      
-                                      thumbs.forEach((thumb, idx) => {
-                                        const display = displays[idx] || thumb;
-                                        const imgUrl = thumb.signed_url;
-                                        const linkUrl = display.signed_url;
-                                        
-                                        results.push(
-                                          <figure key={`img-${item.id}-${idx}`} className="cds-figure cds-card-tile">
-                                            <a href={linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
-                                              <img src={imgUrl} alt={thumb.label || `Image ${idx + 1}`} className="cds-thumb" />
-                                            </a>
-                                            <figcaption className="cds-figcaption">
-                                              <strong>{thumb.label || item.title || `Image ${idx + 1}`}</strong>
-                                              <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
-                                                <Image size={16} /> Image {idx + 1} of {thumbs.length}
-                                              </small>
-                                              <br/><a 
-                                                href={linkUrl} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                  color: '#0f62fe',
-                                                  textDecoration: 'none',
-                                                  fontSize: '0.875rem',
-                                                  display: 'inline-flex',
-                                                  alignItems: 'center',
-                                                  gap: '0.25rem',
-                                                  marginTop: '0.25rem'
-                                                }}
-                                              >
-                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                      results.push({
+                                        type: 'pdf',
+                                        key: `pdf-${item.id}-${idx}`,
+                                        pdfUrl: pdf.signed_url,
+                                        imgUrl: thumb?.signed_url,
+                                        label: pdf.label || item.title,
+                                        title: item.title,
+                                        caption: item.caption
+                                      });
+                                    });
+                                  }
+                                  
+                                  return results;
+                                });
+                                
+                                // Apply pagination
+                                const startIndex = (currentPage - 1) * pageSize;
+                                const endIndex = startIndex + pageSize;
+                                const paginatedAssets = allAssets.slice(startIndex, endIndex);
+                                const totalItems = allAssets.length;
+                                
+                                return (
+                                  <>
+                                    <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
+                                      {paginatedAssets.map((asset) => {
+                                        if (asset.type === 'image') {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                                <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
                                               </a>
-                                            </figcaption>
-                                          </figure>
-                                        );
-                                      });
-                                    }
-                                    
-                                    // Handle pdf_files
-                                    if (item.pdf_files && Array.isArray(item.pdf_files)) {
-                                      item.pdf_files.forEach((pdf, idx) => {
-                                        const pdfUrl = pdf.signed_url;
-                                        // Look for matching thumbnail by filename hash prefix
-                                        // Extract hash from PDF filename (e.g., "1f2097b5...pdf_master__v1.pdf" -> "1f2097b5")
-                                        const pdfHash = pdf.filename?.split('__')[0];
-                                        const thumb = item.jpg_derivatives?.find(j => {
-                                          if (j.role !== 'jpg_thumb') return false;
-                                          // Match by label only if both labels exist and match
-                                          if (pdf.label && j.label && j.label === pdf.label) return true;
-                                          // Otherwise match by filename hash prefix
-                                          return pdfHash && j.filename?.startsWith(pdfHash);
-                                        });
-                                        const imgUrl = thumb?.signed_url;
-                                        
-                                        results.push(
-                                          <figure key={`pdf-${item.id}-${idx}`} className="cds-figure cds-card-tile">
-                                            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
-                                              {imgUrl ? (
-                                                <img src={imgUrl} alt={pdf.label || item.title} className="cds-thumb" />
-                                              ) : (
-                                                <div className="cds-thumb cds-thumb--placeholder" style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  fontSize: '3rem',
-                                                  color: '#525252'
-                                                }}>
-                                                  📄
-                                                </div>
-                                              )}
-                                            </a>
-                                            <figcaption className="cds-figcaption">
-                                              <strong>{pdf.label || item.title}</strong>
-                                              <br/><a 
-                                                href={pdfUrl} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                  color: '#0f62fe',
-                                                  textDecoration: 'none',
-                                                  fontSize: '0.875rem',
-                                                  display: 'inline-flex',
-                                                  alignItems: 'center',
-                                                  gap: '0.25rem',
-                                                  marginTop: '0.25rem'
-                                                }}
-                                              >
-                                                <Document size={16} /> View artefact <ArrowRight size={16} />
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                {asset.caption && <><br/><em style={{color: '#525252', fontSize: '0.875rem'}}>{asset.caption}</em></>}
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Image size={16} /> Image
+                                                </small>
+                                                <br/><a 
+                                                  href={asset.linkUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                </a>
+                                              </figcaption>
+                                            </figure>
+                                          );
+                                        } else {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                                {asset.imgUrl ? (
+                                                  <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                                ) : (
+                                                  <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '3rem',
+                                                    color: '#525252'
+                                                  }}>
+                                                    📄
+                                                  </div>
+                                                )}
                                               </a>
-                                            </figcaption>
-                                          </figure>
-                                        );
-                                      });
-                                    }
-                                    
-                                    // Handle attached_media (for record_v1 with child media items)
-                                    if (item.attached_media && Array.isArray(item.attached_media)) {
-                                      item.attached_media.forEach((media) => {
-                                        // Handle PDFs from attached media
-                                        if (media.pdf_files && Array.isArray(media.pdf_files)) {
-                                          media.pdf_files.forEach((pdf, idx) => {
-                                            const pdfUrl = pdf.signed_url;
-                                            // Look for corresponding thumbnail
-                                            const thumb = media.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
-                                            const imgUrl = thumb?.signed_url;
-                                            
-                                            results.push(
-                                              <figure key={`media-pdf-${media.id}-${idx}`} className="cds-figure cds-card-tile">
-                                                <a href={pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
-                                                  {imgUrl ? (
-                                                    <img src={imgUrl} alt={pdf.label || media.title} className="cds-thumb" />
-                                                  ) : (
-                                                    <div className="cds-thumb cds-thumb--placeholder" style={{
-                                                      display: 'flex',
-                                                      alignItems: 'center',
-                                                      justifyContent: 'center',
-                                                      fontSize: '3rem',
-                                                      color: '#525252'
-                                                    }}>
-                                                      📄
-                                                    </div>
-                                                  )}
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                {asset.caption && <><br/><em style={{color: '#525252', fontSize: '0.875rem'}}>{asset.caption}</em></>}
+                                                <br/><a 
+                                                  href={asset.pdfUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
                                                 </a>
-                                                <figcaption className="cds-figcaption">
-                                                  <strong>{pdf.label || media.title || 'PDF Document'}</strong>
-                                                  <br/><small style={{color: '#525252'}}>📄 PDF</small>
-                                                  <br/><a 
-                                                    href={pdfUrl} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                      color: '#0f62fe',
-                                                      textDecoration: 'none',
-                                                      fontSize: '0.875rem',
-                                                      display: 'inline-flex',
-                                                      alignItems: 'center',
-                                                      gap: '0.25rem',
-                                                      marginTop: '0.25rem'
-                                                    }}
-                                                  >
-                                                    <Document size={16} /> View artefact <ArrowRight size={16} />
-                                                  </a>
-                                                </figcaption>
-                                              </figure>
-                                            );
-                                          });
+                                              </figcaption>
+                                            </figure>
+                                          );
                                         }
-                                        
-                                        // Handle images from attached media (if no PDF)
-                                        if (media.jpg_derivatives && Array.isArray(media.jpg_derivatives) && 
-                                            (!media.pdf_files || media.pdf_files.length === 0)) {
-                                          const thumbs = media.jpg_derivatives.filter(j => j.role === 'jpg_thumb');
-                                          const displays = media.jpg_derivatives.filter(j => j.role === 'jpg_display');
-                                          
-                                          thumbs.forEach((thumb, idx) => {
-                                            const display = displays[idx] || thumb;
-                                            const imgUrl = thumb.signed_url;
-                                            const linkUrl = display.signed_url;
-                                            
-                                            results.push(
-                                              <figure key={`media-img-${media.id}-${idx}`} className="cds-figure cds-card-tile">
-                                                <a href={linkUrl} target="_blank" rel="noopener noreferrer" title="View image">
-                                                  <img src={imgUrl} alt={thumb.label || media.title} className="cds-thumb" />
-                                                </a>
-                                                <figcaption className="cds-figcaption">
-                                                  <strong>{thumb.label || media.title}</strong>
-                                                  <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
-                                                    <Image size={16} /> Image
-                                                  </small>
-                                                  <br/><a 
-                                                    href={linkUrl} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    style={{
-                                                      color: '#0f62fe',
-                                                      textDecoration: 'none',
-                                                      fontSize: '0.875rem',
-                                                      display: 'inline-flex',
-                                                      alignItems: 'center',
-                                                      gap: '0.25rem',
-                                                      marginTop: '0.25rem'
-                                                    }}
-                                                  >
-                                                    <Document size={16} /> View artefact <ArrowRight size={16} />
-                                                  </a>
-                                                </figcaption>
-                                              </figure>
-                                            );
-                                          });
-                                        }
-                                      });
-                                    }
+                                      })}
+                                    </div>
+                                    {totalItems > 13 && (
+                                      <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+                                        <Pagination
+                                          backwardText="Previous page"
+                                          forwardText="Next page"
+                                          itemsPerPageText="Items per page:"
+                                          page={currentPage}
+                                          pageSize={pageSize}
+                                          pageSizes={[12, 24, 48, 96]}
+                                          totalItems={totalItems}
+                                          onChange={({ page, pageSize }) => {
+                                            setCurrentPage(page);
+                                            setPageSize(pageSize);
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              }
+                              
+                              // Standard record display for other presets - flatten to individual assets
+                              return (() => {
+                                // Get the items array
+                                let items = json.items_recent || json.records_v1;
+                                
+                                // Filter for "Records with PDFs" preset
+                                if (activePresetId === 'recordsWithPDFs') {
+                                  items = items.filter(item => item.pdf_files && item.pdf_files.length > 0);
+                                }
+                                
+                                // Flatten items to individual assets (same logic as all_media_items)
+                                const allAssets = [];
+                                items.forEach(item => {
+                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  const jpgs = item.jpg_derivatives || [];
+                                  const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
+                                  const displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                  
+                                  displays.forEach((jpg) => {
+                                    allAssets.push({
+                                      type: 'image',
+                                      key: jpg.key || `${item.id}-jpg-${jpg.role}`,
+                                      label: jpg.label || jpg.filename || item.title || 'Untitled image',
+                                      imgUrl: jpg.signed_url || jpg.url,
+                                      linkUrl: jpg.signed_url || jpg.url,
+                                      role: jpg.role
+                                    });
+                                  });
+                                  
+                                  // Handle pdf_files
+                                  const pdfs = item.pdf_files || [];
+                                  pdfs.forEach((pdf) => {
+                                    // Get thumbnail from jpg_derivatives if available
+                                    const pdfHash = pdf.filename?.split('__')[0];
+                                    const thumbJpg = jpgs.find(j => {
+                                      if (j.role !== 'jpg_thumb') return false;
+                                      if (pdf.label && j.label && j.label === pdf.label) return true;
+                                      return pdfHash && j.filename?.startsWith(pdfHash);
+                                    });
                                     
-                                    return results;
-                                  })}
-                                </div>
-                              );
+                                    allAssets.push({
+                                      type: 'pdf',
+                                      key: pdf.key || `${item.id}-pdf-${pdf.role}`,
+                                      label: pdf.label || pdf.filename || item.title || 'Untitled document',
+                                      imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
+                                      pdfUrl: pdf.signed_url || pdf.url,
+                                      linkUrl: pdf.signed_url || pdf.url,
+                                      role: pdf.role
+                                    });
+                                  });
+                                });
+                                
+                                // Apply pagination
+                                const startIndex = (currentPage - 1) * pageSize;
+                                const endIndex = startIndex + pageSize;
+                                const paginatedAssets = allAssets.slice(startIndex, endIndex);
+                                const totalItems = allAssets.length;
+                                
+                                return (
+                                  <>
+                                    <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
+                                      {paginatedAssets.map((asset) => {
+                                        if (asset.type === 'image') {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
+                                                <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                              </a>
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Image size={16} /> Image
+                                                </small>
+                                                <br/><a 
+                                                  href={asset.linkUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                </a>
+                                              </figcaption>
+                                            </figure>
+                                          );
+                                        } else {
+                                          return (
+                                            <figure key={asset.key} className="cds-figure cds-card-tile">
+                                              <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
+                                                {asset.imgUrl ? (
+                                                  <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
+                                                ) : (
+                                                  <div className="cds-thumb cds-thumb--placeholder" style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    fontSize: '3rem',
+                                                    color: '#525252'
+                                                  }}>
+                                                    📄
+                                                  </div>
+                                                )}
+                                              </a>
+                                              <figcaption className="cds-figcaption">
+                                                <strong>{asset.label}</strong>
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Document size={16} /> Document
+                                                </small>
+                                                <br/><a 
+                                                  href={asset.pdfUrl} 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  style={{
+                                                    color: '#0f62fe',
+                                                    textDecoration: 'none',
+                                                    fontSize: '0.875rem',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.25rem',
+                                                    marginTop: '0.25rem'
+                                                  }}
+                                                >
+                                                  <Document size={16} /> View artefact <ArrowRight size={16} />
+                                                </a>
+                                              </figcaption>
+                                            </figure>
+                                          );
+                                        }
+                                      })}
+                                    </div>
+                                    {totalItems > 13 && (
+                                      <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+                                        <Pagination
+                                          backwardText="Previous page"
+                                          forwardText="Next page"
+                                          itemsPerPageText="Items per page:"
+                                          page={currentPage}
+                                          pageSize={pageSize}
+                                          pageSizes={[13, 26, 52, 100]}
+                                          totalItems={totalItems}
+                                          onChange={({ page, pageSize: newPageSize }) => {
+                                            setCurrentPage(page);
+                                            setPageSize(newPageSize);
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              })();
                             })()}
 
-                            {/* Show message if no visual results */}
-                            {!json.items_recent && !json.records_v1 && !json.record_v1 && (
-                              <p className="cds-subtle">
-                                Query returned data. Check Raw JSON below for details.
-                              </p>
-                            )}
                           </>
                         )}
                       </div>
+
 
                       {showResults && (
                         <div className="cds-card">
@@ -1164,6 +1340,136 @@ const ApiSandbox = () => {
                             />
                           </div>
                           <pre className="cds-json">{json ? JSON.stringify(json, null, 2) : "{}"}</pre>
+                          <div style={{ marginTop: '1rem' }}>
+                            <Button
+                              kind="tertiary"
+                              size="md"
+                              renderIcon={Download}
+                              onClick={() => {
+                                if (!json) return;
+                                
+                                // Flatten nested JSON to tabular format
+                                let rows = [];
+                                
+                                // Handle records_v1 or items_recent
+                                const records = json.records_v1 || json.items_recent || [];
+                                if (Array.isArray(records) && records.length > 0) {
+                                  // For allArtefacts preset, flatten to one row per asset
+                                  if (activePresetId === 'allArtefacts') {
+                                    records.forEach(record => {
+                                      // Add JPG display images
+                                      const displays = record.jpg_derivatives?.filter(j => j.role === 'jpg_display') || [];
+                                      displays.forEach(img => {
+                                        rows.push({
+                                          record_id: record.id,
+                                          record_pid: record.pid,
+                                          record_title: record.title,
+                                          asset_type: 'Image',
+                                          asset_label: img.label,
+                                          asset_filename: img.filename,
+                                          asset_url: img.signed_url,
+                                          copyright_holder: img.copyright_holder || record.copyright_holder,
+                                          rights_holders: img.rights_holders || record.rights_holders,
+                                          date_begin: record.date_begin,
+                                          date_end: record.date_end
+                                        });
+                                      });
+                                      
+                                      // Add PDFs
+                                      const pdfs = record.pdf_files || [];
+                                      pdfs.forEach(pdf => {
+                                        rows.push({
+                                          record_id: record.id,
+                                          record_pid: record.pid,
+                                          record_title: record.title,
+                                          asset_type: 'PDF',
+                                          asset_label: pdf.label,
+                                          asset_filename: pdf.filename,
+                                          asset_url: pdf.signed_url,
+                                          copyright_holder: pdf.copyright_holder || record.copyright_holder,
+                                          rights_holders: pdf.rights_holders || record.rights_holders,
+                                          date_begin: record.date_begin,
+                                          date_end: record.date_end
+                                        });
+                                      });
+                                    });
+                                  } else {
+                                    // Standard flattening - one row per record
+                                    rows = records.map(record => {
+                                      const flat = { ...record };
+                                      // Convert arrays to strings
+                                      Object.keys(flat).forEach(key => {
+                                        if (Array.isArray(flat[key])) {
+                                          flat[key] = flat[key].length;
+                                        } else if (typeof flat[key] === 'object' && flat[key] !== null) {
+                                          flat[key] = JSON.stringify(flat[key]);
+                                        }
+                                      });
+                                      return flat;
+                                    });
+                                  }
+                                } else if (json.record_v1) {
+                                  // Single record - flatten assets
+                                  const record = json.record_v1;
+                                  const displays = record.jpg_derivatives?.filter(j => j.role === 'jpg_display') || [];
+                                  displays.forEach(img => {
+                                    rows.push({
+                                      record_id: record.id,
+                                      record_pid: record.pid,
+                                      record_title: record.title,
+                                      asset_type: 'Image',
+                                      asset_label: img.label,
+                                      asset_filename: img.filename,
+                                      asset_url: img.signed_url,
+                                      copyright_holder: img.copyright_holder,
+                                      rights_holders: img.rights_holders
+                                    });
+                                  });
+                                  const pdfs = record.pdf_files || [];
+                                  pdfs.forEach(pdf => {
+                                    rows.push({
+                                      record_id: record.id,
+                                      record_pid: record.pid,
+                                      record_title: record.title,
+                                      asset_type: 'PDF',
+                                      asset_label: pdf.label,
+                                      asset_filename: pdf.filename,
+                                      asset_url: pdf.signed_url,
+                                      copyright_holder: pdf.copyright_holder,
+                                      rights_holders: pdf.rights_holders
+                                    });
+                                  });
+                                } else {
+                                  // Generic JSON - find first array property
+                                  const firstArrayKey = Object.keys(json).find(k => Array.isArray(json[k]));
+                                  if (firstArrayKey && Array.isArray(json[firstArrayKey])) {
+                                    // Use the array directly
+                                    rows = json[firstArrayKey];
+                                  } else {
+                                    // Wrap single object
+                                    rows = [json];
+                                  }
+                                }
+                                
+                                // Convert to CSV using papaparse
+                                const csv = Papa.unparse(rows);
+                                
+                                // Download
+                                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                                const link = document.createElement('a');
+                                const url = URL.createObjectURL(blob);
+                                const timestamp = new Date().toISOString().split('T')[0];
+                                link.setAttribute('href', url);
+                                link.setAttribute('download', `ddr-query-${activePresetId || 'results'}-${timestamp}.csv`);
+                                link.style.visibility = 'hidden';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }}
+                            >
+                              Download CSV
+                            </Button>
+                          </div>
                         </div>
                       )}
                       </div>
