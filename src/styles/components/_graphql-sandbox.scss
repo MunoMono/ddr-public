@@ -298,23 +298,25 @@
     @include breakpoint.breakpoint-down(md) {
       padding: spacing.$spacing-05;
     }
+  }
+  
+  // Force buttons to stack vertically - highest specificity
+  .history-card .cds--btn-set,
+  .graphql-sandbox .history-card .cds--btn-set,
+  .graphql-sandbox .history-card > .cds--btn-set {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: spacing.$spacing-03 !important;
+    margin-bottom: spacing.$spacing-05 !important;
     
-    // Force buttons to stack vertically always
-    .cds--btn-set {
-      display: flex !important;
-      flex-direction: column !important;
-      gap: spacing.$spacing-03 !important;
-      margin-bottom: spacing.$spacing-05;
-      
-      .cds--btn {
-        width: 100% !important;
-        justify-content: flex-start;
-        transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
-          
-          &:hover:not(:disabled) {
-            transform: translateY(-1px);
-          }
-        }
+    .cds--btn {
+      width: 100% !important;
+      max-width: 100% !important;
+      justify-content: flex-start !important;
+      transition: all 110ms cubic-bezier(0.2, 0, 0.38, 0.9);
+        
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
       }
     }
   }
