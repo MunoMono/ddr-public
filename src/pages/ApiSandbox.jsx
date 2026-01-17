@@ -1117,6 +1117,9 @@ const ApiSandbox = () => {
                                               <figcaption className="cds-figcaption">
                                                 <strong>{asset.label}</strong>
                                                 {asset.caption && <><br/><em style={{color: '#525252', fontSize: '0.875rem'}}>{asset.caption}</em></>}
+                                                <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                                                  <Document size={16} /> Document
+                                                </small>
                                                 <br/><a 
                                                   href={asset.pdfUrl} 
                                                   target="_blank" 
