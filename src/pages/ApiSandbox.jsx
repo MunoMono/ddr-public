@@ -1176,41 +1176,46 @@ const ApiSandbox = () => {
                                 // Flatten items to individual assets (same logic as all_media_items)
                                 const allAssets = [];
                                 items.forEach(item => {
-                                  // Handle jpg_derivatives (images) - only jpg_display
-                                  const jpgs = item.jpg_derivatives || [];
-                                  const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                  const displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                  // Process attached_media children (for items_recent)
+                                  const mediaItems = item.attached_media || [item];
                                   
-                                  displays.forEach((jpg) => {
-                                    allAssets.push({
-                                      type: 'image',
-                                      key: jpg.key || `${item.id}-jpg-${jpg.role}`,
-                                      label: jpg.label || jpg.filename || item.title || 'Untitled image',
-                                      imgUrl: jpg.signed_url || jpg.url,
-                                      linkUrl: jpg.signed_url || jpg.url,
-                                      role: jpg.role
-                                    });
-                                  });
-                                  
-                                  // Handle pdf_files
-                                  const pdfs = item.pdf_files || [];
-                                  pdfs.forEach((pdf) => {
-                                    // Get thumbnail from jpg_derivatives if available
-                                    const pdfHash = pdf.filename?.split('__')[0];
-                                    const thumbJpg = jpgs.find(j => {
-                                      if (j.role !== 'jpg_thumb') return false;
-                                      if (pdf.label && j.label && j.label === pdf.label) return true;
-                                      return pdfHash && j.filename?.startsWith(pdfHash);
+                                  mediaItems.forEach(mediaItem => {
+                                    // Handle jpg_derivatives (images) - only jpg_display
+                                    const jpgs = mediaItem.jpg_derivatives || [];
+                                    const pdfLabels = new Set(mediaItem.pdf_files?.map(p => p.label) || []);
+                                    const displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    
+                                    displays.forEach((jpg) => {
+                                      allAssets.push({
+                                        type: 'image',
+                                        key: jpg.key || `${mediaItem.id}-jpg-${jpg.role}`,
+                                        label: jpg.label || jpg.filename || mediaItem.title || item.title || 'Untitled image',
+                                        imgUrl: jpg.signed_url || jpg.url,
+                                        linkUrl: jpg.signed_url || jpg.url,
+                                        role: jpg.role
+                                      });
                                     });
                                     
-                                    allAssets.push({
-                                      type: 'pdf',
-                                      key: pdf.key || `${item.id}-pdf-${pdf.role}`,
-                                      label: pdf.label || pdf.filename || item.title || 'Untitled document',
-                                      imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
-                                      pdfUrl: pdf.signed_url || pdf.url,
-                                      linkUrl: pdf.signed_url || pdf.url,
-                                      role: pdf.role
+                                    // Handle pdf_files
+                                    const pdfs = mediaItem.pdf_files || [];
+                                    pdfs.forEach((pdf) => {
+                                      // Get thumbnail from jpg_derivatives if available
+                                      const pdfHash = pdf.filename?.split('__')[0];
+                                      const thumbJpg = jpgs.find(j => {
+                                        if (j.role !== 'jpg_thumb') return false;
+                                        if (pdf.label && j.label && j.label === pdf.label) return true;
+                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                      });
+                                      
+                                      allAssets.push({
+                                        type: 'pdf',
+                                        key: pdf.key || `${mediaItem.id}-pdf-${pdf.role}`,
+                                        label: pdf.label || pdf.filename || mediaItem.title || item.title || 'Untitled document',
+                                        imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
+                                        pdfUrl: pdf.signed_url || pdf.url,
+                                        linkUrl: pdf.signed_url || pdf.url,
+                                        role: pdf.role
+                                      });
                                     });
                                   });
                                 });
