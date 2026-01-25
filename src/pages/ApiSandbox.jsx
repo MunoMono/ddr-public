@@ -1015,7 +1015,8 @@ const ApiSandbox = () => {
                               
                               // Handle all_media_items query - flatten media items with their derivatives
                               if (json.all_media_items) {
-                                const items = json.all_media_items;
+                                // Check if it's an aliased record_v1 with attached_media (collection presets)
+                                const items = json.all_media_items.attached_media || json.all_media_items;
                                 
                                 // Collect ALL assets from all media items
                                 const allAssets = items.flatMap((item) => {

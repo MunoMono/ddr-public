@@ -18,14 +18,14 @@
     {
       "id": "kennethAgnewCollection",
       "label": "Kenneth Agnew collection",
-      "description": "Kenneth Agnew collection",
-      "query": "# Kenneth Agnew collection\n{\n  record_v1(id: \"451248821104\") {\n    id\n    pid\n    title\n    status\n    updated_at\n    level\n    reference_code\n    scope_and_content\n    date_begin\n    date_end\n    \n    # Attached media\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      attachment_role\n      attachment_sequence\n      \n      # Digital assets - JPG derivatives\n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n      \n      # Digital assets - PDF files\n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
+      "description": "Kenneth Agnew collection media items",
+      "query": "# Kenneth Agnew collection (parent PID: 451248821104)\n{\n  all_media_items: record_v1(id: \"451248821104\") {\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      parent_collection\n      \n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n      \n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
     },
     {
       "id": "bruceArcherCollection",
       "label": "Bruce Archer collection",
-      "description": "Bruce Archer collection",
-      "query": "# Bruce Archer collection\n{\n  record_v1(id: \"873981573030\") {\n    id\n    pid\n    title\n    status\n    updated_at\n    level\n    reference_code\n    scope_and_content\n    date_begin\n    date_end\n    \n    # Attached media\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      attachment_role\n      attachment_sequence\n      \n      # Digital assets - JPG derivatives\n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n      \n      # Digital assets - PDF files\n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
+      "description": "Bruce Archer collection media items",
+      "query": "# Bruce Archer collection (parent PID: 873981573030)\n{\n  all_media_items: record_v1(id: \"873981573030\") {\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      parent_collection\n      \n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n      \n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
     }
   ]
 }
