@@ -866,11 +866,24 @@ const ApiSandbox = () => {
                                     }
                                     
                                     displays.forEach((display, idx) => {
+                                      // For linkUrl (View artefact), use jpg_display if available, otherwise construct from jpg_thumb
+                                      let linkUrl = display.signed_url || display.url;
+                                      if (display.role === 'jpg_thumb') {
+                                        // Try to find jpg_display in the derivatives
+                                        const displayJpg = item.jpg_derivatives.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === display.filename?.split('__')[0]);
+                                        if (displayJpg) {
+                                          linkUrl = displayJpg.signed_url || displayJpg.url;
+                                        } else {
+                                          // Construct jpg_display URL from jpg_thumb URL (files exist on DO Spaces)
+                                          linkUrl = linkUrl.replace('__jpg_thumb__', '__jpg_display__');
+                                        }
+                                      }
+                                      
                                       results.push({
                                         type: 'image',
                                         key: `img-${item.id}-${idx}`,
                                         imgUrl: display.signed_url || display.url,
-                                        linkUrl: display.signed_url || display.url,
+                                        linkUrl: linkUrl,
                                         label: display.label || item.title || `Image ${idx + 1}`,
                                         title: item.title
                                       });
@@ -1031,11 +1044,24 @@ const ApiSandbox = () => {
                                     }
                                     
                                     displays.forEach((display, idx) => {
+                                      // For linkUrl (View artefact), use jpg_display if available, otherwise construct from jpg_thumb
+                                      let linkUrl = display.signed_url || display.url;
+                                      if (display.role === 'jpg_thumb') {
+                                        // Try to find jpg_display in the derivatives
+                                        const displayJpg = item.jpg_derivatives.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === display.filename?.split('__')[0]);
+                                        if (displayJpg) {
+                                          linkUrl = displayJpg.signed_url || displayJpg.url;
+                                        } else {
+                                          // Construct jpg_display URL from jpg_thumb URL (files exist on DO Spaces)
+                                          linkUrl = linkUrl.replace('__jpg_thumb__', '__jpg_display__');
+                                        }
+                                      }
+                                      
                                       results.push({
                                         type: 'image',
                                         key: `img-${item.id}-${idx}`,
                                         imgUrl: display.signed_url || display.url,
-                                        linkUrl: display.signed_url || display.url,
+                                        linkUrl: linkUrl,
                                         label: display.label || item.title || `Image ${idx + 1}`,
                                         title: item.title,
                                         caption: item.caption
@@ -1208,12 +1234,25 @@ const ApiSandbox = () => {
                                     }
                                     
                                     displays.forEach((jpg) => {
+                                      // For linkUrl (View artefact), use jpg_display if available, otherwise construct from jpg_thumb
+                                      let linkUrl = jpg.signed_url || jpg.url;
+                                      if (jpg.role === 'jpg_thumb') {
+                                        // Try to find jpg_display in the derivatives
+                                        const displayJpg = jpgs.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === jpg.filename?.split('__')[0]);
+                                        if (displayJpg) {
+                                          linkUrl = displayJpg.signed_url || displayJpg.url;
+                                        } else {
+                                          // Construct jpg_display URL from jpg_thumb URL (files exist on DO Spaces)
+                                          linkUrl = linkUrl.replace('__jpg_thumb__', '__jpg_display__');
+                                        }
+                                      }
+                                      
                                       allAssets.push({
                                         type: 'image',
                                         key: jpg.key || `${mediaItem.id}-jpg-${jpg.role}`,
                                         label: jpg.label || jpg.filename || mediaItem.title || item.title || 'Untitled image',
                                         imgUrl: jpg.signed_url || jpg.url,
-                                        linkUrl: jpg.signed_url || jpg.url,
+                                        linkUrl: linkUrl,
                                         role: jpg.role
                                       });
                                     });
