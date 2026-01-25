@@ -1184,7 +1184,7 @@ const ApiSandbox = () => {
                               // Standard record display for other presets - flatten to individual assets
                               return (() => {
                                 // Get the items array
-                                let items = json.items_recent || json.records_v1;
+                                let items = json.items_recent || json.records_v1 || (json.record_v1 ? [json.record_v1] : []);
                                 
                                 // Filter for "Records with PDFs" preset
                                 if (activePresetId === 'recordsWithPDFs') {
@@ -1444,34 +1444,45 @@ const ApiSandbox = () => {
                                     });
                                   }
                                 } else if (json.record_v1) {
-                                  // Single record - flatten assets
+                                  // Single record - flatten attached_media assets
                                   const record = json.record_v1;
-                                  const displays = record.jpg_derivatives?.filter(j => j.role === 'jpg_display') || [];
-                                  displays.forEach(img => {
-                                    rows.push({
-                                      record_id: record.id,
-                                      record_pid: record.pid,
-                                      record_title: record.title,
-                                      asset_type: 'Image',
-                                      asset_label: img.label,
-                                      asset_filename: img.filename,
-                                      asset_url: img.signed_url,
-                                      copyright_holder: img.copyright_holder,
-                                      rights_holders: img.rights_holders
+                                  const mediaItems = record.attached_media || [record];
+                                  
+                                  mediaItems.forEach(mediaItem => {
+                                    const displays = mediaItem.jpg_derivatives?.filter(j => j.role === 'jpg_display') || [];
+                                    displays.forEach(img => {
+                                      rows.push({
+                                        record_id: record.id,
+                                        record_pid: record.pid,
+                                        record_title: record.title,
+                                        media_id: mediaItem.id,
+                                        media_pid: mediaItem.pid,
+                                        media_title: mediaItem.title,
+                                        asset_type: 'Image',
+                                        asset_label: img.label,
+                                        asset_filename: img.filename,
+                                        asset_url: img.signed_url,
+                                        copyright_holder: img.copyright_holder,
+                                        rights_holders: img.rights_holders
+                                      });
                                     });
-                                  });
-                                  const pdfs = record.pdf_files || [];
-                                  pdfs.forEach(pdf => {
-                                    rows.push({
-                                      record_id: record.id,
-                                      record_pid: record.pid,
-                                      record_title: record.title,
-                                      asset_type: 'PDF',
-                                      asset_label: pdf.label,
-                                      asset_filename: pdf.filename,
-                                      asset_url: pdf.signed_url,
-                                      copyright_holder: pdf.copyright_holder,
-                                      rights_holders: pdf.rights_holders
+                                    
+                                    const pdfs = mediaItem.pdf_files || [];
+                                    pdfs.forEach(pdf => {
+                                      rows.push({
+                                        record_id: record.id,
+                                        record_pid: record.pid,
+                                        record_title: record.title,
+                                        media_id: mediaItem.id,
+                                        media_pid: mediaItem.pid,
+                                        media_title: mediaItem.title,
+                                        asset_type: 'PDF',
+                                        asset_label: pdf.label,
+                                        asset_filename: pdf.filename,
+                                        asset_url: pdf.signed_url,
+                                        copyright_holder: pdf.copyright_holder,
+                                        rights_holders: pdf.rights_holders
+                                      });
                                     });
                                   });
                                 } else {
