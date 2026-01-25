@@ -857,17 +857,20 @@ const ApiSandbox = () => {
                                 const allAssets = items.flatMap((item) => {
                                   const results = [];
                                   
-                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                   if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
                                     const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                    const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    let displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    if (displays.length === 0 && !(item.pdf_files && item.pdf_files.length > 0)) {
+                                      displays = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                    }
                                     
                                     displays.forEach((display, idx) => {
                                       results.push({
                                         type: 'image',
                                         key: `img-${item.id}-${idx}`,
-                                        imgUrl: display.signed_url,
-                                        linkUrl: display.signed_url,
+                                        imgUrl: display.signed_url || display.url,
+                                        linkUrl: display.signed_url || display.url,
                                         label: display.label || item.title || `Image ${idx + 1}`,
                                         title: item.title
                                       });
@@ -877,18 +880,24 @@ const ApiSandbox = () => {
                                   // Handle pdf_files
                                   if (item.pdf_files && Array.isArray(item.pdf_files)) {
                                     item.pdf_files.forEach((pdf, idx) => {
-                                      const pdfHash = pdf.filename?.split('__')[0];
-                                      const thumb = item.jpg_derivatives?.find(j => {
+                                      const pdfAssetId = pdf.asset_id || pdf.assetId;
+                                      const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                      let thumb = item.jpg_derivatives?.find(j => {
                                         if (j.role !== 'jpg_thumb') return false;
+                                        const jpgAssetId = j.asset_id || j.assetId;
+                                        if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
                                         if (pdf.label && j.label && j.label === pdf.label) return true;
-                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                        return pdfBase && j.filename?.startsWith(pdfBase);
                                       });
+                                      if (!thumb) {
+                                        thumb = item.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
+                                      }
                                       
                                       results.push({
                                         type: 'pdf',
                                         key: `pdf-${item.id}-${idx}`,
-                                        pdfUrl: pdf.signed_url,
-                                        imgUrl: thumb?.signed_url,
+                                        pdfUrl: pdf.signed_url || pdf.url,
+                                        imgUrl: thumb?.signed_url || thumb?.url,
                                         label: pdf.label || item.title,
                                         title: item.title
                                       });
@@ -1012,17 +1021,20 @@ const ApiSandbox = () => {
                                 const allAssets = items.flatMap((item) => {
                                   const results = [];
                                   
-                                  // Handle jpg_derivatives (images) - only jpg_display
+                                  // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                   if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
                                     const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                    const displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    let displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    if (displays.length === 0 && !(item.pdf_files && item.pdf_files.length > 0)) {
+                                      displays = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                    }
                                     
                                     displays.forEach((display, idx) => {
                                       results.push({
                                         type: 'image',
                                         key: `img-${item.id}-${idx}`,
-                                        imgUrl: display.signed_url,
-                                        linkUrl: display.signed_url,
+                                        imgUrl: display.signed_url || display.url,
+                                        linkUrl: display.signed_url || display.url,
                                         label: display.label || item.title || `Image ${idx + 1}`,
                                         title: item.title,
                                         caption: item.caption
@@ -1033,18 +1045,24 @@ const ApiSandbox = () => {
                                   // Handle pdf_files
                                   if (item.pdf_files && Array.isArray(item.pdf_files)) {
                                     item.pdf_files.forEach((pdf, idx) => {
-                                      const pdfHash = pdf.filename?.split('__')[0];
-                                      const thumb = item.jpg_derivatives?.find(j => {
+                                      const pdfAssetId = pdf.asset_id || pdf.assetId;
+                                      const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                      let thumb = item.jpg_derivatives?.find(j => {
                                         if (j.role !== 'jpg_thumb') return false;
+                                        const jpgAssetId = j.asset_id || j.assetId;
+                                        if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
                                         if (pdf.label && j.label && j.label === pdf.label) return true;
-                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                        return pdfBase && j.filename?.startsWith(pdfBase);
                                       });
+                                      if (!thumb) {
+                                        thumb = item.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
+                                      }
                                       
                                       results.push({
                                         type: 'pdf',
                                         key: `pdf-${item.id}-${idx}`,
-                                        pdfUrl: pdf.signed_url,
-                                        imgUrl: thumb?.signed_url,
+                                        pdfUrl: pdf.signed_url || pdf.url,
+                                        imgUrl: thumb?.signed_url || thumb?.url,
                                         label: pdf.label || item.title,
                                         title: item.title,
                                         caption: item.caption
@@ -1180,10 +1198,13 @@ const ApiSandbox = () => {
                                   const mediaItems = item.attached_media || [item];
                                   
                                   mediaItems.forEach(mediaItem => {
-                                    // Handle jpg_derivatives (images) - only jpg_display
+                                    // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                     const jpgs = mediaItem.jpg_derivatives || [];
                                     const pdfLabels = new Set(mediaItem.pdf_files?.map(p => p.label) || []);
-                                    const displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    let displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    if (displays.length === 0 && !(mediaItem.pdf_files && mediaItem.pdf_files.length > 0)) {
+                                      displays = jpgs.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                    }
                                     
                                     displays.forEach((jpg) => {
                                       allAssets.push({
@@ -1200,12 +1221,18 @@ const ApiSandbox = () => {
                                     const pdfs = mediaItem.pdf_files || [];
                                     pdfs.forEach((pdf) => {
                                       // Get thumbnail from jpg_derivatives if available
-                                      const pdfHash = pdf.filename?.split('__')[0];
-                                      const thumbJpg = jpgs.find(j => {
+                                      const pdfAssetId = pdf.asset_id || pdf.assetId;
+                                      const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                      let thumbJpg = jpgs.find(j => {
                                         if (j.role !== 'jpg_thumb') return false;
+                                        const jpgAssetId = j.asset_id || j.assetId;
+                                        if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
                                         if (pdf.label && j.label && j.label === pdf.label) return true;
-                                        return pdfHash && j.filename?.startsWith(pdfHash);
+                                        return pdfBase && j.filename?.startsWith(pdfBase);
                                       });
+                                      if (!thumbJpg) {
+                                        thumbJpg = jpgs.find(j => j.role === 'jpg_thumb');
+                                      }
                                       
                                       allAssets.push({
                                         type: 'pdf',
