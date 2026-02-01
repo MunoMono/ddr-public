@@ -1116,15 +1116,22 @@ const ApiSandbox = () => {
                                     item.pdf_files.forEach((pdf, idx) => {
                                       const pdfAssetId = pdf.asset_id || pdf.assetId;
                                       const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
-                                      let thumb = item.jpg_derivatives?.find(j => {
-                                        if (j.role !== 'jpg_thumb') return false;
-                                        const jpgAssetId = j.asset_id || j.assetId;
-                                        if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
-                                        if (pdf.label && j.label && j.label === pdf.label) return true;
-                                        return pdfBase && j.filename?.startsWith(pdfBase);
-                                      });
-                                      if (!thumb) {
-                                        thumb = item.jpg_derivatives?.find(j => j.role === 'jpg_thumb');
+                                      
+                                      // Find matching thumbnail for this PDF
+                                      let thumb = null;
+                                      if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                        thumb = item.jpg_derivatives.find(j => {
+                                          if (j.role !== 'jpg_thumb') return false;
+                                          const jpgAssetId = j.asset_id || j.assetId;
+                                          if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
+                                          if (pdf.label && j.label && j.label === pdf.label) return true;
+                                          const jpgBase = (j.filename || '').split('__')[0];
+                                          return pdfBase && jpgBase === pdfBase;
+                                        });
+                                        // Fallback to first thumb if no specific match
+                                        if (!thumb) {
+                                          thumb = item.jpg_derivatives.find(j => j.role === 'jpg_thumb');
+                                        }
                                       }
                                       
                                       results.push({
