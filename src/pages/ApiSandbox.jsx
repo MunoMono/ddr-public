@@ -1270,9 +1270,8 @@ const ApiSandbox = () => {
                                     // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                       const jpgs = mediaItem.jpg_derivatives || [];
                                       const pdfs = mediaItem.pdf_files || [];
-                                      const imageJpgs = filterImageDerivatives(jpgs, pdfs);
                                       
-                                    // If there are PDFs, only show PDFs (jpgs are thumbnails for PDFs)
+                                    // Only process items with PDFs (skip standalone images)
                                     if (pdfs && pdfs.length > 0) {
                                       // Handle pdf_files with jpg thumbnails
                                       pdfs.forEach((pdf) => {
@@ -1302,26 +1301,8 @@ const ApiSandbox = () => {
                                           role: pdf.role
                                         });
                                       });
-                                    } else {
-                                      // No PDFs - show jpg_display or jpg_thumb as standalone images
-                                      let displays = imageJpgs.filter(j => j.role === 'jpg_display');
-                                      if (displays.length === 0) {
-                                        displays = imageJpgs.filter(j => j.role === 'jpg_thumb');
-                                      }
-                                      
-                                      // Process in original order to preserve sequence from API
-                                      displays.forEach((item) => {
-                                        allAssets.push({
-                                          type: 'image',
-                                          key: item.key || `${mediaItem.id}-jpg-${item.filename || item.assetId}`,
-                                          label: item.label || item.filename || mediaItem.title || item.title || 'Untitled image',
-                                          imgUrl: item.signed_url || item.url,
-                                          linkUrl: item.signed_url || item.url,
-                                          role: item.role,
-                                          displayDate: item.display_date
-                                        });
-                                      });
                                     }
+                                    // Skip items without PDFs - don't show standalone images
                                   });
                                 });
                                 
