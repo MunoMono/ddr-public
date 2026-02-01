@@ -24,13 +24,13 @@
     {
       "id": "bruceArcherCollection",
       "label": "Bruce Archer collection",
-      "description": "Bruce Archer collection media items",
+      "description": "Bruce Archer collection media items (PDFs only)",
       "query": "# Bruce Archer collection (parent PID: 873981573030)\n{\n  all_media_items: record_v1(id: \"873981573030\") {\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      parent_collection\n      \n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        display_date\n        normalized_date\n        date_qualifier\n        date_unknown\n        copyright_holder\n        rights_holders\n      }\n      \n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        display_date\n        normalized_date\n        date_qualifier\n        date_unknown\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
     },
     {
       "id": "rcaProspectuses",
       "label": "RCA Prospectuses | 1965-85",
-      "description": "RCA Prospectuses and yearbooks mentioning IDE(R)U and DDR 1965-1985",
+      "description": "RCA Prospectuses and yearbooks mentioning IDE(R)U and DDR 1965-1985 (PDFs only)",
       "query": "# RCA Prospectuses | 1965-85 (record ID: 125, PID: 880612075513)\n{\n  all_media_items: record_v1(id: \"125\") {\n    attached_media {\n      id\n      pid\n      title\n      status\n      caption\n      parent_collection\n      \n      jpg_derivatives {\n        role\n        url\n        signed_url\n        filename\n        label\n        display_date\n        normalized_date\n        date_qualifier\n        date_unknown\n        copyright_holder\n        rights_holders\n      }\n      \n      pdf_files {\n        role\n        url\n        signed_url\n        filename\n        label\n        display_date\n        normalized_date\n        date_qualifier\n        date_unknown\n        copyright_holder\n        rights_holders\n      }\n    }\n  }\n}"
     }
   ]

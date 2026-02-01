@@ -1063,12 +1063,15 @@ const ApiSandbox = () => {
                                 // Check if it's an aliased record_v1 with attached_media (collection presets)
                                 const items = json.all_media_items.attached_media || json.all_media_items;
                                 
+                                // Determine if this is a PDF-only preset (e.g., RCA Prospectuses, Bruce Archer)
+                                const isPdfOnlyPreset = ['rcaProspectuses', 'bruceArcherCollection'].includes(activePresetId);
+                                
                                 // Collect ALL assets from all media items
                                 const allAssets = items.flatMap((item) => {
                                   const results = [];
                                   
-                                  // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
-                                  if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
+                                  // Handle jpg_derivatives (images) - SKIP for PDF-only presets
+                                  if (!isPdfOnlyPreset && item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
                                     // Get ALL derivatives (both jpg_display and jpg_thumb), excluding PDF thumbs
                                     const allJpgs = filterImageDerivatives(item.jpg_derivatives, item.pdf_files);
                                     
