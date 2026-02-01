@@ -1269,53 +1269,55 @@ const ApiSandbox = () => {
                                   mediaItems.forEach(mediaItem => {
                                     // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                       const jpgs = mediaItem.jpg_derivatives || [];
-                                      const imageJpgs = filterImageDerivatives(jpgs, mediaItem.pdf_files);
+                                      const pdfs = mediaItem.pdf_files || [];
+                                      const imageJpgs = filterImageDerivatives(jpgs, pdfs);
+                                      
+                                    // If there are PDFs, only show PDFs (jpgs are thumbnails for PDFs)
+                                    if (pdfs && pdfs.length > 0) {
+                                      // Handle pdf_files with jpg thumbnails
+                                      pdfs.forEach((pdf) => {
+                                        // Get thumbnail from jpg_derivatives matching this PDF
+                                        const pdfAssetId = pdf.asset_id || pdf.assetId;
+                                        const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                        let thumbJpg = jpgs.find(j => {
+                                          if (j.role !== 'jpg_thumb') return false;
+                                          const jpgAssetId = j.asset_id || j.assetId;
+                                          if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
+                                          if (pdf.label && j.label && j.label === pdf.label) return true;
+                                          return pdfBase && j.filename?.startsWith(pdfBase);
+                                        });
+                                        
+                                        allAssets.push({
+                                          type: 'pdf',
+                                          key: pdf.key || `${mediaItem.id}-pdf-${pdf.filename || pdf.role}`,
+                                          label: thumbJpg?.label || pdf.label || pdf.filename || mediaItem.title || 'Untitled document',
+                                          imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
+                                          displayDate: thumbJpg?.display_date || pdf.display_date,
+                                          pdfUrl: pdf.signed_url || pdf.url,
+                                          linkUrl: pdf.signed_url || pdf.url,
+                                          role: pdf.role
+                                        });
+                                      });
+                                    } else {
+                                      // No PDFs - show jpg_display or jpg_thumb as standalone images
                                       let displays = imageJpgs.filter(j => j.role === 'jpg_display');
-                                    if (displays.length === 0 && !(mediaItem.pdf_files && mediaItem.pdf_files.length > 0)) {
+                                      if (displays.length === 0) {
                                         displays = imageJpgs.filter(j => j.role === 'jpg_thumb');
-                                    }
-                                    
-                                    // Process in original order to preserve sequence from API
-                                    displays.forEach((item) => {
-                                      allAssets.push({
-                                        type: 'image',
-                                        key: item.key || `${mediaItem.id}-jpg-${item.filename || item.assetId}`,
-                                        label: item.label || item.filename || mediaItem.title || item.title || 'Untitled image',
-                                        imgUrl: item.signed_url || item.url,
-                                        linkUrl: item.signed_url || item.url,
-                                        role: item.role,
-                                        displayDate: item.display_date
-                                      });
-                                    });
-                                    
-                                    // Handle pdf_files
-                                    const pdfs = mediaItem.pdf_files || [];
-                                    pdfs.forEach((pdf) => {
-                                      // Get thumbnail from jpg_derivatives if available
-                                      const pdfAssetId = pdf.asset_id || pdf.assetId;
-                                      const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
-                                      let thumbJpg = jpgs.find(j => {
-                                        if (j.role !== 'jpg_thumb') return false;
-                                        const jpgAssetId = j.asset_id || j.assetId;
-                                        if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
-                                        if (pdf.label && j.label && j.label === pdf.label) return true;
-                                        return pdfBase && j.filename?.startsWith(pdfBase);
-                                      });
-                                      if (!thumbJpg) {
-                                        thumbJpg = jpgs.find(j => j.role === 'jpg_thumb');
                                       }
                                       
-                                      allAssets.push({
-                                        type: 'pdf',
-                                        key: pdf.key || `${mediaItem.id}-pdf-${pdf.role}`,
-                                        label: pdf.label || pdf.filename || mediaItem.title || item.title || 'Untitled document',
-                                        imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
-                                        displayDate: pdf.display_date,
-                                        pdfUrl: pdf.signed_url || pdf.url,
-                                        linkUrl: pdf.signed_url || pdf.url,
-                                        role: pdf.role
+                                      // Process in original order to preserve sequence from API
+                                      displays.forEach((item) => {
+                                        allAssets.push({
+                                          type: 'image',
+                                          key: item.key || `${mediaItem.id}-jpg-${item.filename || item.assetId}`,
+                                          label: item.label || item.filename || mediaItem.title || item.title || 'Untitled image',
+                                          imgUrl: item.signed_url || item.url,
+                                          linkUrl: item.signed_url || item.url,
+                                          role: item.role,
+                                          displayDate: item.display_date
+                                        });
                                       });
-                                    });
+                                    }
                                   });
                                 });
                                 
