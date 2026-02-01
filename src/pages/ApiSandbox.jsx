@@ -1115,23 +1115,19 @@ const ApiSandbox = () => {
                                   if (item.pdf_files && Array.isArray(item.pdf_files)) {
                                     item.pdf_files.forEach((pdf, idx) => {
                                       const pdfAssetId = pdf.asset_id || pdf.assetId;
-                                      const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                      const pdfFilename = pdf.filename || '';
+                                      const pdfBase = pdfFilename.split('__')[0];
                                       
-                                      // Find matching thumbnail for this PDF
+                                      // Find matching thumbnail for this PDF by matching base hash
                                       let thumb = null;
                                       if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
                                         thumb = item.jpg_derivatives.find(j => {
                                           if (j.role !== 'jpg_thumb') return false;
-                                          const jpgAssetId = j.asset_id || j.assetId;
-                                          if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
-                                          if (pdf.label && j.label && j.label === pdf.label) return true;
-                                          const jpgBase = (j.filename || '').split('__')[0];
-                                          return pdfBase && jpgBase === pdfBase;
+                                          const jpgFilename = j.filename || '';
+                                          const jpgBase = jpgFilename.split('__')[0];
+                                          // Match by base hash (the hash before the first __)
+                                          return pdfBase && jpgBase && pdfBase === jpgBase;
                                         });
-                                        // Fallback to first thumb if no specific match
-                                        if (!thumb) {
-                                          thumb = item.jpg_derivatives.find(j => j.role === 'jpg_thumb');
-                                        }
                                       }
                                       
                                       results.push({
