@@ -105,7 +105,7 @@ const REST_PRESETS = [
 ];
 
 const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
-const PRESETS_BASE_URL = `https://ddrarchive.org/presets`;
+const PRESETS_BASE_URL = `https://ddrarchive.org/data/presets`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
@@ -170,6 +170,38 @@ const getThemePreference = () => {
     root.classList.contains("cds-theme-g90") ||
     root.classList.contains("cds-theme-g100")
   );
+};
+
+const formatTitleWithDate = (title, displayDate) => {
+  if (title && displayDate) return `${title} | ${displayDate}`;
+  return title || displayDate || "";
+};
+
+const getPdfAssetIds = (pdfs = []) =>
+  new Set(pdfs.map((p) => p?.asset_id || p?.assetId).filter(Boolean));
+
+const getPdfBases = (pdfs = []) =>
+  new Set(
+    pdfs
+      .map((p) => (p?.filename || "").split("__")[0].replace(/\.pdf$/i, ""))
+      .filter(Boolean)
+  );
+
+const filterImageDerivatives = (jpgs = [], pdfs = []) => {
+  const pdfAssetIds = getPdfAssetIds(pdfs);
+  const pdfBases = getPdfBases(pdfs);
+  return jpgs.filter((j) => {
+    const role = j?.role;
+    // ALWAYS keep jpg_thumb - needed for PDF thumbnail previews
+    if (role === 'jpg_thumb') return true;
+    
+    // Only filter jpg_display that belongs to PDFs
+    const jpgAssetId = j?.asset_id || j?.assetId;
+    if (jpgAssetId && pdfAssetIds.has(jpgAssetId)) return false;
+    const jpgBase = (j?.filename || "").split("__")[0];
+    if (jpgBase && pdfBases.has(jpgBase)) return false;
+    return true;
+  });
 };
 
 const ApiSandbox = () => {
@@ -859,10 +891,10 @@ const ApiSandbox = () => {
                                   
                                   // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                   if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
-                                    const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                    let displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                    const imageJpgs = filterImageDerivatives(item.jpg_derivatives, item.pdf_files);
+                                    let displays = imageJpgs.filter(j => j.role === 'jpg_display');
                                     if (displays.length === 0 && !(item.pdf_files && item.pdf_files.length > 0)) {
-                                      displays = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                      displays = imageJpgs.filter(j => j.role === 'jpg_thumb');
                                     }
                                     
                                     displays.forEach((display, idx) => {
@@ -870,7 +902,7 @@ const ApiSandbox = () => {
                                       let linkUrl = display.signed_url || display.url;
                                       if (display.role === 'jpg_thumb') {
                                         // Try to find jpg_display in the derivatives
-                                        const displayJpg = item.jpg_derivatives.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === display.filename?.split('__')[0]);
+                                        const displayJpg = imageJpgs.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === display.filename?.split('__')[0]);
                                         if (displayJpg) {
                                           linkUrl = displayJpg.signed_url || displayJpg.url;
                                         } else {
@@ -1037,35 +1069,42 @@ const ApiSandbox = () => {
                                   
                                   // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
                                   if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
-                                    const pdfLabels = new Set(item.pdf_files?.map(p => p.label) || []);
-                                    let displays = item.jpg_derivatives.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
-                                    if (displays.length === 0 && !(item.pdf_files && item.pdf_files.length > 0)) {
-                                      displays = item.jpg_derivatives.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
-                                    }
+                                    // Get ALL derivatives (both jpg_display and jpg_thumb), excluding PDF thumbs
+                                    const allJpgs = filterImageDerivatives(item.jpg_derivatives, item.pdf_files);
                                     
-                                    displays.forEach((display, idx) => {
-                                      // For linkUrl (View artefact), use jpg_display if available, otherwise construct from jpg_thumb
-                                      let linkUrl = display.signed_url || display.url;
-                                      if (display.role === 'jpg_thumb') {
-                                        // Try to find jpg_display in the derivatives
-                                        const displayJpg = item.jpg_derivatives.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === display.filename?.split('__')[0]);
-                                        if (displayJpg) {
-                                          linkUrl = displayJpg.signed_url || displayJpg.url;
-                                        } else {
-                                          // Construct jpg_display URL from jpg_thumb URL (files exist on DO Spaces)
-                                          linkUrl = linkUrl.replace('__jpg_thumb__', '__jpg_display__');
-                                        }
+                                    // Separate jpg_display and jpg_thumb
+                                    const displayJpgs = allJpgs.filter(j => j.role === 'jpg_display');
+                                    const thumbJpgs = allJpgs.filter(j => j.role === 'jpg_thumb');
+                                    
+                                    // Group by assetId to match display with thumb
+                                    const assetMap = new Map();
+                                    displayJpgs.forEach(d => assetMap.set(d.assetId || d.filename, { display: d }));
+                                    thumbJpgs.forEach(t => {
+                                      const key = t.assetId || t.filename;
+                                      if (assetMap.has(key)) {
+                                        assetMap.get(key).thumb = t;
+                                      } else {
+                                        assetMap.set(key, { thumb: t });
                                       }
+                                    });
+                                    
+                                    let idx = 0;
+                                    assetMap.forEach((pair) => {
+                                      const display = pair.display;
+                                      const thumb = pair.thumb || pair.display;
+                                      const img = display || thumb;
                                       
                                       results.push({
                                         type: 'image',
                                         key: `img-${item.id}-${idx}`,
-                                        imgUrl: display.signed_url || display.url,
-                                        linkUrl: linkUrl,
-                                        label: display.label || item.title || `Image ${idx + 1}`,
+                                        imgUrl: thumb ? (thumb.signed_url || thumb.url) : (display.signed_url || display.url),
+                                        linkUrl: display ? (display.signed_url || display.url) : (thumb.signed_url || thumb.url),
+                                        label: img.label || item.title || `Image ${idx + 1}`,
                                         title: item.title,
-                                        caption: item.caption
+                                        caption: item.caption,
+                                        displayDate: img.display_date
                                       });
+                                      idx++;
                                     });
                                   }
                                   
@@ -1092,7 +1131,8 @@ const ApiSandbox = () => {
                                         imgUrl: thumb?.signed_url || thumb?.url,
                                         label: pdf.label || item.title,
                                         title: item.title,
-                                        caption: item.caption
+                                        caption: item.caption,
+                                        displayDate: pdf.display_date
                                       });
                                     });
                                   }
@@ -1111,13 +1151,14 @@ const ApiSandbox = () => {
                                     <div className="cds-grid" style={{ marginTop: "var(--cds-spacing-03)" }}>
                                       {paginatedAssets.map((asset) => {
                                         if (asset.type === 'image') {
+                                          const titleText = formatTitleWithDate(asset.label, asset.displayDate);
                                           return (
                                             <figure key={asset.key} className="cds-figure cds-card-tile">
                                               <a href={asset.linkUrl} target="_blank" rel="noopener noreferrer" title="View hi-res image">
                                                 <img src={asset.imgUrl} alt={asset.label} className="cds-thumb" />
                                               </a>
                                               <figcaption className="cds-figcaption">
-                                                <strong>{asset.label}</strong>
+                                                <strong>{titleText || asset.label}</strong>
                                                 {asset.caption && <><br/><em style={{color: '#525252', fontSize: '0.875rem'}}>{asset.caption}</em></>}
                                                 <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
                                                   <Image size={16} /> Image
@@ -1142,6 +1183,7 @@ const ApiSandbox = () => {
                                             </figure>
                                           );
                                         } else {
+                                          const titleText = formatTitleWithDate(asset.label, asset.displayDate);
                                           return (
                                             <figure key={asset.key} className="cds-figure cds-card-tile">
                                               <a href={asset.pdfUrl} target="_blank" rel="noopener noreferrer" title="View PDF">
@@ -1160,7 +1202,7 @@ const ApiSandbox = () => {
                                                 )}
                                               </a>
                                               <figcaption className="cds-figcaption">
-                                                <strong>{asset.label}</strong>
+                                                <strong>{titleText || asset.label}</strong>
                                                 {asset.caption && <><br/><em style={{color: '#525252', fontSize: '0.875rem'}}>{asset.caption}</em></>}
                                                 <br/><small style={{color: '#525252', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
                                                   <Document size={16} /> Document
@@ -1226,34 +1268,42 @@ const ApiSandbox = () => {
                                   
                                   mediaItems.forEach(mediaItem => {
                                     // Handle jpg_derivatives (images) - jpg_display with jpg_thumb fallback
-                                    const jpgs = mediaItem.jpg_derivatives || [];
-                                    const pdfLabels = new Set(mediaItem.pdf_files?.map(p => p.label) || []);
-                                    let displays = jpgs.filter(j => j.role === 'jpg_display' && !pdfLabels.has(j.label));
+                                      const jpgs = mediaItem.jpg_derivatives || [];
+                                      const imageJpgs = filterImageDerivatives(jpgs, mediaItem.pdf_files);
+                                      let displays = imageJpgs.filter(j => j.role === 'jpg_display');
                                     if (displays.length === 0 && !(mediaItem.pdf_files && mediaItem.pdf_files.length > 0)) {
-                                      displays = jpgs.filter(j => j.role === 'jpg_thumb' && !pdfLabels.has(j.label));
+                                        displays = imageJpgs.filter(j => j.role === 'jpg_thumb');
                                     }
                                     
-                                    displays.forEach((jpg) => {
-                                      // For linkUrl (View artefact), use jpg_display if available, otherwise construct from jpg_thumb
-                                      let linkUrl = jpg.signed_url || jpg.url;
-                                      if (jpg.role === 'jpg_thumb') {
-                                        // Try to find jpg_display in the derivatives
-                                        const displayJpg = jpgs.find(j => j.role === 'jpg_display' && j.filename?.split('__')[0] === jpg.filename?.split('__')[0]);
-                                        if (displayJpg) {
-                                          linkUrl = displayJpg.signed_url || displayJpg.url;
-                                        } else {
-                                          // Construct jpg_display URL from jpg_thumb URL (files exist on DO Spaces)
-                                          linkUrl = linkUrl.replace('__jpg_thumb__', '__jpg_display__');
-                                        }
+                                    // Separate jpg_display and jpg_thumb
+                                    const displayJpgs = displays.filter(j => j.role === 'jpg_display');
+                                    const thumbJpgs = displays.filter(j => j.role === 'jpg_thumb');
+                                    
+                                    // Group by assetId to match display with thumb
+                                    const assetMap = new Map();
+                                    displayJpgs.forEach(d => assetMap.set(d.assetId || d.filename, { display: d }));
+                                    thumbJpgs.forEach(t => {
+                                      const key = t.assetId || t.filename;
+                                      if (assetMap.has(key)) {
+                                        assetMap.get(key).thumb = t;
+                                      } else {
+                                        assetMap.set(key, { thumb: t });
                                       }
+                                    });
+                                    
+                                    assetMap.forEach((pair, assetId) => {
+                                      const display = pair.display;
+                                      const thumb = pair.thumb || pair.display; // fallback to display if no thumb
+                                      const item = display || thumb;
                                       
                                       allAssets.push({
                                         type: 'image',
-                                        key: jpg.key || `${mediaItem.id}-jpg-${jpg.role}`,
-                                        label: jpg.label || jpg.filename || mediaItem.title || item.title || 'Untitled image',
-                                        imgUrl: jpg.signed_url || jpg.url,
-                                        linkUrl: linkUrl,
-                                        role: jpg.role
+                                        key: item.key || `${mediaItem.id}-jpg-${assetId}`,
+                                        label: item.label || item.filename || mediaItem.title || item.title || 'Untitled image',
+                                        imgUrl: thumb ? (thumb.signed_url || thumb.url) : (display.signed_url || display.url),
+                                        linkUrl: display ? (display.signed_url || display.url) : (thumb.signed_url || thumb.url),
+                                        role: item.role,
+                                        displayDate: item.display_date
                                       });
                                     });
                                     
@@ -1279,6 +1329,7 @@ const ApiSandbox = () => {
                                         key: pdf.key || `${mediaItem.id}-pdf-${pdf.role}`,
                                         label: pdf.label || pdf.filename || mediaItem.title || item.title || 'Untitled document',
                                         imgUrl: thumbJpg ? (thumbJpg.signed_url || thumbJpg.url) : null,
+                                        displayDate: pdf.display_date,
                                         pdfUrl: pdf.signed_url || pdf.url,
                                         linkUrl: pdf.signed_url || pdf.url,
                                         role: pdf.role

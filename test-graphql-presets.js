@@ -140,15 +140,20 @@ async function runTests() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   
-  const recordsData = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'public/data/presets/records.json'), 'utf8')
-  );
-  const authoritiesData = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'public/data/presets/authorities.json'), 'utf8')
-  );
-  const snippetsData = JSON.parse(
-    fs.readFileSync(path.join(__dirname, 'public/data/presets/snippets.json'), 'utf8')
-  );
+  const presetsBase = ['public/data/presets', 'public/presets'];
+  const loadJson = (filename) => {
+    for (const base of presetsBase) {
+      const fullPath = path.join(__dirname, base, filename);
+      if (fs.existsSync(fullPath)) {
+        return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+      }
+    }
+    throw new Error(`Unable to locate ${filename} in ${presetsBase.join(' or ')}`);
+  };
+
+  const recordsData = loadJson('records.json');
+  const authoritiesData = loadJson('authorities.json');
+  const snippetsData = loadJson('snippets.json');
 
   const results = [];
   
