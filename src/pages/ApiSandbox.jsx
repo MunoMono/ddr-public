@@ -105,7 +105,7 @@ const REST_PRESETS = [
 ];
 
 const SNIPPETS_URL = `${import.meta.env.BASE_URL}docs/snippets.md`;
-const PRESETS_BASE_URL = `https://ddrarchive.org/data/presets`;
+const PRESETS_BASE_URL = `/presets`;
 
 const endpoint = import.meta.env.DEV
   ? "http://localhost:8000/graphql"
