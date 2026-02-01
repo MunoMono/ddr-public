@@ -1275,33 +1275,14 @@ const ApiSandbox = () => {
                                         displays = imageJpgs.filter(j => j.role === 'jpg_thumb');
                                     }
                                     
-                                    // Separate jpg_display and jpg_thumb
-                                    const displayJpgs = displays.filter(j => j.role === 'jpg_display');
-                                    const thumbJpgs = displays.filter(j => j.role === 'jpg_thumb');
-                                    
-                                    // Group by assetId to match display with thumb
-                                    const assetMap = new Map();
-                                    displayJpgs.forEach(d => assetMap.set(d.assetId || d.filename, { display: d }));
-                                    thumbJpgs.forEach(t => {
-                                      const key = t.assetId || t.filename;
-                                      if (assetMap.has(key)) {
-                                        assetMap.get(key).thumb = t;
-                                      } else {
-                                        assetMap.set(key, { thumb: t });
-                                      }
-                                    });
-                                    
-                                    assetMap.forEach((pair, assetId) => {
-                                      const display = pair.display;
-                                      const thumb = pair.thumb || pair.display; // fallback to display if no thumb
-                                      const item = display || thumb;
-                                      
+                                    // Process in original order to preserve sequence from API
+                                    displays.forEach((item) => {
                                       allAssets.push({
                                         type: 'image',
-                                        key: item.key || `${mediaItem.id}-jpg-${assetId}`,
+                                        key: item.key || `${mediaItem.id}-jpg-${item.filename || item.assetId}`,
                                         label: item.label || item.filename || mediaItem.title || item.title || 'Untitled image',
-                                        imgUrl: thumb ? (thumb.signed_url || thumb.url) : (display.signed_url || display.url),
-                                        linkUrl: display ? (display.signed_url || display.url) : (thumb.signed_url || thumb.url),
+                                        imgUrl: item.signed_url || item.url,
+                                        linkUrl: item.signed_url || item.url,
                                         role: item.role,
                                         displayDate: item.display_date
                                       });
