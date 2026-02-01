@@ -1278,13 +1278,17 @@ const ApiSandbox = () => {
                                       pdfs.forEach((pdf) => {
                                         // Get thumbnail from jpg_derivatives matching this PDF
                                         const pdfAssetId = pdf.asset_id || pdf.assetId;
-                                        const pdfBase = (pdf.filename || '').split('__')[0].replace(/\.pdf$/i, '');
+                                        const pdfBase = (pdf.filename || '').split('__')[0];
                                         let thumbJpg = jpgs.find(j => {
                                           if (j.role !== 'jpg_thumb') return false;
                                           const jpgAssetId = j.asset_id || j.assetId;
+                                          // 1. Try asset_id match first
                                           if (pdfAssetId && jpgAssetId && jpgAssetId === pdfAssetId) return true;
+                                          // 2. Try filename hash match (most reliable)
+                                          if (pdfBase && j.filename?.startsWith(pdfBase)) return true;
+                                          // 3. Fall back to label match (least reliable due to duplicates)
                                           if (pdf.label && j.label && j.label === pdf.label) return true;
-                                          return pdfBase && j.filename?.startsWith(pdfBase);
+                                          return false;
                                         });
                                         
                                         allAssets.push({
