@@ -1118,6 +1118,16 @@ const ApiSandbox = () => {
                                       const pdfFilename = pdf.filename || '';
                                       const pdfBase = pdfFilename.split('__')[0];
                                       
+                                      // DEBUG: Log PDF and available thumbnails
+                                      if (activePresetId === 'rcaProspectuses') {
+                                        console.log('📄 PDF:', pdfFilename, 'base:', pdfBase);
+                                        console.log('🖼️  Available jpg_derivatives:', item.jpg_derivatives?.map(j => ({
+                                          role: j.role,
+                                          filename: j.filename,
+                                          base: j.filename?.split('__')[0]
+                                        })));
+                                      }
+                                      
                                       // Find matching thumbnail for this PDF by matching base hash
                                       let thumb = null;
                                       if (item.jpg_derivatives && Array.isArray(item.jpg_derivatives)) {
@@ -1128,6 +1138,10 @@ const ApiSandbox = () => {
                                           // Match by base hash (the hash before the first __)
                                           return pdfBase && jpgBase && pdfBase === jpgBase;
                                         });
+                                        
+                                        if (activePresetId === 'rcaProspectuses') {
+                                          console.log('🎯 Matched thumb:', thumb?.filename || 'NONE FOUND');
+                                        }
                                       }
                                       
                                       results.push({
